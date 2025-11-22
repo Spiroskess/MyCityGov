@@ -1,26 +1,17 @@
 package gr.hua.dit.mycitygov.web.ui;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
-/**
- * Authentication utilities for controllers.
- */
-final class AuthUtils {
+@Component
+public class AuthUtils {
 
-    private AuthUtils() {
-        throw new UnsupportedOperationException();
-    }
-
-    public static boolean isAuthenticated(final Authentication auth) {
-        if (auth == null) return false;
-        if (auth instanceof AnonymousAuthenticationToken) return false;
-        return auth.isAuthenticated();
-    }
-
-    public static boolean isAnonymous(final Authentication auth) {
-        if (auth == null) return true;
-        if (auth instanceof AnonymousAuthenticationToken) return true;
-        return !auth.isAuthenticated();
+    public String getCurrentUserEmail() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getName().equals("anonymousUser")) {
+            throw new IllegalStateException("No authenticated user");
+        }
+        return auth.getName();
     }
 }

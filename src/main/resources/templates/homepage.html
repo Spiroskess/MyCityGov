@@ -1,37 +1,15 @@
 <!DOCTYPE html>
-<html
-    xmlns:th="https://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{base}">
-
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content})}">
 <head>
-    <title>Home</title>
+    <title>Αρχική</title>
 </head>
-
 <body>
-
-<header layout:fragment="header">
-    <h1>🌐 Office Hours</h1>
-    <h3>The Smart Way to Connect Students and Faculty</h3>
-</header>
-
-<section layout:fragment="main">
-
-    <div class="mb-4">
-        <img src="https://www.tourismheritage.hua.gr/wp-content/uploads/2017/07/university-harokopio-test-01-min.jpg" style="width: 100%" />
-    </div>
-
-    <div>
-        <p>The Office Hours web application modernizes academic communication at Harokopio University. Students can easily submit questions or academic requests, track their progress, and receive real-time notifications — all from one intuitive interface. Faculty members get a streamlined dashboard to manage, process, and complete incoming requests efficiently.</p>
-        <p>With secure authentication, automated reminders, and seamless integration with university services, Office Hours brings clarity, speed, and transparency to everyday academic interactions. A better, faster, smarter way to stay connected.</p>
-    </div>
-
-    <div class="text-center mt-4">
-        <p><a th:href="@{/login}">Log in</a></p>
-        <p><a th:href="@{/register}">Register</a></p>
-    </div>
-
-</section>
-
+<content>
+    <h2>Καλώς ήρθες στο MyCityGov</h2>
+    <p>Μπορείς να υποβάλεις αιτήματα και να κλείσεις ραντεβού με τις υπηρεσίες του δήμου.</p>
+    <p><a th:href="@{/requests}">Τα αιτήματά μου</a></p>
+    <p><a th:href="@{/appointments}">Τα ραντεβού μου</a></p>
+</content>
 </body>
 </html>

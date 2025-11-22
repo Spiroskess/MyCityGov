@@ -1,52 +1,34 @@
 <!DOCTYPE html>
-<html
-    xmlns:th="https://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    lang="en"
-    dir="ltr">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title, content)">
 <head>
-    <meta charset="UTF-8" />
-    <title layout:title-pattern="$CONTENT_TITLE - Office Hours - Harokopio University of Athens">HUA</title>
-
-    <!-- BOOTSTRAP -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
-    <!-- CUSTOM STYLES -->
-    <style>
-        .app-container {
-            margin: 0 auto;
-            max-width: 600px;
-            box-shadow: 12px 12px 0px black;
-            border: 4px solid black !important;
-        }
-        .form-control, .form-select {
-            border: 2px solid #6d6d6d;
-            border-radius: 0;
-        }
-        .form-label {
-            text-transform: uppercase;
-            margin-bottom: 2px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            color: #7c7c7c;
-            font-size: 12px;
-        }
-        .app-container .btn-primary {
-            background: black;
-            border: 0;
-            padding: 0.5em 4em;
-        }
-    </style>
+    <meta charset="UTF-8"/>
+    <title th:replace="${title}">MyCityGov</title>
 </head>
 <body>
+<header>
+    <h1>MyCityGov</h1>
+    <nav>
+        <a th:href="@{/}">Αρχική</a> |
+        <a th:href="@{/requests}">Αιτήματα</a> |
+        <a th:href="@{/appointments}">Ραντεβού</a> |
 
-<header class="text-center p-4" layout:fragment="header"></header>
+        <span sec:authorize="isAuthenticated()">
+            Συνδεδεμένος ως <b th:text="${#authentication.name}">user</b> |
+            <a th:href="@{/logout}">Έξοδος</a>
+        </span>
 
-<main class="app-container p-4" layout:fragment="main"></main>
+        <span sec:authorize="isAnonymous()">
+            <a th:href="@{/login}">Είσοδος</a> |
+            <a th:href="@{/register}">Εγγραφή</a>
+        </span>
+    </nav>
+    <hr/>
+</header>
 
-<footer class="text-center p-4 mt-4" layout:fragment="footer">
-    <small>&copy; 2025 Harokopio University of Athens</small>
-</footer>
+<main>
+    <div th:replace="${content}"></div>
+</main>
 </body>
 </html>

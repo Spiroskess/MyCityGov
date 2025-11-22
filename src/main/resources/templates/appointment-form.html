@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Νέο ραντεβού</title>
+</head>
+<body>
+<section>
+    <h2>Νέο ραντεβού</h2>
+
+    <form th:action="@{/appointments}" th:object="${createAppointment}" method="post">
+
+        <div>
+            <label for="requestTypeId">Τύπος αιτήματος</label>
+            <select id="requestTypeId" th:field="*{requestTypeId}">
+                <option th:each="t : ${requestTypes}"
+                        th:value="${t.id}"
+                        th:text="${t.label}">
+                    Τύπος
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <label for="startAt">Ημερομηνία / Ώρα έναρξης</label>
+            <input id="startAt" type="datetime-local" th:field="*{startAt}"/>
+        </div>
+
+        <div>
+            <label for="durationMinutes">Διάρκεια (λεπτά)</label>
+            <input id="durationMinutes" type="number" th:field="*{durationMinutes}"/>
+        </div>
+
+        <div th:if="${#fields.hasErrors('*')}">
+            <p style="color:red;">Υπάρχουν σφάλματα στη φόρμα</p>
+        </div>
+
+        <button type="submit">Καταχώρηση</button>
+    </form>
+</section>
+</body>
+</html>

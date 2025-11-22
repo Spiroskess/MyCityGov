@@ -1,53 +1,29 @@
 <!DOCTYPE html>
-<html
-    xmlns:th="https://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{base}">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <title>Είσοδος</title>
 </head>
-
 <body>
-
-<header layout:fragment="header">
-    <h1>Office Hours <small>/ Login</small></h1>
-</header>
-
-<section layout:fragment="main">
+<section>
+    <h2>Είσοδος</h2>
 
     <form th:action="@{/login}" method="post">
-
-        <!-- MESSAGE -->
-        <div class="text-center mb-3" th:if="${message}">
-            <p class="text-primary" th:text="${message}"></p>
+        <div>
+            <label for="username">Email</label>
+            <input id="username" name="username" type="email" required/>
         </div>
 
-        <!-- ERROR MESSAGE -->
-        <div class="text-center mb-3" th:if="${error}">
-            <p class="text-danger" th:text="${error}"></p>
+        <div>
+            <label for="password">Κωδικός</label>
+            <input id="password" name="password" type="password" required/>
         </div>
 
-        <!-- FORM CONTROLS -->
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input name="username" type="text" class="form-control" required autofocus>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input name="password" type="password" class="form-control" required>
-        </div>
-
-        <div class="mb-4">
-            <button type="submit" class="btn btn-primary">Log in</button>
-        </div>
-
-        <p><a th:href="@{/register}">Don't have an account? Register</a></p>
-
+        <button type="submit">Είσοδος</button>
     </form>
 
+    <p>Δεν έχεις λογαριασμό; <a th:href="@{/register}">Εγγράψου</a></p>
 </section>
-
 </body>
 </html>

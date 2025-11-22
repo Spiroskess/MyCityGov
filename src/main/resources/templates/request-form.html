@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Νέο αίτημα</title>
+</head>
+<body>
+<content>
+    <h2>Νέο αίτημα</h2>
+
+    <form th:action="@{/requests}" th:object="${createRequest}" method="post">
+
+        <div>
+            <label for="requestTypeId">Τύπος αιτήματος</label>
+            <select id="requestTypeId" th:field="*{requestTypeId}">
+                <option th:each="t : ${requestTypes}"
+                        th:value="${t.id}"
+                        th:text="${t.label}">
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <label for="title">Τίτλος</label>
+            <input id="title" type="text" th:field="*{title}"/>
+        </div>
+
+        <div>
+            <label for="description">Περιγραφή</label>
+            <textarea id="description" th:field="*{description}"></textarea>
+        </div>
+
+        <div th:if="${#fields.hasErrors('*')}">
+            <p style="color:red;">Υπάρχουν σφάλματα στη φόρμα</p>
+        </div>
+
+        <button type="submit">Καταχώρηση</button>
+    </form>
+</content>
+</body>
+</html>
