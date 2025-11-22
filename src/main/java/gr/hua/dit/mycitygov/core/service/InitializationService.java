@@ -30,7 +30,7 @@ public class InitializationService {
         this.initialized = new AtomicBoolean(false);
     }
 
-    @PostConstruct
+    /*@PostConstruct
     public void populateDatabaseWithInitialData() {
         final boolean alreadyInitialized = this.initialized.getAndSet(true);
         if (alreadyInitialized) {
@@ -71,5 +71,5 @@ public class InitializationService {
             this.personService.createPerson(createPersonRequest, false); // do not send SMS
         }
         LOGGER.info("Database initialization completed successfully.");
-    }
+    }*/
 }
