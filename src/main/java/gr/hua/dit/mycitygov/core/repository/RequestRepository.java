@@ -12,4 +12,10 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByCitizenOrderBySubmittedAtDesc(Citizen citizen);
 
     List<Request> findByStatus(RequestStatus status);
+
+    // Αιτήματα που έχει αναλάβει ένας υπάλληλος
+    List<Request> findByAssignedEmployeeOrderBySubmittedAtDesc(Citizen employee);
+
+    // Όλα τα αιτήματα, ταξινομημένα με βάση την ημερομηνία
+    List<Request> findAllByOrderBySubmittedAtDesc();
 }

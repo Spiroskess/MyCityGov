@@ -38,8 +38,10 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/register", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/employee/**").hasAnyRole("EMPLOYEE", "ADMIN")
                 .anyRequest().authenticated()
             )
+
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)

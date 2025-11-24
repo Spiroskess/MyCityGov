@@ -1,15 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base :: layout(~{::title}, ~{::content})}">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
 <head>
     <title>Αρχική</title>
 </head>
 <body>
-<content>
-    <h2>Καλώς ήρθες στο MyCityGov</h2>
-    <p>Μπορείς να υποβάλεις αιτήματα και να κλείσεις ραντεβού με τις υπηρεσίες του δήμου.</p>
-    <p><a th:href="@{/requests}">Τα αιτήματά μου</a></p>
-    <p><a th:href="@{/appointments}">Τα ραντεβού μου</a></p>
-</content>
+<section>
+
+    <!-- ΜΗΝΥΜΑ ΓΙΑ ΠΟΛΙΤΗ -->
+    <div sec:authorize="hasRole('CITIZEN')">
+        <h2>Καλώς ήρθες στο MyCityGov</h2>
+        <p>Μπορείς να υποβάλεις αιτήματα και να κλείσεις ραντεβού με τις υπηρεσίες του δήμου.</p>
+        <p><a th:href="@{/requests}">Τα αιτήματά μου</a></p>
+        <p><a th:href="@{/appointments}">Τα ραντεβού μου</a></p>
+    </div>
+
+    <!-- ΜΗΝΥΜΑ ΓΙΑ ΥΠΑΛΛΗΛΟ / ADMIN -->
+    <div sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
+        <h2>Πίνακας υπαλλήλου</h2>
+        <p>Από εδώ μπορείς να δεις και να διαχειριστείς τα αιτήματα πολιτών.</p>
+        <p><a th:href="@{/employee/requests}">Λίστα αιτημάτων πολιτών</a></p>
+        <p><a th:href="@{/employee/requests/assigned}">Αιτήματα που έχω αναλάβει</a></p>
+    </div>
+
+    <!-- ΜΗΝΥΜΑ ΓΙΑ ΑΝΩΝΥΜΟ ΧΡΗΣΤΗ -->
+    <div sec:authorize="isAnonymous()">
+        <h2>Καλώς ήρθες στο MyCityGov</h2>
+        <p>Συνδέσου ή κάνε εγγραφή για να χρησιμοποιήσεις την υπηρεσία.</p>
+        <p><a th:href="@{/login}">Είσοδος</a> | <a th:href="@{/register}">Εγγραφή</a></p>
+    </div>
+
+</section>
 </body>
 </html>

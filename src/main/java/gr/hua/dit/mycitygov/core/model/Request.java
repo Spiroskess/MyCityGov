@@ -37,29 +37,77 @@ public class Request {
     @Column(nullable = false, updatable = false)
     private Instant submittedAt;
 
-    public Long getId() { return id; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Citizen assignedEmployee;
 
-    public Citizen getCitizen() { return citizen; }
+    @Column(length = 2000)
+    private String employeeComment;
 
-    public void setCitizen(Citizen citizen) { this.citizen = citizen; }
+    public Long getId() {
+        return id;
+    }
 
-    public RequestType getType() { return type; }
+    public Citizen getCitizen() {
+        return citizen;
+    }
 
-    public void setType(RequestType type) { this.type = type; }
+    public void setCitizen(Citizen citizen) {
+        this.citizen = citizen;
+    }
 
-    public String getTitle() { return title; }
+    public RequestType getType() {
+        return type;
+    }
 
-    public void setTitle(String title) { this.title = title; }
+    public void setType(RequestType type) {
+        this.type = type;
+    }
 
-    public String getDescription() { return description; }
+    public String getTitle() {
+        return title;
+    }
 
-    public void setDescription(String description) { this.description = description; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public RequestStatus getStatus() { return status; }
+    public String getDescription() {
+        return description;
+    }
 
-    public void setStatus(RequestStatus status) { this.status = status; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Instant getSubmittedAt() { return submittedAt; }
+    public RequestStatus getStatus() {
+        return status;
+    }
 
-    public void setSubmittedAt(Instant submittedAt) { this.submittedAt = submittedAt; }
+    public void setStatus(RequestStatus status) {
+        this.status = status;
+    }
+
+    public Instant getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(Instant submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+    public Citizen getAssignedEmployee() {
+        return assignedEmployee;
+    }
+
+    public void setAssignedEmployee(Citizen assignedEmployee) {
+        this.assignedEmployee = assignedEmployee;
+    }
+
+    public String getEmployeeComment() {
+        return employeeComment;
+    }
+
+    public void setEmployeeComment(String employeeComment) {
+        this.employeeComment = employeeComment;
+    }
+
 }
