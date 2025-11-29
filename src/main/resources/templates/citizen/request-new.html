@@ -14,7 +14,7 @@
         <div>
             <label for="type">Τύπος αίτηματος:</label>
             <select id="type" th:field="*{type}">
-                <option th:each="t : ${T(gr.hua.dit.mycitygov_updated_ui.core.model.RequestType).values()}"
+                <option th:each="t : ${T(gr.hua.dit.mycitygov.core.model.RequestType).values()}"
                         th:value="${t}"
                         th:text="${t}">CERTIFICATE_RESIDENCE</option>
             </select>
