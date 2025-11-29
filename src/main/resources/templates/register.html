@@ -1,35 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
 <head>
     <title>Εγγραφή</title>
 </head>
+
 <body>
 <section>
-    <h2>Εγγραφή νέου πολίτη</h2>
+    <h1>Εγγραφή Πολίτη</h1>
 
-    <form th:action="@{/register}" th:object="${registrationRequest}" method="post">
+    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/register}" th:object="${createPersonRequest}" method="post">
         <div>
-            <label for="email">Email</label>
-            <input id="email" type="email" th:field="*{email}"/>
-            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            <label>Email</label>
+            <input type="email" th:field="*{emailAddress}"/>
+            <div th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}"></div>
         </div>
 
         <div>
-            <label for="password">Κωδικός</label>
-            <input id="password" type="password" th:field="*{password}"/>
-            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            <label>Όνομα</label>
+            <input type="text" th:field="*{firstName}"/>
+            <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
         </div>
 
         <div>
-            <label for="fullName">Ονοματεπώνυμο</label>
-            <input id="fullName" type="text" th:field="*{fullName}"/>
-            <div th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+            <label>Επώνυμο</label>
+            <input type="text" th:field="*{lastName}"/>
+            <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
         </div>
 
         <div>
-            <label for="phone">Τηλέφωνο</label>
-            <input id="phone" type="text" th:field="*{phone}"/>
+            <label>Κινητό</label>
+            <input type="text" th:field="*{mobilePhoneNumber}"/>
+            <div th:if="${#fields.hasErrors('mobilePhoneNumber')}" th:errors="*{mobilePhoneNumber}"></div>
+        </div>
+
+        <div>
+            <label>ΑΦΜ</label>
+            <input type="text" th:field="*{afm}"/>
+            <div th:if="${#fields.hasErrors('afm')}" th:errors="*{afm}"></div>
+        </div>
+
+        <div>
+            <label>ΑΜΚΑ</label>
+            <input type="text" th:field="*{amka}"/>
+            <div th:if="${#fields.hasErrors('amka')}" th:errors="*{amka}"></div>
+        </div>
+
+        <div>
+            <label>Κωδικός</label>
+            <input type="password" th:field="*{rawPassword}"/>
+            <div th:if="${#fields.hasErrors('rawPassword')}" th:errors="*{rawPassword}"></div>
         </div>
 
         <button type="submit">Εγγραφή</button>

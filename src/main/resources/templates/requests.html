@@ -1,33 +1,20 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base :: layout(~{::title}, ~{::content})}">
-<head>
-    <title>Τα αιτήματά μου</title>
-</head>
-<body>
-<content>
-    <h2>Τα αιτήματά μου</h2>
-
-    <p><a th:href="@{/requests/new}">Νέο αίτημα</a></p>
-
-    <table>
-        <thead>
-        <tr>
-            <th>Τίτλος</th>
-            <th>Τύπος</th>
-            <th>Κατάσταση</th>
-            <th>Ημερομηνία</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="r : ${requests}">
-            <td th:text="${r.title}">Τίτλος</td>
-            <td th:text="${r.typeLabel}">Τύπος</td>
-            <td th:text="${r.status}">Κατάσταση</td>
-            <td th:text="${#temporals.format(r.submittedAt, 'dd/MM/yyyy HH:mm')}">Ημ/νία</td>
-        </tr>
-        </tbody>
-    </table>
-</content>
-</body>
-</html>
+<table>
+    <thead>
+    <tr>
+        <th>Πρωτόκολλο</th>
+        <th>Τύπος</th>
+        <th>Κατάσταση</th>
+        <th>Θέμα</th>
+        <th>Δημιουργία</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="req : ${requests}">
+        <td th:text="${req.protocolNumber}"></td>
+        <td th:text="${req.type}"></td>
+        <td th:text="${req.status}"></td>
+        <td th:text="${req.subject}"></td>
+        <td th:text="${#temporals.format(req.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+    </tr>
+    </tbody>
+</table>

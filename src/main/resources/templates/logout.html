@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Αποσύνδεση</title>
+</head>
+
+<body>
+<section>
+    <h2>Έχετε αποσυνδεθεί</h2>
+    <p><a th:href="@{/login}">Σύνδεση ξανά</a></p>
+</section>
+</body>
+</html>

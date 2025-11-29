@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Νέο αίτημα</title>
+</head>
+
+<body>
+<section>
+    <h2>Υποβολή νέου αιτήματος</h2>
+
+    <form th:action="@{/citizen/request-new}" th:object="${openRequestRequest}" method="post">
+        <div>
+            <label for="type">Τύπος αίτηματος:</label>
+            <select id="type" th:field="*{type}">
+                <option th:each="t : ${T(gr.hua.dit.mycitygov_updated_ui.core.model.RequestType).values()}"
+                        th:value="${t}"
+                        th:text="${t}">CERTIFICATE_RESIDENCE</option>
+            </select>
+            <span th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></span>
+        </div>
+
+        <div>
+            <label for="subject">Θέμα:</label>
+            <input id="subject" type="text" th:field="*{subject}"/>
+            <span th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></span>
+        </div>
+
+        <div>
+            <label for="description">Περιγραφή:</label>
+            <textarea id="description" th:field="*{description}"></textarea>
+            <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+        </div>
+
+        <div>
+            <button type="submit">Υποβολή</button>
+        </div>
+    </form>
+</section>
+</body>
+</html>

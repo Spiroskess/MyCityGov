@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:fragment="layout(title, content)">
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:fragment="layout(title, content)">
+
 <head>
     <meta charset="UTF-8"/>
     <title th:replace="${title}">MyCityGov</title>
@@ -11,32 +13,33 @@
     <h1>MyCityGov</h1>
 
     <nav>
-
-        <!-- Αρχική -->
         <a th:href="@{/}">Αρχική</a>
 
-        <!-- LINKS ΠΟΛΙΤΗ -->
+        <!-- CITIZEN -->
         <span sec:authorize="hasRole('CITIZEN')">
-            | <a th:href="@{/requests}">Αιτήματα</a>
-            | <a th:href="@{/appointments}">Ραντεβού</a>
+            | <a th:href="@{/citizen/requests}">Τα αιτήματά μου</a>
+            | <a th:href="@{/citizen/request-new}">Νέο αίτημα</a>
         </span>
 
-        <!-- LINKS ΥΠΑΛΛΗΛΟΥ & ADMIN -->
-        <span sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
-            | <a th:href="@{/employee/requests}">Αιτήματα (Υπάλληλος)</a>
+        <!-- EMPLOYEE -->
+        <span sec:authorize="hasRole('EMPLOYEE')">
+            | <a th:href="@{/employee/requests}">Αιτήματα υπηρεσίας</a>
         </span>
 
-        <!-- LOGIN / LOGOUT -->
+        <!-- ADMIN -->
+        <span sec:authorize="hasRole('ADMIN')">
+            | <a th:href="@{/admin/requests}">Όλα τα αιτήματα</a>
+        </span>
+
+        <!-- Δεξιά: login / profile / logout -->
         <span sec:authorize="isAuthenticated()">
-            | Συνδεδεμένος ως <b th:text="${#authentication.name}">user</b>
-            | <a th:href="@{/logout}">Έξοδος</a>
+            | <a th:href="@{/profile}">Προφίλ</a>
+            | <a th:href="@{/logout}">Αποσύνδεση</a>
         </span>
-
-        <span sec:authorize="isAnonymous()">
-            | <a th:href="@{/login}">Είσοδος</a>
+        <span sec:authorize="!isAuthenticated()">
+            | <a th:href="@{/login}">Σύνδεση</a>
             | <a th:href="@{/register}">Εγγραφή</a>
         </span>
-
     </nav>
 
     <hr/>

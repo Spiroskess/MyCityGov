@@ -1,29 +1,32 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Είσοδος</title>
+    <title>Σύνδεση</title>
 </head>
+
 <body>
 <section>
-    <h2>Είσοδος</h2>
+    <h2>Σύνδεση</h2>
+
+    <p th:if="${param.error}">Λάθος email ή κωδικός.</p>
+    <p th:if="${param.logout}">Έχετε αποσυνδεθεί.</p>
+    <p th:if="${param.registered}">Η εγγραφή ολοκληρώθηκε. Συνδεθείτε.</p>
 
     <form th:action="@{/login}" method="post">
         <div>
-            <label for="username">Email</label>
+            <label for="username">Email:</label>
             <input id="username" name="username" type="email" required/>
         </div>
-
         <div>
-            <label for="password">Κωδικός</label>
+            <label for="password">Κωδικός:</label>
             <input id="password" name="password" type="password" required/>
         </div>
-
-        <button type="submit">Είσοδος</button>
+        <div>
+            <button type="submit">Είσοδος</button>
+        </div>
     </form>
-
-    <p>Δεν έχεις λογαριασμό; <a th:href="@{/register}">Εγγράψου</a></p>
 </section>
 </body>
 </html>

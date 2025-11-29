@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Ανάθεση αιτήματος</title>
+</head>
+
+<body>
+<section>
+    <h2>Ανάθεση αιτήματος</h2>
+
+    <p>Αίτημα με ID: <span th:text="${requestId}">1</span></p>
+
+    <form th:action="@{'/admin/requests/' + ${requestId} + '/assign'}"
+          th:object="${assignRequestForm}"
+          method="post">
+
+        <div>
+            <label for="employeeId">Υπάλληλος:</label>
+            <select id="employeeId" th:field="*{employeeId}">
+                <option th:each="e : ${employees}"
+                        th:value="${e.id}"
+                        th:text="${e.lastName + ' ' + e.firstName}">Υπάλληλος</option>
+            </select>
+            <span th:if="${#fields.hasErrors('employeeId')}" th:errors="*{employeeId}"></span>
+        </div>
+
+        <div>
+            <button type="submit">Ανάθεση</button>
+        </div>
+    </form>
+</section>
+</body>
+</html>

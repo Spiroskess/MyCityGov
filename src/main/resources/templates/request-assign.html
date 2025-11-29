@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: layout(~{::body})}">
+<body>
+<div class="container">
+    <h1>Ανάθεση Αιτήματος</h1>
+
+    <form th:action="@{|/admin/requests/${requestId}/assign|}"
+          th:object="${assignRequestForm}" method="post">
+
+        <label>Υπάλληλος</label>
+        <select th:field="*{employeeId}">
+            <option value="" disabled selected>Επιλέξτε υπάλληλο</option>
+            <option th:each="emp : ${employees}"
+                    th:value="${emp.id}"
+                    th:text="${emp.lastName} + ' ' + ${emp.firstName}"></option>
+        </select>
+        <div th:if="${#fields.hasErrors('employeeId')}" th:errors="*{employeeId}"></div>
+
+        <button type="submit">Ανάθεση</button>
+    </form>
+</div>
+</body>
+</html>

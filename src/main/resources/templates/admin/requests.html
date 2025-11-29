@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Όλα τα αιτήματα</title>
+</head>
+
+<body>
+<section>
+    <h2>Όλα τα αιτήματα</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Πρωτόκολλο</th>
+            <th>Πολίτης</th>
+            <th>Τύπος</th>
+            <th>Κατάσταση</th>
+            <th>Υπάλληλος</th>
+            <th>Ανάθεση</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${requests}">
+            <td th:text="${r.protocolNumber}">PR-0001</td>
+            <td th:text="${r.citizenFullName}">Citizen Name</td>
+            <td th:text="${r.type}">CERTIFICATE_RESIDENCE</td>
+            <td th:text="${r.status}">RECEIVED</td>
+            <td th:text="${r.assignedEmployeeFullName}">-</td>
+            <td>
+                <a th:href="@{'/admin/requests/' + ${r.id} + '/assign'}">Ανάθεση</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>
