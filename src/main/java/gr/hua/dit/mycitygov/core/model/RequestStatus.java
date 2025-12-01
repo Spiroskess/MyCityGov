@@ -4,7 +4,7 @@ public enum RequestStatus {
     SUBMITTED,
     RECEIVED,
     IN_PROGRESS,
-    WAITING_FOR_MORE_INFO,
+    WAITING_ADDITIONAL_INFO,
     COMPLETED,
     REJECTED
 
