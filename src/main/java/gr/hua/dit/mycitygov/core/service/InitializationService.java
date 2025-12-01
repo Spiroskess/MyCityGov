@@ -25,7 +25,7 @@ public class InitializationService {
         this.personService = personService;
     }
 
-    @PostConstruct
+    @PostConstruct //τρέχει μόλις ξεκινήσει η εφαρμογή
     public void initialize() {
         if (!initialized.compareAndSet(false, true)) {
             // έχει ήδη τρέξει
@@ -35,38 +35,39 @@ public class InitializationService {
         LOGGER.info("Starting MyCityGov database initialization…");
 
         final List<CreatePersonRequest> users = List.of(
-            // Citizen
-            new CreatePersonRequest(
-                PersonRole.CITIZEN,
-                "citizen1@mycity.gov",
-                "Giorgos",
-                "Papadopoulos",
-                "+306900000001",
-                "111111111",
-                "11111111111",
-                "citizen1"
-            ),
             // Admin
             new CreatePersonRequest(
                 PersonRole.ADMIN,
                 "admin@mycity.gov",
-                "Admin",
-                "User",
+                "Artemakis",
+                "Papadopoulos",
                 "+306900000000",
                 "999999999",
                 "99999999999",
-                "admin"
+                "Admin1"
             ),
-            // Employee
+            // Employee1
             new CreatePersonRequest(
                 PersonRole.EMPLOYEE,
                 "employee1@mycity.gov",
+                "Soula",
+                "Koromila",
+                "+306900000001",
+                "111111111",
+                "11111111111",
+                "Emp1"
+            ),
+
+            // Employee2
+            new CreatePersonRequest(
+                PersonRole.EMPLOYEE,
+                "employee2@mycity.gov",
                 "Maria",
                 "Papadopoulou",
                 "+306900000002",
                 "222222222",
                 "22222222222",
-                "emp1"
+                "Emp2"
             )
         );
 

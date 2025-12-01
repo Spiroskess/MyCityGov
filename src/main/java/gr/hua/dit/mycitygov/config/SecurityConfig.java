@@ -17,7 +17,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -33,14 +32,24 @@ public class SecurityConfig {
         throws Exception {
 
         http
+            // Έχεις ήδη CSRF disabled για όλη την εφαρμογή
             .csrf(csrf -> csrf.disable())
+
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()
+                // 🔹 ΕΔΩ προσθέτουμε το /h2-console/**
+                .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/h2-console/**")
+                .permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/employee/**").hasRole("EMPLOYEE")
                 .requestMatchers("/citizen/**").hasRole("CITIZEN")
                 .anyRequest().authenticated()
             )
+
+            // 🔹 ΕΔΩ επιτρέπουμε frames για να δουλέψει το H2 console
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.sameOrigin())
+            )
+
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -57,4 +66,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
