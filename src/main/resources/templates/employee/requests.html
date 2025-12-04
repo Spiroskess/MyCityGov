@@ -18,8 +18,11 @@
             <th>Τύπος</th>
             <th>Κατάσταση</th>
             <th>Ημ/νία</th>
+            <th>Προθεσμία</th>
+            <th>Ληξιπρόθεσμο;</th>
         </tr>
         </thead>
+
         <tbody>
         <tr th:each="r : ${requests}">
             <td th:text="${r.protocolNumber}">PR-0001</td>
@@ -27,7 +30,10 @@
             <td th:text="${r.type}">CERTIFICATE_RESIDENCE</td>
             <td th:text="${r.status}">IN_PROGRESS</td>
             <td th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+            <td th:text="${r.slaDueDate != null ? #temporals.format(r.slaDueDate, 'dd/MM/yyyy') : '-'}">10/01/2025</td>
+            <td th:text="${r.overdue} ? 'ΝΑΙ' : 'ΟΧΙ'">ΟΧΙ</td>
         </tr>
+
         </tbody>
     </table>
 </section>

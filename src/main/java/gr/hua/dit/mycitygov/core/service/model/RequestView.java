@@ -4,6 +4,7 @@ import gr.hua.dit.mycitygov.core.model.RequestStatus;
 import gr.hua.dit.mycitygov.core.model.RequestType;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 public record RequestView(
     Long id,
@@ -13,5 +14,7 @@ public record RequestView(
     String subject,
     String citizenFullName,
     String assignedEmployeeFullName,
-    Instant createdAt
+    Instant createdAt,
+    LocalDate slaDueDate,
+    boolean overdue
 ) {}

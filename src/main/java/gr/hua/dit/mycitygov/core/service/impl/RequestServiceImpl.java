@@ -1,6 +1,6 @@
 package gr.hua.dit.mycitygov.core.service.impl;
 
-
+import gr.hua.dit.mycitygov.core.model.RequestType;
 import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.core.model.Request;
 import gr.hua.dit.mycitygov.core.model.RequestStatus;
@@ -12,6 +12,7 @@ import gr.hua.dit.mycitygov.core.service.model.RequestView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +42,29 @@ public class RequestServiceImpl implements RequestService {
         request.setProtocolNumber(generateProtocolNumber());
         request.setCreatedAt(Instant.now());
         request.setUpdatedAt(Instant.now());
+
+        //  υπολογισμός προθεσμίας (SLA) ανά τύπο αιτήματος
+        LocalDate slaDueDate = calculateSlaDueDate(openReq.type());
+        request.setSlaDueDate(slaDueDate);
+
         request = requestRepository.save(request);
         return requestMapper.convertRequestToView(request);
     }
+
+    private LocalDate calculateSlaDueDate(RequestType type) {
+        LocalDate today = LocalDate.now();
+
+        return switch (type) {
+            case CERTIFICATE_RESIDENCE -> today.plusDays(10);   // π.χ. 10 μέρες
+            case SIDEWALK_LICENSE      -> today.plusDays(15);   // 15 μέρες
+            case LIGHTING_ISSUE,
+                 ROAD_HOLE,
+                 CLEANING_ISSUE        -> today.plusDays(5);    // βλάβες πόλης: πιο γρήγορα
+            case OTHER                 -> today.plusDays(20);   // γενικά αιτήματα
+        };
+    }
+
+
 
     @Override
     @Transactional(readOnly = true)

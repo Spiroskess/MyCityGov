@@ -35,6 +35,7 @@ public class InitializationService {
         LOGGER.info("Starting MyCityGov database initialization…");
 
         final List<CreatePersonRequest> users = List.of(
+
             // Admin
             new CreatePersonRequest(
                 PersonRole.ADMIN,
@@ -46,6 +47,7 @@ public class InitializationService {
                 "99999999999",
                 "Admin1"
             ),
+
             // Employee1
             new CreatePersonRequest(
                 PersonRole.EMPLOYEE,
