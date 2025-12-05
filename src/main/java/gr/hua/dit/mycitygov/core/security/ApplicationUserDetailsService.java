@@ -34,7 +34,7 @@ public class ApplicationUserDetailsService implements UserDetailsService {
         }
 
         return new ApplicationUserDetails(
-            person.getId(),                 // Long → autounbox σε long
+            person.getId(),
             person.getEmailAddress(),
             person.getPasswordHash(),
             person.getRole()

@@ -32,11 +32,11 @@ public class SecurityConfig {
         throws Exception {
 
         http
-            // Έχεις ήδη CSRF disabled για όλη την εφαρμογή
+
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
-                // 🔹 ΕΔΩ προσθέτουμε το /h2-console/**
+                //  ΕΔΩ προσθέτουμε το /h2-console/**
                 .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/h2-console/**")
                 .permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // 🔹 ΕΔΩ επιτρέπουμε frames για να δουλέψει το H2 console
+            //  ΕΔΩ επιτρέπουμε frames για να δουλέψει το H2 console
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
             )

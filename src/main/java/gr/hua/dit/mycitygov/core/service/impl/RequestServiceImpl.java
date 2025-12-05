@@ -55,7 +55,7 @@ public class RequestServiceImpl implements RequestService {
         LocalDate today = LocalDate.now();
 
         return switch (type) {
-            case CERTIFICATE_RESIDENCE -> today.plusDays(10);   // π.χ. 10 μέρες
+            case CERTIFICATE_RESIDENCE -> today.plusDays(10);   // 10 μέρες
             case SIDEWALK_LICENSE      -> today.plusDays(15);   // 15 μέρες
             case LIGHTING_ISSUE,
                  ROAD_HOLE,
@@ -106,7 +106,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private String generateProtocolNumber() {
-        // απλό παράδειγμα – μπορείς να το αλλάξεις
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

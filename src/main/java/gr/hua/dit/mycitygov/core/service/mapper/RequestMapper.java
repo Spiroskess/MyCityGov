@@ -12,7 +12,6 @@ import java.util.EnumSet;
 @Component
 public class RequestMapper {
 
-    // τελικές καταστάσεις – αν φτάσει εδώ, δεν μας νοιάζει αν έχει λήξει η προθεσμία
     private static final EnumSet<RequestStatus> TERMINAL_STATUSES =
         EnumSet.of(RequestStatus.COMPLETED, RequestStatus.REJECTED);
 

@@ -25,9 +25,8 @@ public final class CurrentUserProvider {
         this.personRepository = personRepository;
     }
 
-    /**
-     * Returns a lightweight view of the currently authenticated user, if any.
-     */
+
+
     public Optional<CurrentUser> getCurrentUser() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
@@ -43,25 +42,19 @@ public final class CurrentUserProvider {
         return Optional.empty();
     }
 
-    /**
-     * Returns the current user or throws {@link SecurityException} if not authenticated.
-     */
+
     public CurrentUser requireCurrentUser() {
         return this.getCurrentUser()
             .orElseThrow(() -> new SecurityException("not authenticated"));
     }
 
-    /**
-     * Returns the Person entity of the current authenticated user, if present.
-     */
+
     public Optional<Person> getCurrentPerson() {
         return getCurrentUser()
             .flatMap(u -> personRepository.findById(u.id()));
     }
 
-    /**
-     * Convenience helpers for role-specific access (χρήσιμα αν τα χρειαστείς).
-     */
+
     public long requireCitizenId() {
         final var currentUser = this.requireCurrentUser();
         if (currentUser.role() != PersonRole.CITIZEN) {

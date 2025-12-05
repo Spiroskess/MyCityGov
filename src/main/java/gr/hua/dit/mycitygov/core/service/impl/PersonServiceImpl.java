@@ -67,7 +67,7 @@ public class PersonServiceImpl implements PersonService {
 
         // Δημιουργία entity
         Person person = new Person();
-        person.setRole(role); // 👈 εδώ μπαίνει ο ΠΡΑΓΜΑΤΙΚΟΣ ρόλος
+        person.setRole(role); //εδώ μπαίνει ο ΠΡΑΓΜΑΤΙΚΟΣ ρόλος
         person.setEmailAddress(request.emailAddress());
         person.setFirstName(request.firstName());
         person.setLastName(request.lastName());

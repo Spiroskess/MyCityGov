@@ -28,7 +28,6 @@ public class InitializationService {
     @PostConstruct //τρέχει μόλις ξεκινήσει η εφαρμογή
     public void initialize() {
         if (!initialized.compareAndSet(false, true)) {
-            // έχει ήδη τρέξει
             return;
         }
 
