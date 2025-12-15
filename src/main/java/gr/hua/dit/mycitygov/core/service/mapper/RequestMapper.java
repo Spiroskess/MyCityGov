@@ -39,7 +39,8 @@ public class RequestMapper {
             employeeName,
             request.getCreatedAt(),
             slaDueDate,
-            overdue
+            overdue,
+            request.getStatusComment()
         );
     }
 }

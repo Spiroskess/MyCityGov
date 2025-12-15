@@ -84,7 +84,7 @@ public class RegistrationController {
         }
 
         // Κανονική δημιουργία χρήστη μέσω service.
-        CreatePersonResult createPersonResult = this.personService.createPerson(createPersonRequest);
+        CreatePersonResult createPersonResult = this.personService.createPerson(createPersonRequest,true);
 
         if (createPersonResult.created()) {
             LOGGER.info("New person registered with email={}", createPersonRequest.emailAddress());

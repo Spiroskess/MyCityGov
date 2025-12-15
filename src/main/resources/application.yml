@@ -20,3 +20,14 @@ server:
 logging:
   level:
     org.hibernate.SQL: debug
+
+routee:
+  app-id: 5bba56ece4b0a43fbf239aae
+  app-secret: kDsvtwHe3w
+  sender: HUANOC
+
+mycitygov:
+  noc:
+    base-url: "http://localhost:8081"
+    sms:
+      active: true

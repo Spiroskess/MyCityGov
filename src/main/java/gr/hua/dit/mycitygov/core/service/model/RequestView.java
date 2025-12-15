@@ -16,5 +16,6 @@ public record RequestView(
     String assignedEmployeeFullName,
     Instant createdAt,
     LocalDate slaDueDate,
-    boolean overdue
+    boolean overdue,
+    String statusComment
 ) {}

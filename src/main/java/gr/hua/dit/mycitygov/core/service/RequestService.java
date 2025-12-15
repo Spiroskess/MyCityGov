@@ -1,6 +1,7 @@
 package gr.hua.dit.mycitygov.core.service;
 
 import gr.hua.dit.mycitygov.core.model.Person;
+import gr.hua.dit.mycitygov.core.model.RequestStatus;
 import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
 import gr.hua.dit.mycitygov.core.service.model.RequestView;
 
@@ -18,4 +19,11 @@ public interface RequestService {
     List<RequestView> getAllRequests();
 
     Optional<RequestView> assignRequestToEmployee(Long requestId, Person employee);
+    Optional<RequestView> updateStatus(
+        Long requestId,
+        Person employee,
+        RequestStatus nextStatus,
+        String comment
+    );
+
 }

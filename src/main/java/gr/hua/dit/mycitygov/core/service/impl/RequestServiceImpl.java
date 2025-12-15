@@ -4,8 +4,10 @@ import gr.hua.dit.mycitygov.core.model.RequestType;
 import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.core.model.Request;
 import gr.hua.dit.mycitygov.core.model.RequestStatus;
+import gr.hua.dit.mycitygov.core.port.SmsNotificationPort;
 import gr.hua.dit.mycitygov.core.repository.RequestRepository;
 import gr.hua.dit.mycitygov.core.service.RequestService;
+import gr.hua.dit.mycitygov.core.service.RequestStatusTransitions;
 import gr.hua.dit.mycitygov.core.service.mapper.RequestMapper;
 import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
 import gr.hua.dit.mycitygov.core.service.model.RequestView;
@@ -23,11 +25,16 @@ public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
     private final RequestMapper requestMapper;
+    private final SmsNotificationPort smsNotificationPort;
 
-    public RequestServiceImpl(RequestRepository requestRepository,
-                              RequestMapper requestMapper) {
+    public RequestServiceImpl(
+        RequestRepository requestRepository,
+        RequestMapper requestMapper,
+        SmsNotificationPort smsNotificationPort
+    ) {
         this.requestRepository = requestRepository;
         this.requestMapper = requestMapper;
+        this.smsNotificationPort = smsNotificationPort;
     }
 
     @Override
@@ -105,7 +112,71 @@ public class RequestServiceImpl implements RequestService {
             });
     }
 
+    /*@Override
+    public Optional<RequestView> updateStatus(Long requestId, Person employee, RequestStatus nextStatus, String comment) {
+        return Optional.empty();
+    }*/
+
+
+
     private String generateProtocolNumber() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
+
+    @Override
+    @Transactional
+    public Optional<RequestView> updateStatus(
+        Long requestId,
+        Person employee,
+        RequestStatus nextStatus,
+        String comment
+    ) {
+        return requestRepository.findById(requestId).map(request -> {
+
+            if (request.getAssignedEmployee() == null ||
+                !request.getAssignedEmployee().getId().equals(employee.getId())) {
+                throw new IllegalStateException("Δεν έχεις δικαίωμα για αυτό το αίτημα");
+            }
+
+            if (!RequestStatusTransitions.canMove(request.getStatus(), nextStatus)) {
+                throw new IllegalStateException(
+                    "Μη επιτρεπτή μετάβαση: "
+                        + request.getStatus() + " → " + nextStatus
+                );
+            }
+
+            request.setStatus(nextStatus);
+            request.setUpdatedAt(Instant.now());
+
+            if (comment != null && !comment.isBlank()) {
+                request.setStatusComment(comment.trim());
+            }
+
+            sendSmsIfNeeded(request);
+
+            return requestMapper.convertRequestToView(request);
+        });
+    }
+    private void sendSmsIfNeeded(Request request) {
+        String phone = request.getCitizen().getMobilePhoneNumber();
+        String protocol = request.getProtocolNumber();
+
+        String msg = switch (request.getStatus()) {
+            case IN_PROGRESS ->
+                "MyCityGov: Το αίτημά σου (" + protocol + ") ξεκίνησε να επεξεργάζεται.";
+            case WAITING_ADDITIONAL_INFO ->
+                "MyCityGov: Απαιτούνται επιπλέον στοιχεία για το αίτημα (" + protocol + ").";
+            case COMPLETED ->
+                "MyCityGov: Το αίτημά σου (" + protocol + ") ολοκληρώθηκε επιτυχώς.";
+            case REJECTED ->
+                "MyCityGov: Το αίτημά σου (" + protocol + ") απορρίφθηκε. "
+                    + (request.getStatusComment() != null ? request.getStatusComment() : "");
+            default -> null;
+        };
+
+        if (msg != null) {
+            smsNotificationPort.sendSms(phone, msg);
+        }
+    }
+
 }
