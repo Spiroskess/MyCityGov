@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Ωράρια</title></head>
+<body>
+<h2>Ωράρια Υπηρεσιών</h2>
+
+<a th:href="@{/admin/schedules/new}">+ Νέο ωράριο</a>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Υπηρεσία</th><th>Ημέρα</th><th>Από</th><th>Έως</th><th>Slot</th><th>Ενέργειες</th>
+    </tr>
+    <tr th:each="s : ${schedules}">
+        <td th:text="${s.service}"></td>
+        <td th:text="${s.dayOfWeek}"></td>
+        <td th:text="${s.startTime}"></td>
+        <td th:text="${s.endTime}"></td>
+        <td th:text="${s.slotMinutes} + ' λεπτά'"></td>
+        <td>
+            <form th:action="@{'/admin/schedules/' + ${s.id} + '/delete'}" method="post">
+                <button type="submit">Διαγραφή</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

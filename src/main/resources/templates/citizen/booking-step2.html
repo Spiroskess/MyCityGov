@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Διαθέσιμες ώρες</title>
+</head>
+<body>
+
+<h2 th:text="'Υπηρεσία: ' + ${service}"></h2>
+<h3 th:text="'Ημερομηνία: ' + ${date}"></h3>
+
+<div th:if="${#lists.isEmpty(times)}">
+    <p>Δεν υπάρχουν διαθέσιμες ώρες για αυτή την ημερομηνία.</p>
+</div>
+
+<form th:if="${!#lists.isEmpty(times)}" th:action="@{/citizen/booking/confirm}" method="post">
+    <input type="hidden" name="service" th:value="${service}"/>
+    <input type="hidden" name="date" th:value="${date}"/>
+
+    <p>Διάλεξε ώρα:</p>
+    <div th:each="t : ${times}">
+        <label>
+            <input type="radio" name="time" th:value="${t}" required/>
+            <span th:text="${t}"></span>
+        </label><br>
+    </div>
+
+    <button type="submit">Κλείσιμο ραντεβού</button>
+</form>
+
+</body>
+</html>

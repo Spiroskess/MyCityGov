@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="base :: layout(~{::title}, ~{::section})">
+
+<title>Ραντεβού</title>
+
+<section>
+    <h1 class="mc-title">Ραντεβού</h1>
+
+    <div style="display:flex; gap:12px; align-items:center; margin-top:16px; flex-wrap:wrap;">
+        <a th:href="@{/citizen/booking}" class="mc-nav-link" style="text-decoration: underline;">
+            + Νέο ραντεβού
+        </a>
+
+        <a th:href="@{/appointments/test-create}" class="mc-nav-link" style="text-decoration:underline;">
+            + Δημιούργησε test ραντεβού
+        </a>
+    </div>
+
+    <table style="margin-top:18px; width:100%; border-collapse:collapse;">
+        <thead>
+        <tr>
+            <th style="text-align:left; padding:8px;">ID</th>
+            <th style="text-align:left; padding:8px;">Υπηρεσία</th>
+            <th style="text-align:left; padding:8px;">Ημερομηνία</th>
+            <th style="text-align:left; padding:8px;">Status</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:if="${appointments == null or #lists.isEmpty(appointments)}">
+            <td colspan="4" style="padding:8px;">Δεν υπάρχουν ραντεβού</td>
+        </tr>
+
+        <tr th:each="a : ${appointments}">
+            <td style="padding:8px;" th:text="${a.id}">1</td>
+            <td style="padding:8px;" th:text="${a.service}">KEP</td>
+            <td style="padding:8px;"
+                th:text="${a.appointmentDateTime != null ? #temporals.format(a.appointmentDateTime,'dd/MM/yyyy HH:mm') : '-'}">
+                01/01/2025 10:00
+            </td>
+            <td style="padding:8px;" th:text="${a.status}">REQUESTED</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</html>

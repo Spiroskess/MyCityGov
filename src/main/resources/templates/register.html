@@ -8,56 +8,73 @@
 </head>
 
 <body>
-<section>
-    <h1>Εγγραφή Πολίτη</h1>
+<section class="mc-auth-page">
+    <div class="mc-auth-card mc-auth-card-wide">
 
-    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
-
-    <form th:action="@{/register}" th:object="${createPersonRequest}" method="post">
-        <div>
-            <label>Email</label>
-            <input type="email" th:field="*{emailAddress}"/>
-            <div th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}"></div>
+        <div class="mc-auth-header">
+            <span class="mc-auth-label">ΕΝΑΡΞΗ</span>
+            <h2>Εγγραφή </h2>
+            <p class="mc-auth-subtitle">
+                Έχεις ήδη λογαριασμό;
+                <a th:href="@{/login}">Σύνδεση</a>
+            </p>
         </div>
 
-        <div>
-            <label>Όνομα</label>
-            <input type="text" th:field="*{firstName}"/>
-            <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
-        </div>
+        <div th:if="${errorMessage}" th:text="${errorMessage}"
+             class="mc-alert mc-alert-error"></div>
 
-        <div>
-            <label>Επώνυμο</label>
-            <input type="text" th:field="*{lastName}"/>
-            <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
-        </div>
+        <form th:action="@{/register}" th:object="${createPersonRequest}" method="post" class="mc-form mc-form-grid">
 
-        <div>
-            <label>Κινητό</label>
-            <input type="text" th:field="*{mobilePhoneNumber}"/>
-            <div th:if="${#fields.hasErrors('mobilePhoneNumber')}" th:errors="*{mobilePhoneNumber}"></div>
-        </div>
+            <div class="mc-form-group mc-form-group-full">
+                <label>Email</label>
+                <input type="email" th:field="*{emailAddress}" placeholder="name@example.com"/>
+                <div th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}" class="mc-field-error"></div>
+            </div>
 
-        <div>
-            <label>ΑΦΜ</label>
-            <input type="text" th:field="*{afm}"/>
-            <div th:if="${#fields.hasErrors('afm')}" th:errors="*{afm}"></div>
-        </div>
+            <div class="mc-form-group">
+                <label>Όνομα</label>
+                <input type="text" th:field="*{firstName}"/>
+                <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="mc-field-error"></div>
+            </div>
 
-        <div>
-            <label>ΑΜΚΑ</label>
-            <input type="text" th:field="*{amka}"/>
-            <div th:if="${#fields.hasErrors('amka')}" th:errors="*{amka}"></div>
-        </div>
+            <div class="mc-form-group">
+                <label>Επώνυμο</label>
+                <input type="text" th:field="*{lastName}"/>
+                <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="mc-field-error"></div>
+            </div>
 
-        <div>
-            <label>Κωδικός</label>
-            <input type="password" th:field="*{rawPassword}"/>
-            <div th:if="${#fields.hasErrors('rawPassword')}" th:errors="*{rawPassword}"></div>
-        </div>
+            <div class="mc-form-group">
+                <label>Κινητό</label>
+                <input type="text" th:field="*{mobilePhoneNumber}"/>
+                <div th:if="${#fields.hasErrors('mobilePhoneNumber')}" th:errors="*{mobilePhoneNumber}" class="mc-field-error"></div>
+            </div>
 
-        <button type="submit">Εγγραφή</button>
-    </form>
+            <div class="mc-form-group">
+                <label>ΑΦΜ</label>
+                <input type="text" th:field="*{afm}"/>
+                <div th:if="${#fields.hasErrors('afm')}" th:errors="*{afm}" class="mc-field-error"></div>
+            </div>
+
+            <div class="mc-form-group">
+                <label>ΑΜΚΑ</label>
+                <input type="text" th:field="*{amka}"/>
+                <div th:if="${#fields.hasErrors('amka')}" th:errors="*{amka}" class="mc-field-error"></div>
+            </div>
+
+            <div class="mc-form-group mc-form-group-full">
+                <label>Κωδικός</label>
+                <input type="password" th:field="*{rawPassword}"/>
+                <div th:if="${#fields.hasErrors('rawPassword')}" th:errors="*{rawPassword}" class="mc-field-error"></div>
+            </div>
+
+            <div class="mc-form-actions mc-form-group-full">
+                <button type="submit" class="mc-button-primary mc-button-full">
+                    Εγγραφή
+                </button>
+            </div>
+        </form>
+
+    </div>
 </section>
 </body>
 </html>

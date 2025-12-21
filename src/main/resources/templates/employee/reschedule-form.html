@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Αλλαγή ώρας</title>
+</head>
+<body>
+
+<h2>Αλλαγή ώρας ραντεβού</h2>
+
+<p>
+    ID: <b th:text="${appointment.id}"></b><br>
+    Υπηρεσία: <b th:text="${appointment.service}"></b><br>
+    Τρέχουσα ώρα: <b th:text="${appointment.appointmentDateTime}"></b>
+</p>
+
+<!-- Επιλογή ημερομηνίας (και reload για να φέρει ώρες) -->
+<form method="get" th:action="@{'/employee/appointments/' + ${appointment.id} + '/reschedule'}">
+    <label>Νέα ημερομηνία:</label>
+    <input type="date" name="date" th:value="${selectedDate}" required>
+    <button type="submit">Φόρτωση ωρών</button>
+</form>
+
+<br>
+
+<!-- Επιλογή ώρας μόνο από διαθέσιμες -->
+<form th:action="@{'/employee/appointments/' + ${appointment.id} + '/reschedule'}" method="post">
+
+    <input type="hidden" name="date" th:value="${selectedDate}"/>
+
+    <label>Νέα ώρα:</label>
+    <select name="time" required>
+        <option value="">-- Διάλεξε ώρα --</option>
+        <option th:each="t : ${availableTimes}"
+                th:value="${t}"
+                th:text="${t}">
+        </option>
+    </select>
+
+    <button type="submit">Αποθήκευση</button>
+</form>
+
+</body>
+</html>

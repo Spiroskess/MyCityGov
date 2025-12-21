@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Διαχείριση Ραντεβού (Employee)</title>
+</head>
+<body>
+
+<h2>Διαχείριση Ραντεβού (Employee)</h2>
+
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Υπηρεσία</th>
+        <th>Ημερομηνία</th>
+        <th>Status</th>
+        <th>Ενέργειες</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="a : ${appointments}">
+        <td th:text="${a.id}">1</td>
+
+        <td th:text="${a.serviceType}">
+            CERTIFICATE_RESIDENCE
+        </td>
+
+        <td th:text="${#temporals.format(a.appointmentDateTime, 'dd/MM/yyyy HH:mm')}">
+            25/12/2025 10:00
+        </td>
+
+        <td th:text="${a.status}">
+            REQUESTED
+        </td>
+
+        <td>
+            <!-- CONFIRM -->
+            <form th:action="@{'/employee/appointments/' + ${a.id} + '/confirm'}"
+                  method="post" style="display:inline;">
+                <button type="submit">Confirm</button>
+            </form>
+
+            <!-- CANCEL -->
+            <form th:action="@{'/employee/appointments/' + ${a.id} + '/cancel'}"
+                  method="post" style="display:inline;">
+                <button type="submit">Cancel</button>
+            </form>
+
+            <!-- COMPLETE -->
+            <form th:action="@{'/employee/appointments/' + ${a.id} + '/complete'}"
+                  method="post" style="display:inline;">
+                <button type="submit">Complete</button>
+            </form>
+
+            <!-- RESCHEDULE -->
+            <a th:href="@{'/employee/appointments/' + ${a.id} + '/reschedule'}">
+                Reschedule
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

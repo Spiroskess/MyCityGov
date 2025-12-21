@@ -7,15 +7,85 @@
 </head>
 
 <body>
-<section>
-    <h2>Καλωσήρθες στο MyCityGov</h2>
-    <p>Μπορείς να υποβάλεις ψηφιακά αιτήματα, να δηλώσεις προβλήματα στην πόλη
-        και να κλείσεις ραντεβού με υπηρεσίες του Δήμου.</p>
+<section class="mc-hero">
 
-    <p th:if="${#authentication == null or !#authentication.authenticated}">
-        <a th:href="@{/login}">Σύνδεση</a> ή
-        <a th:href="@{/register}">Εγγραφή</a>
-    </p>
+    <!-- Αριστερό μπλε panel -->
+    <div class="mc-hero-left">
+        <div class="mc-badge">
+            <span class="mc-badge-circle">GR</span>
+            <span>Ηλεκτρονικές Υπηρεσίες Δήμου</span>
+        </div>
+
+        <h1>Καλωσόρισες στο MyCityGov</h1>
+
+        <p class="mc-hero-text">
+            Υπέβαλε αιτήματα, κλείσε ραντεβού και παρακολούθησε την πορεία των υποθέσεών σου,
+            εύκολα και γρήγορα, από τον υπολογιστή ή το κινητό σου.
+        </p>
+
+        <ul class="mc-hero-list">
+            <li>24/7 πρόσβαση στις υπηρεσίες του Δήμου</li>
+            <li>Ασφαλής είσοδος με τα στοιχεία σου</li>
+            <li>Ιστορικό αιτημάτων και ραντεβού πολιτών</li>
+        </ul>
+
+        <div class="mc-hero-footer">
+            <span class="mc-hero-logo">MC MyCityGov • Δήμος</span>
+        </div>
+    </div>
+
+    <!-- Δεξιά κάρτα σύνδεσης (ίδια αυθεντικοποίηση) -->
+    <div class="mc-auth-card">
+        <div class="mc-auth-header">
+            <span class="mc-auth-label">ΕΝΑΡΞΗ</span>
+            <h2>Σύνδεση </h2>
+            <p class="mc-auth-subtitle">
+                Δεν έχεις λογαριασμό;
+                <a th:href="@{/register}">Εγγραφή</a>
+            </p>
+        </div>
+
+        <!-- Μηνύματα από Spring Security -->
+        <p th:if="${param.error}" class="mc-alert mc-alert-error">
+            Λάθος email ή κωδικός.
+        </p>
+        <p th:if="${param.logout}" class="mc-alert mc-alert-info">
+            Έχετε αποσυνδεθεί.
+        </p>
+        <p th:if="${param.registered}" class="mc-alert mc-alert-success">
+            Η εγγραφή ολοκληρώθηκε. Συνδεθείτε.
+        </p>
+
+        <form th:action="@{/login}" method="post" class="mc-form">
+            <div class="mc-form-group">
+                <label for="username">Email</label>
+                <input id="username" name="username" type="email"
+                       placeholder="name@example.com" required/>
+            </div>
+
+            <div class="mc-form-group">
+                <label for="password">Κωδικός πρόσβασης</label>
+                <input id="password" name="password" type="password" required/>
+            </div>
+
+            <div class="mc-form-footer">
+                <label class="mc-checkbox">
+                    <input type="checkbox" name="remember-me"/>
+                    <span>Να με θυμάσαι</span>
+                </label>
+                <a href="#" class="mc-link-muted">Ξέχασα τον κωδικό</a>
+            </div>
+
+            <button type="submit" class="mc-button-primary mc-button-full">
+                Είσοδος στο MyCityGov
+            </button>
+
+            <p class="mc-form-terms">
+                Με την είσοδο αποδέχεσαι τους όρους χρήσης της πλατφόρμας.
+            </p>
+        </form>
+    </div>
+
 </section>
 </body>
 </html>

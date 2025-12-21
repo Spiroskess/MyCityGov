@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Κλείσιμο ραντεβού</title>
+</head>
+<body>
+
+<h2>Κλείσιμο ραντεβού</h2>
+
+<form th:action="@{/citizen/booking/times}" method="get">
+    <label>Υπηρεσία:</label>
+    <select name="service" required>
+        <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
+    </select>
+
+
+    <label>Ημερομηνία:</label>
+    <input type="date" name="date" required/>
+
+    <button type="submit">Εμφάνιση ωρών</button>
+</form>
+
+</body>
+</html>

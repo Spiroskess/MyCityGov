@@ -1,0 +1,535 @@
+:root {
+    --mc-blue-50: #e6f1ff;
+    --mc-blue-100: #c5e0ff;
+    --mc-blue-500: #2684ff;
+    --mc-blue-600: #135bba;
+    --mc-blue-700: #0f5abb;
+    --mc-blue-800: #0b3a73;
+    --mc-text-main: #0f172a;
+    --mc-text-muted: #64748b;
+    --mc-white: #ffffff;
+    --mc-radius-xl: 32px;
+    --mc-radius-lg: 20px;
+    --mc-shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.25);
+}
+
+/* Βασικά */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body.mc-body {
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--mc-white);
+    background: radial-gradient(circle at top left, #4f9cff 0%, #0b63d8 40%, #05337a 100%);
+}
+
+/* Header */
+
+.mc-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 16px 40px;
+    backdrop-filter: blur(18px);
+    background: linear-gradient(to bottom, rgba(5, 37, 94, 0.65), rgba(5, 37, 94, 0.15));
+}
+
+.mc-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.mc-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.mc-logo-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #ffffff 0%, #dbeafe 40%, #1d4ed8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: #0f172a;
+}
+
+.mc-logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mc-logo-title {
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.mc-logo-subtitle {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.mc-nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 1;
+    justify-content: flex-start;
+    font-size: 15px;
+}
+
+.mc-header-auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mc-nav-link {
+    color: rgba(241, 245, 249, 0.9);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 999px;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+
+.mc-nav-link:hover {
+    background: rgba(15, 23, 42, 0.25);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.mc-nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--mc-blue-500), var(--mc-blue-600));
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.mc-nav-button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+    box-shadow: 0 16px 35px rgba(37, 99, 235, 0.55);
+}
+
+.mc-nav-logout {
+    opacity: 0.8;
+}
+
+/* Κύριο περιεχόμενο */
+
+.mc-main {
+    max-width: 1200px;
+    margin: 32px auto 40px;
+    padding: 0 24px;
+}
+
+/* Hero αρχικής */
+
+.mc-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.05fr);
+    gap: 42px;
+    align-items: stretch;
+}
+
+.mc-hero-left {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.05));
+    border-radius: 40px;
+    padding: 40px 40px 36px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.55);
+    position: relative;
+    overflow: hidden;
+}
+
+.mc-hero-left::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 10% 0, rgba(191, 219, 254, 0.15), transparent 55%),
+                radial-gradient(circle at 90% 100%, rgba(56, 189, 248, 0.18), transparent 50%);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.mc-hero-left > * {
+    position: relative;
+    z-index: 1;
+}
+
+.mc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 15px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.75);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+    font-size: 13px;
+}
+
+.mc-badge-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #dbeafe 50%, #1d4ed8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 13px;
+}
+
+.mc-hero-left h1 {
+    margin: 22px 0 14px;
+    font-size: clamp(32px, 3.5vw, 44px);
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+}
+
+.mc-hero-text {
+    margin: 0 0 20px;
+    max-width: 560px;
+    font-size: 16px;
+    color: rgba(226, 232, 240, 0.92);
+}
+
+.mc-hero-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mc-hero-list li {
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mc-hero-list li::before {
+    content: "•";
+    font-size: 18px;
+    margin-right: 4px;
+    color: #a5f3fc;
+}
+
+.mc-hero-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-size: 13px;
+    color: rgba(226, 232, 240, 0.9);
+}
+
+.mc-hero-logo {
+    font-weight: 600;
+}
+
+/* Κάρτα σύνδεσης / φόρμες */
+
+.mc-auth-card {
+    background: #f9fafb;
+    border-radius: 40px;
+    padding: 32px 32px 30px;
+    color: var(--mc-text-main);
+    box-shadow: var(--mc-shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.mc-auth-card-centered {
+    max-width: 420px;
+    margin: 40px auto;
+}
+
+.mc-auth-card-wide {
+    max-width: 640px;
+    margin: 40px auto;
+}
+
+.mc-auth-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mc-auth-label {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mc-blue-600);
+    font-weight: 600;
+}
+
+.mc-auth-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.mc-auth-subtitle {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--mc-text-muted);
+}
+
+.mc-auth-subtitle a {
+    color: var(--mc-blue-600);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.mc-auth-subtitle a:hover {
+    text-decoration: underline;
+}
+
+/* Alerts */
+
+.mc-alert {
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.mc-alert-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.mc-alert-info {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.mc-alert-success {
+    background: #ecfdf5;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+/* Φόρμες */
+
+.mc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mc-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    column-gap: 16px;
+    row-gap: 14px;
+}
+
+.mc-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.mc-form-group-full {
+    grid-column: 1 / -1;
+}
+
+.mc-form-group label {
+    color: var(--mc-text-main);
+    font-weight: 500;
+}
+
+.mc-form-group input {
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.mc-form-group input:focus {
+    border-color: var(--mc-blue-500);
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+    background: #ffffff;
+}
+
+.mc-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--mc-text-muted);
+}
+
+.mc-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.mc-checkbox input {
+    width: 14px;
+    height: 14px;
+}
+
+.mc-link-muted {
+    color: var(--mc-text-muted);
+    text-decoration: none;
+}
+
+.mc-link-muted:hover {
+    text-decoration: underline;
+}
+
+.mc-button-primary {
+    border: none;
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(to right, var(--mc-blue-500), var(--mc-blue-700));
+    color: #ffffff;
+    box-shadow: 0 16px 35px rgba(37, 99, 235, 0.55);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.mc-button-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+.mc-button-full {
+    width: 100%;
+}
+
+.mc-form-terms {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--mc-text-muted);
+}
+
+.mc-form-actions {
+    margin-top: 6px;
+}
+
+.mc-field-error {
+    font-size: 12px;
+    color: #b91c1c;
+}
+
+/* Σελίδες auth (login/register) */
+
+.mc-auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 140px);
+}
+
+/* Footer */
+
+.mc-footer {
+    padding: 12px 24px 20px;
+    color: rgba(226, 232, 240, 0.85);
+    font-size: 13px;
+}
+
+.mc-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    opacity: 0.9;
+}
+
+.mc-footer-secondary {
+    opacity: 0.8;
+}
+
+/* Responsive */
+
+@media (max-width: 960px) {
+    .mc-header-inner {
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .mc-nav {
+        order: 3;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 14px;
+    }
+
+    .mc-main {
+        margin-top: 20px;
+    }
+
+    .mc-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .mc-hero-left {
+        padding: 26px 22px 24px;
+        border-radius: 30px;
+    }
+
+    .mc-auth-card {
+        margin-top: 8px;
+    }
+}
+
+@media (max-width: 640px) {
+    .mc-header {
+        padding-inline: 18px;
+    }
+
+    .mc-header-inner {
+        align-items: flex-start;
+    }
+
+    .mc-footer-inner {
+        flex-direction: column;
+        gap: 4px;
+    }
+}

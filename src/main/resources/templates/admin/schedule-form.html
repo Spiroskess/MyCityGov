@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Νέο ωράριο</title></head>
+<body>
+<h2>Ορισμός ωραρίου</h2>
+
+<form th:action="@{/admin/schedules}" th:object="${schedule}" method="post">
+    <label>Υπηρεσία:</label>
+    <select th:field="*{serviceType}">
+        <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
+    </select>
+    <br><br>
+
+    <label>Ημέρα:</label>
+    <select th:field="*{dayOfWeek}">
+        <option th:each="d : ${days}" th:value="${d}" th:text="${d}"></option>
+    </select>
+    <br><br>
+
+    <label>Από:</label>
+    <input type="time" th:field="*{startTime}"/>
+    <br><br>
+
+    <label>Έως:</label>
+    <input type="time" th:field="*{endTime}"/>
+    <br><br>
+
+    <label>Διάρκεια slot (λεπτά):</label>
+    <input type="number" th:field="*{slotMinutes}" min="5" max="120"/>
+    <br><br>
+
+    <button type="submit">Αποθήκευση</button>
+</form>
+
+</body>
+</html>
