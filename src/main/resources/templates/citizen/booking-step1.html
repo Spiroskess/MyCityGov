@@ -1,25 +1,32 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Κλείσιμο ραντεβού</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<h2>Κλείσιμο ραντεβού</h2>
+<title>Κλείσιμο ραντεβού</title>
 
-<form th:action="@{/citizen/booking/times}" method="get">
-    <label>Υπηρεσία:</label>
-    <select name="service" required>
-        <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
-    </select>
+<section>
+    <h1 class="mc-title">Κλείσιμο ραντεβού</h1>
 
+    <form th:action="@{/citizen/booking/times}" method="get"
+          style="margin-top:14px; display:grid; gap:12px; max-width:520px;">
 
-    <label>Ημερομηνία:</label>
-    <input type="date" name="date" required/>
+        <div>
+            <label style="display:block; font-weight:600;">Υπηρεσία</label>
+            <select name="service" required>
+                <option value="">-- Επιλογή --</option>
+                <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
+            </select>
+        </div>
 
-    <button type="submit">Εμφάνιση ωρών</button>
-</form>
+        <div>
+            <label style="display:block; font-weight:600;">Ημερομηνία</label>
+            <input type="date" name="date" required/>
+        </div>
 
-</body>
+        <button type="submit" class="mc-btn" style="padding:10px 14px;">
+            Εμφάνιση διαθέσιμων ωρών
+        </button>
+    </form>
+</section>
+
 </html>

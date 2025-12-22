@@ -1,44 +1,46 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Αλλαγή ώρας</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<h2>Αλλαγή ώρας ραντεβού</h2>
+<title>Αλλαγή ώρας ραντεβού</title>
 
-<p>
-    ID: <b th:text="${appointment.id}"></b><br>
-    Υπηρεσία: <b th:text="${appointment.service}"></b><br>
-    Τρέχουσα ώρα: <b th:text="${appointment.appointmentDateTime}"></b>
-</p>
+<section>
+    <h1 class="mc-title">Αλλαγή ώρας ραντεβού</h1>
 
-<!-- Επιλογή ημερομηνίας (και reload για να φέρει ώρες) -->
-<form method="get" th:action="@{'/employee/appointments/' + ${appointment.id} + '/reschedule'}">
-    <label>Νέα ημερομηνία:</label>
-    <input type="date" name="date" th:value="${selectedDate}" required>
-    <button type="submit">Φόρτωση ωρών</button>
-</form>
+    <p style="margin-top:8px;">
+        <b>ID:</b> <span th:text="${appointment.id}"></span><br/>
+        <b>Υπηρεσία:</b> <span th:text="${appointment.service}"></span><br/>
+        <b>Τρέχουσα ώρα:</b>
+        <span th:text="${appointment.appointmentDateTime != null ? #temporals.format(appointment.appointmentDateTime,'dd/MM/yyyy HH:mm') : '-'}"></span>
+    </p>
 
-<br>
+    <p th:if="${error != null}" th:text="${error}"
+       style="margin-top:12px; color:#b00020; font-weight:700;"></p>
 
-<!-- Επιλογή ώρας μόνο από διαθέσιμες -->
-<form th:action="@{'/employee/appointments/' + ${appointment.id} + '/reschedule'}" method="post">
+    <form th:action="@{'/employee/appointments/' + ${appointment.id} + '/reschedule'}"
+          method="post"
+          style="margin-top:14px; display:grid; gap:12px; max-width:520px;">
 
-    <input type="hidden" name="date" th:value="${selectedDate}"/>
+        <div>
+            <label style="display:block; font-weight:600;">Νέα ημερομηνία</label>
+            <input type="date" name="date" th:value="${selectedDate}" required/>
+        </div>
 
-    <label>Νέα ώρα:</label>
-    <select name="time" required>
-        <option value="">-- Διάλεξε ώρα --</option>
-        <option th:each="t : ${availableTimes}"
-                th:value="${t}"
-                th:text="${t}">
-        </option>
-    </select>
+        <div>
+            <label style="display:block; font-weight:600;">Νέα ώρα</label>
+            <select name="time" required>
+                <option value="">-- Διάλεξε ώρα --</option>
+                <option th:each="t : ${availableTimes}" th:value="${t}" th:text="${t}"></option>
+            </select>
+        </div>
 
-    <button type="submit">Αποθήκευση</button>
-</form>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button type="submit" class="mc-btn" style="padding:10px 14px;">Αποθήκευση</button>
+            <a th:href="@{/employee/appointments}" class="mc-nav-link" style="text-decoration:underline;">
+                Ακύρωση
+            </a>
+        </div>
+    </form>
+</section>
 
-</body>
 </html>

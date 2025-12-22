@@ -1,7 +1,7 @@
 package gr.hua.dit.mycitygov.web;
 
 import gr.hua.dit.mycitygov.core.repository.AppointmentRepository;
-import gr.hua.dit.mycitygov.core.service.model.Appointment;
+import gr.hua.dit.mycitygov.core.model.Appointment;
 import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,18 +21,14 @@ public class EmployeeAppointmentsController {
         this.appointmentRepo = appointmentRepo;
     }
 
-    // =========================
     // LIST APPOINTMENTS
-    // =========================
     @GetMapping
     public String list(Model model) {
         model.addAttribute("appointments", appointmentRepo.findAll());
         return "employee/appointments2";
     }
 
-    // =========================
     // CONFIRM
-    // =========================
     @PostMapping("/{id}/confirm")
     public String confirm(@PathVariable Long id) {
         Appointment a = appointmentRepo.findById(id).orElseThrow();
@@ -41,9 +37,7 @@ public class EmployeeAppointmentsController {
         return "redirect:/employee/appointments";
     }
 
-    // =========================
     // CANCEL
-    // =========================
     @PostMapping("/{id}/cancel")
     public String cancel(@PathVariable Long id) {
         Appointment a = appointmentRepo.findById(id).orElseThrow();
@@ -52,9 +46,8 @@ public class EmployeeAppointmentsController {
         return "redirect:/employee/appointments";
     }
 
-    // =========================
+
     // COMPLETE
-    // =========================
     @PostMapping("/{id}/complete")
     public String complete(@PathVariable Long id) {
         Appointment a = appointmentRepo.findById(id).orElseThrow();
@@ -63,9 +56,8 @@ public class EmployeeAppointmentsController {
         return "redirect:/employee/appointments";
     }
 
-    // =========================
+
     // RESCHEDULE FORM
-    // =========================
     @GetMapping("/{id}/reschedule")
     public String rescheduleForm(@PathVariable Long id, Model model) {
         Appointment a = appointmentRepo.findById(id).orElseThrow();
@@ -73,9 +65,8 @@ public class EmployeeAppointmentsController {
         return "employee/reschedule-form";
     }
 
-    // =========================
+
     // RESCHEDULE SUBMIT
-    // =========================
     @PostMapping("/{id}/reschedule")
     public String reschedule(@PathVariable Long id,
                              @RequestParam String date,

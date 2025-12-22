@@ -1,6 +1,6 @@
 package gr.hua.dit.mycitygov.core.repository;
 
-import gr.hua.dit.mycitygov.core.service.model.Appointment;
+import gr.hua.dit.mycitygov.core.model.Appointment;
 import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,19 +20,25 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     // Ραντεβού ανά κατάσταση
     List<Appointment> findByStatus(AppointmentStatus status);
 
-    // Μελλοντικά ραντεβού
+    // Μελλοντικά ραντεβού (χρήσιμο για dashboards / admin)
     List<Appointment> findByAppointmentDateTimeAfter(LocalDateTime from);
 
-    // ✅ Για διαθέσιμες ώρες: όλα τα ραντεβού μιας υπηρεσίας μέσα σε μία μέρα
+    // Όλα τα ραντεβού μιας υπηρεσίας μέσα σε μία μέρα (για AvailabilityService)
     List<Appointment> findByServiceAndAppointmentDateTimeBetween(
         MunicipalService service,
         LocalDateTime start,
         LocalDateTime end
     );
 
-    // ✅ Για να αποτρέψεις διπλοκλείσιμο ίδιας ώρας
+    // Για να αποτρέψεις διπλοκλείσιμο ίδιας ώρας (ανά υπηρεσία + datetime)
     Optional<Appointment> findByServiceAndAppointmentDateTime(
         MunicipalService service,
+        LocalDateTime appointmentDateTime
+    );
+
+    // Για overlap rule: ίδιος υπάλληλος, ίδια ώρα (μην επιτρέπονται επικαλύψεις)
+    Optional<Appointment> findByEmployeeIdAndAppointmentDateTime(
+        Long employeeId,
         LocalDateTime appointmentDateTime
     );
 }

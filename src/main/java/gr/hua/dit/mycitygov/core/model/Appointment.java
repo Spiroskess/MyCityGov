@@ -1,5 +1,7 @@
-package gr.hua.dit.mycitygov.core.service.model;
+package gr.hua.dit.mycitygov.core.model;
 
+import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -19,11 +21,10 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private MunicipalService service;
 
-    // Απλά IDs (χωρίς relations)
+    // Απλά IDs
     private Long citizenId;
     private Long employeeId;
 
-    // ========= getters / setters =========
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

@@ -1,61 +1,57 @@
 package gr.hua.dit.mycitygov.core.service;
 
 import gr.hua.dit.mycitygov.core.repository.AppointmentRepository;
-import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
-import gr.hua.dit.mycitygov.core.service.model.ServiceSchedule;
 import gr.hua.dit.mycitygov.core.repository.ServiceScheduleRepository;
+import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
+import gr.hua.dit.mycitygov.core.model.ServiceSchedule;
 import org.springframework.stereotype.Service;
 
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.*;
 
 @Service
 public class AvailabilityService {
 
-    private final ServiceScheduleRepository scheduleRepo;
-    private final AppointmentRepository appointmentRepo;
+    private final AppointmentRepository appointmentRepository;
+    private final ServiceScheduleRepository scheduleRepository;
 
-    public AvailabilityService(ServiceScheduleRepository scheduleRepo,
-                               AppointmentRepository appointmentRepo) {
-        this.scheduleRepo = scheduleRepo;
-        this.appointmentRepo = appointmentRepo;
+    public AvailabilityService(AppointmentRepository appointmentRepository,
+                               ServiceScheduleRepository scheduleRepository) {
+        this.appointmentRepository = appointmentRepository;
+        this.scheduleRepository = scheduleRepository;
     }
 
     public List<LocalTime> getAvailableTimes(MunicipalService service, LocalDate date) {
+        DayOfWeek day = date.getDayOfWeek();
 
-        Optional<ServiceSchedule> scheduleOpt =
-            scheduleRepo.findByServiceAndDayOfWeek(service, date.getDayOfWeek());
+        ServiceSchedule schedule = scheduleRepository
+            .findByServiceAndDayOfWeek(service, day)
+            .orElse(null);
 
-        if (scheduleOpt.isEmpty()) {
-            return List.of();
-        }
-
-        ServiceSchedule schedule = scheduleOpt.get();
+        if (schedule == null) return List.of();
 
         LocalDateTime from = date.atStartOfDay();
         LocalDateTime to = date.plusDays(1).atStartOfDay();
 
-        Set<LocalTime> bookedTimes = new HashSet<>();
-
-        appointmentRepo
-            .findByServiceAndAppointmentDateTimeBetween(service, from, to)
-            .forEach(a ->
-                bookedTimes.add(a.getAppointmentDateTime().toLocalTime())
-            );
+        Set<LocalTime> booked = new HashSet<>();
+        appointmentRepository.findByServiceAndAppointmentDateTimeBetween(service, from, to)
+            .stream()
+            .filter(a -> a.getStatus() == AppointmentStatus.REQUESTED
+                || a.getStatus() == AppointmentStatus.CONFIRMED)
+            .forEach(a -> booked.add(a.getAppointmentDateTime().toLocalTime()));
 
         List<LocalTime> slots = new ArrayList<>();
+        LocalTime t = schedule.getStartTime();
+        while (!t.isAfter(schedule.getEndTime())) {
+            // να χωράει το slot (π.χ. end 15:30, slot 30 -> τελευταίο 15:00)
+            LocalTime endCandidate = t.plusMinutes(schedule.getSlotMinutes());
+            if (endCandidate.isAfter(schedule.getEndTime().plusSeconds(1))) break;
 
-        for (LocalTime t = schedule.getStartTime();
-             t.plusMinutes(schedule.getSlotMinutes())
-                 .compareTo(schedule.getEndTime()) <= 0;
-             t = t.plusMinutes(schedule.getSlotMinutes())) {
-
-            if (!bookedTimes.contains(t)) {
+            if (!booked.contains(t)) {
                 slots.add(t);
             }
+            t = t.plusMinutes(schedule.getSlotMinutes());
         }
 
         return slots;

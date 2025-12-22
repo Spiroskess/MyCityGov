@@ -1,17 +1,14 @@
 package gr.hua.dit.mycitygov.web;
 
+import gr.hua.dit.mycitygov.core.service.AppointmentService;
 import gr.hua.dit.mycitygov.core.service.AvailabilityService;
-import gr.hua.dit.mycitygov.core.service.model.Appointment;
-import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
-import gr.hua.dit.mycitygov.core.repository.AppointmentRepository;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
-
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Controller
@@ -19,11 +16,12 @@ import java.time.LocalTime;
 public class CitizenBookingController {
 
     private final AvailabilityService availabilityService;
-    private final AppointmentRepository appointmentRepo;
+    private final AppointmentService appointmentService;
 
-    public CitizenBookingController(AvailabilityService availabilityService, AppointmentRepository appointmentRepo) {
+    public CitizenBookingController(AvailabilityService availabilityService,
+                                    AppointmentService appointmentService) {
         this.availabilityService = availabilityService;
-        this.appointmentRepo = appointmentRepo;
+        this.appointmentService = appointmentService;
     }
 
     @GetMapping
@@ -40,28 +38,37 @@ public class CitizenBookingController {
         LocalDate selectedDate = LocalDate.parse(date);
         model.addAttribute("service", service);
         model.addAttribute("date", selectedDate);
-
-        model.addAttribute("times", availabilityService.getAvailableTimes(service, selectedDate));
+        model.addAttribute(
+            "times",
+            availabilityService.getAvailableTimes(service, selectedDate)
+        );
         return "citizen/booking-step2";
     }
 
     @PostMapping("/confirm")
-    public String confirm(@RequestParam MunicipalService service,
+    public String confirm(Authentication authentication,
+                          @RequestParam MunicipalService service,
                           @RequestParam String date,
-                          @RequestParam String time) {
+                          @RequestParam String time,
+                          Model model) {
 
         LocalDate d = LocalDate.parse(date);
         LocalTime t = LocalTime.parse(time);
 
-        Appointment a = new Appointment();
-        a.setService(service); // ΠΡΟΣΟΧΗ: θέλει αντίστοιχο field στον Appointment
-        a.setAppointmentDateTime(LocalDateTime.of(d, t));
-        a.setStatus(AppointmentStatus.REQUESTED);
-
-        // TODO: βάλε citizenId από logged-in user (προς το παρόν hardcode)
-        a.setCitizenId(1L);
-
-        appointmentRepo.save(a);
-        return "redirect:/citizen/appointments";
+        try {
+            Long citizenId = CurrentUserIds.currentUserId(authentication);
+            appointmentService.book(citizenId, service, d, t);
+            return "redirect:/citizen/appointments";
+        } catch (Exception ex) {
+            // σωστό UI error handling
+            model.addAttribute("service", service);
+            model.addAttribute("date", d);
+            model.addAttribute(
+                "times",
+                availabilityService.getAvailableTimes(service, d)
+            );
+            model.addAttribute("error", ex.getMessage());
+            return "citizen/booking-step2";
+        }
     }
 }

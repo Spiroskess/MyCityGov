@@ -1,5 +1,6 @@
-package gr.hua.dit.mycitygov.core.service.model;
+package gr.hua.dit.mycitygov.core.model;
 
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalTime;

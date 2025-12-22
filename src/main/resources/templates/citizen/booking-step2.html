@@ -1,32 +1,55 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Διαθέσιμες ώρες</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<h2 th:text="'Υπηρεσία: ' + ${service}"></h2>
-<h3 th:text="'Ημερομηνία: ' + ${date}"></h3>
+<title>Διαθέσιμες ώρες</title>
 
-<div th:if="${#lists.isEmpty(times)}">
-    <p>Δεν υπάρχουν διαθέσιμες ώρες για αυτή την ημερομηνία.</p>
-</div>
+<section>
+    <h1 class="mc-title">Διαθέσιμες ώρες</h1>
 
-<form th:if="${!#lists.isEmpty(times)}" th:action="@{/citizen/booking/confirm}" method="post">
-    <input type="hidden" name="service" th:value="${service}"/>
-    <input type="hidden" name="date" th:value="${date}"/>
+    <p style="margin-top:8px;">
+        <b>Υπηρεσία:</b> <span th:text="${service}"></span><br/>
+        <b>Ημερομηνία:</b> <span th:text="${date}"></span>
+    </p>
 
-    <p>Διάλεξε ώρα:</p>
-    <div th:each="t : ${times}">
-        <label>
-            <input type="radio" name="time" th:value="${t}" required/>
-            <span th:text="${t}"></span>
-        </label><br>
+    <p th:if="${error != null}" th:text="${error}"
+       style="margin-top:12px; color:#b00020; font-weight:700;"></p>
+
+    <div th:if="${#lists.isEmpty(times)}" style="margin-top:12px;">
+        <p>Δεν υπάρχουν διαθέσιμες ώρες για αυτή την ημερομηνία.</p>
+        <a th:href="@{/citizen/booking}" class="mc-nav-link" style="text-decoration:underline;">
+            Επιστροφή
+        </a>
     </div>
 
-    <button type="submit">Κλείσιμο ραντεβού</button>
-</form>
+    <form th:if="${!#lists.isEmpty(times)}"
+          th:action="@{/citizen/booking/confirm}"
+          method="post"
+          style="margin-top:12px;">
 
-</body>
+        <!-- ✅ ΑΠΑΡΑΙΤΗΤΟ -->
+        <input type="hidden" name="service" th:value="${service}"/>
+        <input type="hidden" name="date" th:value="${date}"/>
+
+        <p style="font-weight:700;">Διάλεξε ώρα:</p>
+
+        <div style="display:grid; gap:8px; margin-top:8px; max-width:380px;">
+            <label th:each="t : ${times}"
+                   style="display:flex; gap:8px; align-items:center; padding:10px; border:1px solid #ddd; border-radius:10px; cursor:pointer;">
+                <input type="radio" name="time" th:value="${t}" required/>
+                <span th:text="${t}"></span>
+            </label>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
+            <button type="submit" class="mc-btn" style="padding:10px 14px;">
+                Κλείσιμο ραντεβού
+            </button>
+            <a th:href="@{/citizen/booking}" class="mc-nav-link" style="text-decoration:underline;">
+                Ακύρωση
+            </a>
+        </div>
+    </form>
+</section>
+
 </html>

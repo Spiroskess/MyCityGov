@@ -1,67 +1,67 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Διαχείριση Ραντεβού (Employee)</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<h2>Διαχείριση Ραντεβού (Employee)</h2>
+<title>Διαχείριση Ραντεβού</title>
 
-<table border="1" cellpadding="8">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Υπηρεσία</th>
-        <th>Ημερομηνία</th>
-        <th>Status</th>
-        <th>Ενέργειες</th>
-    </tr>
-    </thead>
+<section>
+    <h1 class="mc-title">Διαχείριση Ραντεβού</h1>
 
-    <tbody>
-    <tr th:each="a : ${appointments}">
-        <td th:text="${a.id}">1</td>
+    <table style="margin-top:16px; width:100%; border-collapse:collapse;">
+        <thead>
+        <tr style="text-align:left; border-bottom:1px solid #ddd;">
+            <th style="padding:10px;">ID</th>
+            <th style="padding:10px;">Υπηρεσία</th>
+            <th style="padding:10px;">Ημ/νία & Ώρα</th>
+            <th style="padding:10px;">Κατάσταση</th>
+            <th style="padding:10px;">Ενέργειες</th>
+        </tr>
+        </thead>
 
-        <td th:text="${a.serviceType}">
-            CERTIFICATE_RESIDENCE
-        </td>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(appointments)}">
+            <td colspan="5" style="padding:12px; opacity:0.85;">Δεν υπάρχουν ραντεβού.</td>
+        </tr>
 
-        <td th:text="${#temporals.format(a.appointmentDateTime, 'dd/MM/yyyy HH:mm')}">
-            25/12/2025 10:00
-        </td>
+        <tr th:each="a : ${appointments}" style="border-bottom:1px solid #eee;">
+            <td style="padding:10px;" th:text="${a.id}">1</td>
+            <td style="padding:10px;" th:text="${a.service}">KEP</td>
+            <td style="padding:10px;"
+                th:text="${a.appointmentDateTime != null ? #temporals.format(a.appointmentDateTime,'dd/MM/yyyy HH:mm') : '-'}">
+            </td>
+            <td style="padding:10px;">
+                <span th:text="${a.status}" style="padding:4px 8px; border:1px solid #ccc; border-radius:999px;"></span>
+            </td>
 
-        <td th:text="${a.status}">
-            REQUESTED
-        </td>
+            <td style="padding:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                <form th:action="@{'/employee/appointments/' + ${a.id} + '/confirm'}"
+                      method="post" style="display:inline;"
+                      th:if="${a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).REQUESTED}">
+                    <button type="submit" class="mc-btn" style="padding:8px 12px;">Confirm</button>
+                </form>
 
-        <td>
-            <!-- CONFIRM -->
-            <form th:action="@{'/employee/appointments/' + ${a.id} + '/confirm'}"
-                  method="post" style="display:inline;">
-                <button type="submit">Confirm</button>
-            </form>
+                <a th:href="@{'/employee/appointments/' + ${a.id} + '/reschedule'}"
+                   class="mc-nav-link" style="text-decoration:underline;"
+                   th:if="${a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
+                           and a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}">
+                    Reschedule
+                </a>
 
-            <!-- CANCEL -->
-            <form th:action="@{'/employee/appointments/' + ${a.id} + '/cancel'}"
-                  method="post" style="display:inline;">
-                <button type="submit">Cancel</button>
-            </form>
+                <form th:action="@{'/employee/appointments/' + ${a.id} + '/cancel'}"
+                      method="post" style="display:inline;"
+                      onsubmit="return confirm('Να ακυρωθεί το ραντεβού;');"
+                      th:if="${a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
+                              and a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}">
+                    <button type="submit" class="mc-btn" style="padding:8px 12px;">Cancel</button>
+                </form>
 
-            <!-- COMPLETE -->
-            <form th:action="@{'/employee/appointments/' + ${a.id} + '/complete'}"
-                  method="post" style="display:inline;">
-                <button type="submit">Complete</button>
-            </form>
+                <span th:if="${a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
+                              or a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}"
+                      style="opacity:0.7;">—</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
 
-            <!-- RESCHEDULE -->
-            <a th:href="@{'/employee/appointments/' + ${a.id} + '/reschedule'}">
-                Reschedule
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-</body>
 </html>

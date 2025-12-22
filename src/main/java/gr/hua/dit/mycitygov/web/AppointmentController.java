@@ -1,7 +1,7 @@
 package gr.hua.dit.mycitygov.web;
 
 import gr.hua.dit.mycitygov.core.repository.AppointmentRepository;
-import gr.hua.dit.mycitygov.core.service.model.Appointment;
+import gr.hua.dit.mycitygov.core.model.Appointment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class AppointmentController {
         return 1L;
     }
 
-    // ✅ Λίστα ραντεβού για πολίτη (μόνο τα δικά του)
+    // Λίστα ραντεβού για πολίτη (μόνο τα δικά του)
     @GetMapping("/citizen/appointments")
     public String listAppointments(Model model) {
         Long citizenId = currentCitizenId();
@@ -31,7 +31,7 @@ public class AppointmentController {
         return "citizen/appointments";
     }
 
-    // ✅ Το "Νέο ραντεβού" πάει στο νέο booking flow
+    // Το "Νέο ραντεβού" πάει στο νέο booking flow
     @GetMapping("/citizen/appointments/new")
     public String newAppointment() {
         return "redirect:/citizen/booking";
