@@ -11,6 +11,7 @@ public record RequestView(
     String protocolNumber,
     RequestType type,
     RequestStatus status,
+    MunicipalService assignedService,
     String subject,
     String citizenFullName,
     String assignedEmployeeFullName,

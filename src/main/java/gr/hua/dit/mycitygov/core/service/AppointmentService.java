@@ -19,6 +19,8 @@ public interface AppointmentService {
 
     Appointment cancelByEmployee(Long employeeId, Long appointmentId);
 
+    Appointment completeByEmployee(Long employeeId, Long appointmentId); // ✅ NEW
+
     List<Appointment> listForCitizen(Long citizenId);
 
     List<Appointment> listForEmployee(Long employeeId);

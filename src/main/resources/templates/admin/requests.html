@@ -2,46 +2,61 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<head>
-    <title>Όλα τα αιτήματα</title>
-</head>
+<title>Όλα τα αιτήματα</title>
 
-<body>
 <section>
-    <h2>Όλα τα αιτήματα</h2>
+    <h1 class="mc-title">Διαχείριση Αιτημάτων</h1>
 
-    <table>
+    <table style="margin-top:18px; width:100%; border-collapse:collapse;">
         <thead>
-        <tr>
-            <th>Πρωτόκολλο</th>
-            <th>Πολίτης</th>
-            <th>Τύπος</th>
-            <th>Κατάσταση</th>
-            <th>Υπάλληλος</th>
-            <th>Ημ/νία</th>
-            <th>Προθεσμία</th>
-            <th>Ληξιπρόθεσμο;</th>
-            <th>Ενέργειες</th>
+        <tr style="text-align:left; border-bottom:1px solid #ddd;">
+            <th style="padding:10px;">Πρωτόκολλο</th>
+            <th style="padding:10px;">Τύπος</th>
+            <th style="padding:10px;">Κατάσταση</th>
+            <th style="padding:10px;">Υπηρεσία</th>
+            <th style="padding:10px;">Πολίτης</th>
+            <th style="padding:10px;">Υπάλληλος</th>
+            <th style="padding:10px;">SLA</th>
+            <th style="padding:10px;">Ενέργειες</th>
         </tr>
         </thead>
 
         <tbody>
-        <tr th:each="r : ${requests}">
-            <td th:text="${r.protocolNumber}">PR-0001</td>
-            <td th:text="${r.citizenFullName}">Citizen Name</td>
-            <td th:text="${r.type}">CERTIFICATE_RESIDENCE</td>
-            <td th:text="${r.status}">RECEIVED</td>
-            <td th:text="${r.assignedEmployeeFullName}">-</td>
-            <td th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
-            <td th:text="${r.slaDueDate != null ? #temporals.format(r.slaDueDate, 'dd/MM/yyyy') : '-'}">10/01/2025</td>
-            <td th:text="${r.overdue} ? 'ΝΑΙ' : 'ΟΧΙ'">ΟΧΙ</td>
-            <td>
-                <a th:href="@{'/admin/requests/' + ${r.id} + '/assign'}">Ανάθεση</a>
-            </td>
+        <tr th:if="${#lists.isEmpty(requests)}">
+            <td colspan="8" style="padding:12px; opacity:0.85;">Δεν υπάρχουν αιτήματα.</td>
         </tr>
 
+        <tr th:each="r : ${requests}" style="border-bottom:1px solid #eee;">
+            <td style="padding:10px;" th:text="${r.protocolNumber()}"></td>
+            <td style="padding:10px;" th:text="${r.type()}"></td>
+            <td style="padding:10px;" th:text="${r.status()}"></td>
+
+            <td style="padding:10px;">
+                <span th:if="${r.assignedService() != null}" th:text="${r.assignedService()}"></span>
+                <span th:if="${r.assignedService() == null}">—</span>
+            </td>
+
+            <td style="padding:10px;" th:text="${r.citizenFullName()}"></td>
+
+            <td style="padding:10px;">
+                <span th:if="${r.assignedEmployeeFullName() != null}" th:text="${r.assignedEmployeeFullName()}"></span>
+                <span th:if="${r.assignedEmployeeFullName() == null}">—</span>
+            </td>
+
+            <td style="padding:10px;">
+                <span th:if="${r.slaDueDate() != null}" th:text="${r.slaDueDate()}"></span>
+                <span th:if="${r.slaDueDate() == null}">—</span>
+                <span th:if="${r.overdue()}" style="margin-left:8px; font-weight:600; color:#b00020;">Εκπρόθεσμο</span>
+            </td>
+
+            <td style="padding:10px;">
+                <a th:href="@{/admin/requests/{id}/assign(id=${r.id()})}">
+                    Ανάθεση σε υπηρεσία
+                </a>
+            </td>
+        </tr>
         </tbody>
     </table>
 </section>
-</body>
+
 </html>

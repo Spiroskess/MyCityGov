@@ -2,6 +2,7 @@ package gr.hua.dit.mycitygov.core.service;
 
 import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.core.model.RequestStatus;
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
 import gr.hua.dit.mycitygov.core.service.model.RequestView;
 
@@ -14,16 +15,22 @@ public interface RequestService {
 
     List<RequestView> getRequestsOfCitizen(Person citizen);
 
+    // “Mine” (όσα έχει αναλάβει ο υπάλληλος)
     List<RequestView> getRequestsAssignedToEmployee(Person employee);
 
+    // Admin: όλα
     List<RequestView> getAllRequests();
 
-    Optional<RequestView> assignRequestToEmployee(Long requestId, Person employee);
+    Optional<RequestView> assignRequestToService(Long requestId, MunicipalService service);
+
+    List<RequestView> getServiceQueue(MunicipalService service);
+
+    Optional<RequestView> claimRequest(Long requestId, Person employee);
+
     Optional<RequestView> updateStatus(
         Long requestId,
         Person employee,
         RequestStatus nextStatus,
         String comment
     );
-
 }

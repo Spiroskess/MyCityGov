@@ -1,4 +1,3 @@
-// src/main/java/gr/hua/dit/mycitygov/core/service/mapper/RequestMapper.java
 package gr.hua.dit.mycitygov.core.service.mapper;
 
 import gr.hua.dit.mycitygov.core.model.Request;
@@ -17,6 +16,7 @@ public class RequestMapper {
 
     public RequestView convertRequestToView(Request request) {
         String citizenName = request.getCitizen().getLastName() + " " + request.getCitizen().getFirstName();
+
         String employeeName = request.getAssignedEmployee() == null
             ? null
             : request.getAssignedEmployee().getLastName() + " " + request.getAssignedEmployee().getFirstName();
@@ -25,8 +25,8 @@ public class RequestMapper {
 
         boolean overdue = false;
         if (slaDueDate != null) {
-            overdue = slaDueDate.isBefore(LocalDate.now())
-                && !TERMINAL_STATUSES.contains(request.getStatus());
+            boolean terminal = TERMINAL_STATUSES.contains(request.getStatus());
+            overdue = !terminal && slaDueDate.isBefore(LocalDate.now());
         }
 
         return new RequestView(
@@ -34,6 +34,7 @@ public class RequestMapper {
             request.getProtocolNumber(),
             request.getType(),
             request.getStatus(),
+            request.getAssignedService(),
             request.getSubject(),
             citizenName,
             employeeName,

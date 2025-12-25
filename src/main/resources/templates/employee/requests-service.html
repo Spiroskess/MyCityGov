@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<title>Αιτήματα Υπηρεσίας</title>
+
+<section>
+    <h1 class="mc-title">Αιτήματα Υπηρεσίας</h1>
+
+    <div style="display:flex; gap:14px; margin:12px 0 18px 0; flex-wrap:wrap;">
+        <a th:href="@{/employee/requests-service}" class="mc-nav-link">Ουρά Υπηρεσίας</a>
+        <a th:href="@{/employee/requests-mine}" class="mc-nav-link">Τα δικά μου</a>
+    </div>
+
+    <p style="margin:0 0 14px 0;">
+        Υπηρεσία: <strong th:text="${service}">KEP</strong>
+        — εμφανίζονται μόνο αιτήματα που δεν έχουν αναληφθεί.
+    </p>
+
+    <div th:if="${#lists.isEmpty(requests)}">
+        Δεν υπάρχουν αιτήματα προς ανάληψη για την υπηρεσία σου.
+    </div>
+
+    <table th:if="${!#lists.isEmpty(requests)}" style="width:100%; border-collapse:collapse;">
+        <thead>
+        <tr>
+            <th style="padding:10px;">Πρωτόκολλο</th>
+            <th style="padding:10px;">Τύπος</th>
+            <th style="padding:10px;">Κατάσταση</th>
+            <th style="padding:10px;">Πολίτης</th>
+            <th style="padding:10px;">SLA</th>
+            <th style="padding:10px;">Ενέργεια</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${requests}">
+            <td style="padding:10px;" th:text="${r.protocolNumber()}">PR-0001</td>
+            <td style="padding:10px;" th:text="${r.type()}">TYPE</td>
+            <td style="padding:10px;" th:text="${r.status()}">STATUS</td>
+            <td style="padding:10px;" th:text="${r.citizenFullName()}">Citizen</td>
+            <td style="padding:10px;">
+                <span th:if="${r.slaDueDate() != null}" th:text="${r.slaDueDate()}">2026-01-01</span>
+                <span th:if="${r.slaDueDate() == null}">—</span>
+                <span th:if="${r.overdue()}"> (Εκπρόθεσμο)</span>
+            </td>
+            <td style="padding:10px;">
+                <form th:action="@{/employee/requests/claim}" method="post">
+                    <input type="hidden" name="requestId" th:value="${r.id()}"/>
+                    <button type="submit" class="mc-nav-button">Ανάληψη</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</html>

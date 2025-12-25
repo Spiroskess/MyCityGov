@@ -1,17 +1,18 @@
 package gr.hua.dit.mycitygov.web.ui.model;
 
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.validation.constraints.NotNull;
 
 public class AssignRequestForm {
 
     @NotNull
-    private Long employeeId;
+    private MunicipalService service;
 
-    public Long getEmployeeId() {
-        return employeeId;
+    public MunicipalService getService() {
+        return service;
     }
 
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
+    public void setService(MunicipalService service) {
+        this.service = service;
     }
 }

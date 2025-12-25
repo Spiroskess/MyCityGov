@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<title>Τα αιτήματά μου</title>
+
+<section>
+    <h1 class="mc-title">Τα αιτήματά μου</h1>
+
+    <div style="display:flex; gap:14px; margin:12px 0 18px 0; flex-wrap:wrap;">
+        <a th:href="@{/employee/requests-service}" class="mc-nav-link">Ουρά Υπηρεσίας</a>
+        <a th:href="@{/employee/requests-mine}" class="mc-nav-link">Τα δικά μου</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(requests)}">
+        Δεν έχεις αναλάβει κανένα αίτημα ακόμα.
+    </div>
+
+    <div th:each="r : ${requests}" style="margin-top:14px;">
+        <p><strong>Πρωτόκολλο:</strong> <span th:text="${r.protocolNumber()}">PR-0001</span></p>
+        <p><strong>Τύπος:</strong> <span th:text="${r.type()}">TYPE</span></p>
+        <p><strong>Κατάσταση:</strong> <span th:text="${r.status()}">STATUS</span></p>
+
+        <hr style="opacity:0.3;"/>
+
+        <form th:action="@{/employee/requests/status}" method="post">
+            <input type="hidden" name="requestId" th:value="${r.id()}"/>
+
+            <label>Νέα κατάσταση</label>
+            <select name="nextStatus" required>
+                <option value="" disabled selected>— Επιλογή —</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="WAITING_ADDITIONAL_INFO">WAITING_ADDITIONAL_INFO</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="REJECTED">REJECTED</option>
+            </select>
+
+            <label style="display:block; margin-top:10px;">Σχόλιο (προαιρετικό)</label>
+            <input type="text" name="comment" placeholder="π.χ. Ζητήθηκαν επιπλέον στοιχεία..."/>
+
+            <div style="margin-top:10px;">
+                <button type="submit" class="mc-nav-button">Ενημέρωση</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+</html>

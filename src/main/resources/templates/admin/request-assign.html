@@ -8,28 +8,36 @@
 
 <body>
 <section>
-    <h2>Ανάθεση αιτήματος</h2>
+    <h2>Ανάθεση Αιτήματος σε Υπηρεσία</h2>
 
-    <p>Αίτημα με ID: <span th:text="${requestId}">1</span></p>
+    <p>Request ID: <strong th:text="${requestId}">1</strong></p>
 
-    <form th:action="@{'/admin/requests/' + ${requestId} + '/assign'}"
-          th:object="${assignRequestForm}"
+    <form th:action="@{/admin/requests/{id}/assign(id=${requestId})}"
+          th:object="${form}"
           method="post">
 
-        <div>
-            <label for="employeeId">Υπάλληλος:</label>
-            <select id="employeeId" th:field="*{employeeId}">
-                <option th:each="e : ${employees}"
-                        th:value="${e.id}"
-                        th:text="${e.lastName + ' ' + e.firstName}">Υπάλληλος</option>
-            </select>
-            <span th:if="${#fields.hasErrors('employeeId')}" th:errors="*{employeeId}"></span>
+        <div th:if="${#fields.hasErrors('*')}">
+            <p>Υπάρχουν σφάλματα στη φόρμα.</p>
         </div>
 
         <div>
+            <label>Υπηρεσία</label>
+            <select th:field="*{service}" required>
+                <option value="">-- Επιλογή --</option>
+                <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
+            </select>
+        </div>
+
+        <div th:if="${#fields.hasErrors('service')}">
+            <span th:errors="*{service}"></span>
+        </div>
+
+        <div style="margin-top:12px;">
+            <a th:href="@{/admin/requests}">Πίσω</a>
             <button type="submit">Ανάθεση</button>
         </div>
     </form>
 </section>
 </body>
+
 </html>

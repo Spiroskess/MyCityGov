@@ -1,9 +1,7 @@
 package gr.hua.dit.mycitygov.web.ui;
 
-import gr.hua.dit.mycitygov.core.model.Person;
-import gr.hua.dit.mycitygov.core.model.PersonRole;
-import gr.hua.dit.mycitygov.core.repository.PersonRepository;
 import gr.hua.dit.mycitygov.core.service.RequestService;
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import gr.hua.dit.mycitygov.web.ui.model.AssignRequestForm;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -16,47 +14,38 @@ import org.springframework.web.bind.annotation.*;
 public class AdminRequestController {
 
     private final RequestService requestService;
-    private final PersonRepository personRepository;
 
-    public AdminRequestController(RequestService requestService,
-                                  PersonRepository personRepository) {
+    public AdminRequestController(RequestService requestService) {
         this.requestService = requestService;
-        this.personRepository = personRepository;
     }
 
     @GetMapping
-    public String listAllRequests(Model model) {
+    public String listRequests(Model model) {
         model.addAttribute("requests", requestService.getAllRequests());
         return "admin/requests";
     }
 
     @GetMapping("/{id}/assign")
-    public String showAssignForm(@PathVariable("id") Long id, Model model) {
+    public String showAssignForm(@PathVariable Long id, Model model) {
         model.addAttribute("requestId", id);
-        model.addAttribute("employees",
-            personRepository.findAllByRoleOrderByLastName(PersonRole.EMPLOYEE));
-        model.addAttribute("assignRequestForm", new AssignRequestForm());
+        model.addAttribute("form", new AssignRequestForm());
+        model.addAttribute("services", MunicipalService.values());
         return "admin/request-assign";
     }
 
     @PostMapping("/{id}/assign")
-    public String handleAssign(
-        @PathVariable("id") Long id,
-        @Valid @ModelAttribute("assignRequestForm") AssignRequestForm form,
-        BindingResult bindingResult,
-        Model model) {
+    public String assignToService(@PathVariable Long id,
+                                  @ModelAttribute("form") @Valid AssignRequestForm form,
+                                  BindingResult bindingResult,
+                                  Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("requestId", id);
-            model.addAttribute("employees",
-                personRepository.findAllByRoleOrderByLastName(PersonRole.EMPLOYEE));
+            model.addAttribute("services", MunicipalService.values());
             return "admin/request-assign";
         }
 
-        Person employee = personRepository.findById(form.getEmployeeId())
-            .orElseThrow();
-
-        requestService.assignRequestToEmployee(id, employee);
+        requestService.assignRequestToService(id, form.getService());
         return "redirect:/admin/requests";
     }
 }

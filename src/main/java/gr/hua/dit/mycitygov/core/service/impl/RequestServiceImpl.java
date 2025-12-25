@@ -1,21 +1,23 @@
 package gr.hua.dit.mycitygov.core.service.impl;
 
-import gr.hua.dit.mycitygov.core.model.RequestType;
 import gr.hua.dit.mycitygov.core.model.Person;
+import gr.hua.dit.mycitygov.core.model.PersonRole;
 import gr.hua.dit.mycitygov.core.model.Request;
 import gr.hua.dit.mycitygov.core.model.RequestStatus;
+import gr.hua.dit.mycitygov.core.model.RequestType;
 import gr.hua.dit.mycitygov.core.port.SmsNotificationPort;
 import gr.hua.dit.mycitygov.core.repository.RequestRepository;
 import gr.hua.dit.mycitygov.core.service.RequestService;
 import gr.hua.dit.mycitygov.core.service.RequestStatusTransitions;
 import gr.hua.dit.mycitygov.core.service.mapper.RequestMapper;
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
 import gr.hua.dit.mycitygov.core.service.model.RequestView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +52,6 @@ public class RequestServiceImpl implements RequestService {
         request.setCreatedAt(Instant.now());
         request.setUpdatedAt(Instant.now());
 
-        //  υπολογισμός προθεσμίας (SLA) ανά τύπο αιτήματος
         LocalDate slaDueDate = calculateSlaDueDate(openReq.type());
         request.setSlaDueDate(slaDueDate);
 
@@ -62,16 +63,14 @@ public class RequestServiceImpl implements RequestService {
         LocalDate today = LocalDate.now();
 
         return switch (type) {
-            case CERTIFICATE_RESIDENCE -> today.plusDays(10);   // 10 μέρες
-            case SIDEWALK_LICENSE      -> today.plusDays(15);   // 15 μέρες
-            case LIGHTING_ISSUE,
-                 ROAD_HOLE,
-                 CLEANING_ISSUE        -> today.plusDays(5);    // βλάβες πόλης: πιο γρήγορα
-            case OTHER                 -> today.plusDays(20);   // γενικά αιτήματα
+            case CERTIFICATE_RESIDENCE -> today.plusDays(10);
+            case SIDEWALK_LICENSE      -> today.plusDays(15);
+            case LIGHTING_ISSUE        -> today.plusDays(7);
+            case ROAD_HOLE             -> today.plusDays(7);
+            case CLEANING_ISSUE        -> today.plusDays(5);
+            case OTHER                 -> today.plusDays(20);
         };
     }
-
-
 
     @Override
     @Transactional(readOnly = true)
@@ -102,62 +101,74 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public Optional<RequestView> assignRequestToEmployee(Long requestId, Person employee) {
+    public Optional<RequestView> assignRequestToService(Long requestId, MunicipalService service) {
         return requestRepository.findById(requestId)
             .map(request -> {
-                request.setAssignedEmployee(employee);
-                request.setStatus(RequestStatus.RECEIVED);
+                request.setAssignedService(service);
+
+                // Μόλις ανατεθεί σε υπηρεσία, μπαίνει σε "RECEIVED" (στο τμήμα)
+                if (request.getStatus() == RequestStatus.SUBMITTED) {
+                    request.setStatus(RequestStatus.RECEIVED);
+                }
+
                 request.setUpdatedAt(Instant.now());
                 return requestMapper.convertRequestToView(request);
             });
     }
 
-    /*@Override
+    @Override
+    @Transactional(readOnly = true)
+    public List<RequestView> getServiceQueue(MunicipalService service) {
+        return requestRepository
+            .findAllByAssignedServiceAndAssignedEmployeeIsNullOrderByCreatedAtDesc(service)
+            .stream()
+            .map(requestMapper::convertRequestToView)
+            .toList();
+    }
+
+    @Override
+    @Transactional
+    public Optional<RequestView> claimRequest(Long requestId, Person employee) {
+        if (employee.getRole() != PersonRole.EMPLOYEE) {
+            return Optional.empty();
+        }
+        if (employee.getMunicipalService() == null) {
+            return Optional.empty();
+        }
+
+        return requestRepository.findById(requestId)
+            .filter(req -> req.getAssignedService() != null)
+            .filter(req -> req.getAssignedService() == employee.getMunicipalService())
+            .filter(req -> req.getAssignedEmployee() == null)
+            .map(req -> {
+                req.setAssignedEmployee(employee);
+                req.setUpdatedAt(Instant.now());
+                return requestMapper.convertRequestToView(req);
+            });
+    }
+
+    @Override
+    @Transactional
     public Optional<RequestView> updateStatus(Long requestId, Person employee, RequestStatus nextStatus, String comment) {
-        return Optional.empty();
-    }*/
+        return requestRepository.findById(requestId)
+            .filter(req -> req.getAssignedEmployee() != null && req.getAssignedEmployee().getId().equals(employee.getId()))
+            .filter(req -> RequestStatusTransitions.canMove(req.getStatus(), nextStatus))
+            .map(req -> {
+                req.setStatus(nextStatus);
+                req.setStatusComment(comment);
+                req.setUpdatedAt(Instant.now());
 
+                notifyCitizenOnStatusChange(req);
 
+                return requestMapper.convertRequestToView(req);
+            });
+    }
 
     private String generateProtocolNumber() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    @Override
-    @Transactional
-    public Optional<RequestView> updateStatus(
-        Long requestId,
-        Person employee,
-        RequestStatus nextStatus,
-        String comment
-    ) {
-        return requestRepository.findById(requestId).map(request -> {
-
-            if (request.getAssignedEmployee() == null ||
-                !request.getAssignedEmployee().getId().equals(employee.getId())) {
-                throw new IllegalStateException("Δεν έχεις δικαίωμα για αυτό το αίτημα");
-            }
-
-            if (!RequestStatusTransitions.canMove(request.getStatus(), nextStatus)) {
-                throw new IllegalStateException(
-                    "Μη επιτρεπτή μετάβαση: "
-                        + request.getStatus() + " → " + nextStatus
-                );
-            }
-
-            request.setStatus(nextStatus);
-            request.setUpdatedAt(Instant.now());
-
-            if (comment != null && !comment.isBlank()) {
-                request.setStatusComment(comment.trim());
-            }
-
-            sendSmsIfNeeded(request);
-
-            return requestMapper.convertRequestToView(request);
-        });
-    }
-    private void sendSmsIfNeeded(Request request) {
+    private void notifyCitizenOnStatusChange(Request request) {
         String phone = request.getCitizen().getMobilePhoneNumber();
         String protocol = request.getProtocolNumber();
 
@@ -178,5 +189,4 @@ public class RequestServiceImpl implements RequestService {
             smsNotificationPort.sendSms(phone, msg);
         }
     }
-
 }
