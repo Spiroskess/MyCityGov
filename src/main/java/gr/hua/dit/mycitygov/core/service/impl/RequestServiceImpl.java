@@ -52,8 +52,9 @@ public class RequestServiceImpl implements RequestService {
         request.setCreatedAt(Instant.now());
         request.setUpdatedAt(Instant.now());
 
-        LocalDate slaDueDate = calculateSlaDueDate(openReq.type());
-        request.setSlaDueDate(slaDueDate);
+        request.setSlaDueDate(calculateSlaDueDate(openReq.type()));
+
+        request.setAssignedService(inferService(openReq.type()));
 
         request = requestRepository.save(request);
         return requestMapper.convertRequestToView(request);
@@ -69,6 +70,16 @@ public class RequestServiceImpl implements RequestService {
             case ROAD_HOLE             -> today.plusDays(7);
             case CLEANING_ISSUE        -> today.plusDays(5);
             case OTHER                 -> today.plusDays(20);
+        };
+    }
+
+    // ✅ Mapping τύπου → υπηρεσία (με βάση τα δικά σου enums)
+    private MunicipalService inferService(RequestType type) {
+        return switch (type) {
+            case CERTIFICATE_RESIDENCE -> MunicipalService.KEP;
+            case SIDEWALK_LICENSE, LIGHTING_ISSUE, ROAD_HOLE -> MunicipalService.TECHNICAL_SERVICE;
+            case CLEANING_ISSUE -> MunicipalService.ENVIRONMENT_SERVICE;
+            case OTHER -> MunicipalService.KEP;
         };
     }
 
@@ -106,13 +117,15 @@ public class RequestServiceImpl implements RequestService {
             .map(request -> {
                 request.setAssignedService(service);
 
-                // Μόλις ανατεθεί σε υπηρεσία, μπαίνει σε "RECEIVED" (στο τμήμα)
+                // Μόλις ανατεθεί σε υπηρεσία, μπαίνει σε RECEIVED
                 if (request.getStatus() == RequestStatus.SUBMITTED) {
                     request.setStatus(RequestStatus.RECEIVED);
                 }
 
                 request.setUpdatedAt(Instant.now());
-                return requestMapper.convertRequestToView(request);
+
+                Request saved = requestRepository.save(request);
+                return requestMapper.convertRequestToView(saved);
             });
     }
 
@@ -129,12 +142,8 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public Optional<RequestView> claimRequest(Long requestId, Person employee) {
-        if (employee.getRole() != PersonRole.EMPLOYEE) {
-            return Optional.empty();
-        }
-        if (employee.getMunicipalService() == null) {
-            return Optional.empty();
-        }
+        if (employee.getRole() != PersonRole.EMPLOYEE) return Optional.empty();
+        if (employee.getMunicipalService() == null) return Optional.empty();
 
         return requestRepository.findById(requestId)
             .filter(req -> req.getAssignedService() != null)
@@ -143,7 +152,9 @@ public class RequestServiceImpl implements RequestService {
             .map(req -> {
                 req.setAssignedEmployee(employee);
                 req.setUpdatedAt(Instant.now());
-                return requestMapper.convertRequestToView(req);
+
+                Request saved = requestRepository.save(req);
+                return requestMapper.convertRequestToView(saved);
             });
     }
 
@@ -152,16 +163,25 @@ public class RequestServiceImpl implements RequestService {
     public Optional<RequestView> updateStatus(Long requestId, Person employee, RequestStatus nextStatus, String comment) {
         return requestRepository.findById(requestId)
             .filter(req -> req.getAssignedEmployee() != null && req.getAssignedEmployee().getId().equals(employee.getId()))
-            .filter(req -> RequestStatusTransitions.canMove(req.getStatus(), nextStatus))
+            .filter(req -> RequestStatusTransitions.canMove(req.getStatus(), nextStatus)) // ✅ ΤΟ ΔΙΚΟ ΣΟΥ
             .map(req -> {
                 req.setStatus(nextStatus);
                 req.setStatusComment(comment);
                 req.setUpdatedAt(Instant.now());
 
-                notifyCitizenOnStatusChange(req);
+                Request saved = requestRepository.save(req);
 
-                return requestMapper.convertRequestToView(req);
+                notifyCitizenOnStatusChange(saved);
+                return requestMapper.convertRequestToView(saved);
             });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RequestView> getMyRequestDetails(Long requestId, Person employee) {
+        return requestRepository
+            .findByIdAndAssignedEmployee(requestId, employee)
+            .map(requestMapper::convertRequestToView);
     }
 
     private String generateProtocolNumber() {

@@ -36,6 +36,7 @@ public class RequestMapper {
             request.getStatus(),
             request.getAssignedService(),
             request.getSubject(),
+            request.getDescription(),    
             citizenName,
             employeeName,
             request.getCreatedAt(),

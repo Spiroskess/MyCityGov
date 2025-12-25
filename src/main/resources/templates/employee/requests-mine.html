@@ -17,33 +17,32 @@
         Δεν έχεις αναλάβει κανένα αίτημα ακόμα.
     </div>
 
-    <div th:each="r : ${requests}" style="margin-top:14px;">
-        <p><strong>Πρωτόκολλο:</strong> <span th:text="${r.protocolNumber()}">PR-0001</span></p>
-        <p><strong>Τύπος:</strong> <span th:text="${r.type()}">TYPE</span></p>
-        <p><strong>Κατάσταση:</strong> <span th:text="${r.status()}">STATUS</span></p>
+    <div th:if="${!#lists.isEmpty(requests)}">
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+            <tr style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.25);">
+                <th style="padding:10px 6px;">Πρωτόκολλο</th>
+                <th style="padding:10px 6px;">Τύπος</th>
+                <th style="padding:10px 6px;">Κατάσταση</th>
+                <th style="padding:10px 6px;"></th>
+            </tr>
+            </thead>
 
-        <hr style="opacity:0.3;"/>
-
-        <form th:action="@{/employee/requests/status}" method="post">
-            <input type="hidden" name="requestId" th:value="${r.id()}"/>
-
-            <label>Νέα κατάσταση</label>
-            <select name="nextStatus" required>
-                <option value="" disabled selected>— Επιλογή —</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="WAITING_ADDITIONAL_INFO">WAITING_ADDITIONAL_INFO</option>
-                <option value="COMPLETED">COMPLETED</option>
-                <option value="REJECTED">REJECTED</option>
-            </select>
-
-            <label style="display:block; margin-top:10px;">Σχόλιο (προαιρετικό)</label>
-            <input type="text" name="comment" placeholder="π.χ. Ζητήθηκαν επιπλέον στοιχεία..."/>
-
-            <div style="margin-top:10px;">
-                <button type="submit" class="mc-nav-button">Ενημέρωση</button>
-            </div>
-        </form>
+            <tbody>
+            <tr th:each="r : ${requests}" style="border-bottom:1px solid rgba(255,255,255,0.12);">
+                <td style="padding:10px 6px;" th:text="${r.protocolNumber()}">PR-0001</td>
+                <td style="padding:10px 6px;" th:text="${r.type()}">TYPE</td>
+                <td style="padding:10px 6px;" th:text="${r.status()}">STATUS</td>
+                <td style="padding:10px 6px;">
+                    <a class="mc-nav-button"
+                       th:href="@{/employee/requests/{id}(id=${r.id()})}">
+                        Πληροφορίες αιτήματος
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-</section>
 
+</section>
 </html>

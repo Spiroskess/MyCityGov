@@ -15,10 +15,8 @@ public interface RequestService {
 
     List<RequestView> getRequestsOfCitizen(Person citizen);
 
-    // “Mine” (όσα έχει αναλάβει ο υπάλληλος)
     List<RequestView> getRequestsAssignedToEmployee(Person employee);
 
-    // Admin: όλα
     List<RequestView> getAllRequests();
 
     Optional<RequestView> assignRequestToService(Long requestId, MunicipalService service);
@@ -33,4 +31,6 @@ public interface RequestService {
         RequestStatus nextStatus,
         String comment
     );
+
+    Optional<RequestView> getMyRequestDetails(Long requestId, Person employee);
 }

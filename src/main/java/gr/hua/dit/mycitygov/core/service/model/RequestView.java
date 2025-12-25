@@ -13,6 +13,7 @@ public record RequestView(
     RequestStatus status,
     MunicipalService assignedService,
     String subject,
+    String description,
     String citizenFullName,
     String assignedEmployeeFullName,
     Instant createdAt,
