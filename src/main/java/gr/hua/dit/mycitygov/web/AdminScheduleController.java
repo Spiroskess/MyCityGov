@@ -37,7 +37,7 @@ public class AdminScheduleController {
             adminScheduleService.create(schedule);
             return "redirect:/admin/schedules";
         } catch (Exception ex) {
-            // σωστή εμφάνιση σφαλμάτων UI: μένουμε στην ίδια σελίδα
+            // σωστή εμφάνιση σφαλμάτων UI μένουμε στην ίδια σελίδα
             model.addAttribute("error", ex.getMessage());
 
             // ξαναγεμίζουμε τη σελίδα

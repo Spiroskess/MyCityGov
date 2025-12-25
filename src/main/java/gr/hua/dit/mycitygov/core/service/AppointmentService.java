@@ -19,7 +19,7 @@ public interface AppointmentService {
 
     Appointment cancelByEmployee(Long employeeId, Long appointmentId);
 
-    Appointment completeByEmployee(Long employeeId, Long appointmentId); // ✅ NEW
+    Appointment completeByEmployee(Long employeeId, Long appointmentId);
 
     List<Appointment> listForCitizen(Long citizenId);
 

@@ -76,7 +76,7 @@ public class PersonServiceImpl implements PersonService {
             return CreatePersonResult.fail("Υπάρχει ήδη χρήστης με αυτό το ΑΜΚΑ.");
         }
 
-        // 1) Validate + normalize phone with NOC (E164)
+        // 1) Validate kai normalize phone me NOC
         PhoneNumberValidationResult validation = phoneNumberPort.validate(request.mobilePhoneNumber());
         if (validation == null || !validation.isValidMobile()) {
             return CreatePersonResult.fail("Μη έγκυρο κινητό (πρέπει να είναι mobile).");
@@ -89,7 +89,7 @@ public class PersonServiceImpl implements PersonService {
         person.setEmailAddress(request.emailAddress());
         person.setFirstName(request.firstName());
         person.setLastName(request.lastName());
-        person.setMobilePhoneNumber(e164); // αποθήκευση normalized E164
+        person.setMobilePhoneNumber(e164); // αποθήκευση E164
         person.setAfm(request.afm());
         person.setAmka(request.amka());
         person.setPasswordHash(passwordEncoder.encode(request.rawPassword()));
@@ -98,7 +98,7 @@ public class PersonServiceImpl implements PersonService {
         person = personRepository.save(person);
         PersonView view = personMapper.convertPersonToPersonView(person);
 
-        // 2) SMS success (optional)
+        // 2) SMS success
         if (notify) {
             String msg = "MyCityGov: Καλώς ήρθες " + person.getFirstName()
                 + "! Η εγγραφή σου ολοκληρώθηκε επιτυχώς.";

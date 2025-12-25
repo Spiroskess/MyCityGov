@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<title>Πληροφορίες αιτήματος</title>
+
+<section>
+    <h1 class="mc-title">Πληροφορίες αιτήματος</h1>
+
+    <div style="display:flex; gap:14px; margin:12px 0 18px 0; flex-wrap:wrap;">
+        <a th:href="@{/employee/requests-mine}" class="mc-nav-link">← Πίσω στα δικά μου</a>
+    </div>
+
+    <p><strong>Πρωτόκολλο:</strong> <span th:text="${r.protocolNumber()}"></span></p>
+    <p><strong>Τύπος:</strong> <span th:text="${r.type()}"></span></p>
+    <p><strong>Κατάσταση:</strong> <span th:text="${r.status()}"></span></p>
+
+    <hr style="opacity:0.3;"/>
+
+    <p><strong>Θέμα:</strong></p>
+    <p th:text="${r.subject()}">—</p>
+
+    <p><strong>Περιγραφή:</strong></p>
+    <div th:text="${r.description()}" style="white-space:pre-wrap;">—</div>
+
+    <hr style="opacity:0.3; margin-top:16px;"/>
+
+    <h3>Ενέργειες</h3>
+
+    <!-- Κοινό σχόλιο (προαιρετικό). Για απόρριψη/αίτημα στοιχείων συνήθως το γράφουν -->
+    <form th:action="@{/employee/requests/status}" method="post" style="margin-top:10px;">
+        <input type="hidden" name="requestId" th:value="${r.id()}"/>
+        <input type="hidden" name="redirectTo" th:value="@{/employee/requests/{id}(id=${r.id()})}"/>
+
+        <label style="display:block; margin-bottom:6px;">Σχόλιο (προαιρετικό)</label>
+        <input type="text" name="comment" style="width:min(520px, 100%);"
+               placeholder="π.χ. Ζητούνται επιπλέον στοιχεία / λόγος απόρριψης..."/>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+
+            <!-- SUBMITTED -> RECEIVED / REJECTED (σπάνιο για employee, αλλά το καλύπτουμε) -->
+            <button th:if="${r.status().name() == 'SUBMITTED'}"
+                    type="submit" name="nextStatus" value="RECEIVED"
+                    class="mc-nav-button">
+                Παραλαβή
+            </button>
+
+            <button th:if="${r.status().name() == 'SUBMITTED'}"
+                    type="submit" name="nextStatus" value="REJECTED"
+                    class="mc-nav-button">
+                Απόρριψη
+            </button>
+
+            <!-- RECEIVED -> IN_PROGRESS / REJECTED -->
+            <button th:if="${r.status().name() == 'RECEIVED'}"
+                    type="submit" name="nextStatus" value="IN_PROGRESS"
+                    class="mc-nav-button">
+                Έναρξη επεξεργασίας
+            </button>
+
+            <button th:if="${r.status().name() == 'RECEIVED'}"
+                    type="submit" name="nextStatus" value="REJECTED"
+                    class="mc-nav-button">
+                Απόρριψη
+            </button>
+
+            <!-- IN_PROGRESS -> WAITING_ADDITIONAL_INFO / COMPLETED / REJECTED -->
+            <button th:if="${r.status().name() == 'IN_PROGRESS'}"
+                    type="submit" name="nextStatus" value="WAITING_ADDITIONAL_INFO"
+                    class="mc-nav-button">
+                Ζήτηση επιπλέον στοιχείων
+            </button>
+
+            <button th:if="${r.status().name() == 'IN_PROGRESS'}"
+                    type="submit" name="nextStatus" value="COMPLETED"
+                    class="mc-nav-button">
+                Ολοκλήρωση
+            </button>
+
+            <button th:if="${r.status().name() == 'IN_PROGRESS'}"
+                    type="submit" name="nextStatus" value="REJECTED"
+                    class="mc-nav-button">
+                Απόρριψη
+            </button>
+
+            <!-- WAITING_ADDITIONAL_INFO -> IN_PROGRESS / REJECTED -->
+            <button th:if="${r.status().name() == 'WAITING_ADDITIONAL_INFO'}"
+                    type="submit" name="nextStatus" value="IN_PROGRESS"
+                    class="mc-nav-button">
+                Συνέχεια (λήφθηκαν στοιχεία)
+            </button>
+
+            <button th:if="${r.status().name() == 'WAITING_ADDITIONAL_INFO'}"
+                    type="submit" name="nextStatus" value="REJECTED"
+                    class="mc-nav-button">
+                Απόρριψη
+            </button>
+
+            <!-- COMPLETED / REJECTED -> κανένα κουμπί -->
+            <span th:if="${r.status().name() == 'COMPLETED' or r.status().name() == 'REJECTED'}">
+                Δεν υπάρχουν διαθέσιμες ενέργειες (τελική κατάσταση).
+            </span>
+
+        </div>
+    </form>
+
+</section>
+</html>

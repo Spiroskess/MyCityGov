@@ -73,7 +73,6 @@ public class RequestServiceImpl implements RequestService {
         };
     }
 
-    // ✅ Mapping τύπου → υπηρεσία (με βάση τα δικά σου enums)
     private MunicipalService inferService(RequestType type) {
         return switch (type) {
             case CERTIFICATE_RESIDENCE -> MunicipalService.KEP;

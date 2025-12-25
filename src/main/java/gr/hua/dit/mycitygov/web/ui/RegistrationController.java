@@ -38,7 +38,7 @@ public class RegistrationController {
      */
     @GetMapping("/register")
     public String showRegisterForm(final Authentication authentication, final Model model) {
-        // Αν είναι ήδη συνδεδεμένος, στείλ' τον στο profile (ή σε home σελίδα ρόλου).
+        // Αν είναι ήδη συνδεδεμένος, στείλ' τον στο profile ή σε home σελίδα ρόλου
         if (authentication != null && authentication.isAuthenticated()
             && !"anonymousUser".equals(authentication.getPrincipal())) {
             return "redirect:/profile";
@@ -76,24 +76,22 @@ public class RegistrationController {
             return "redirect:/profile";
         }
 
-        // Bean Validation (NotBlank, Email, Size κλπ)
+        // Bean Validation
         if (bindingResult.hasErrors()) {
             LOGGER.warn("Registration validation errors: {}", bindingResult.getAllErrors());
-            // Η φόρμα ξαναγυρίζει μαζί με μηνύματα λαθών (th:errors στο template).
             return "register";
         }
 
-        // Κανονική δημιουργία χρήστη μέσω service.
+        // Κανονική δημιουργία χρήστη μέσω service
         CreatePersonResult createPersonResult = this.personService.createPerson(createPersonRequest,true);
 
         if (createPersonResult.created()) {
             LOGGER.info("New person registered with email={}", createPersonRequest.emailAddress());
-            // 1η φάση: μετά την εγγραφή τον στέλνουμε στο login
-            // (αν θες auto-login, το φτιάχνουμε σε επόμενο βήμα)
+            //μετά την εγγραφή τον στέλνουμε στο login
             return "redirect:/login?registered";
         }
 
-        // Αν απέτυχε (π.χ. διπλό email/afm/amka), στείλε μήνυμα λάθους
+        // Αν απέτυχε στείλε μήνυμα λάθους
         model.addAttribute("createPersonRequest", createPersonRequest);
         model.addAttribute("errorMessage", createPersonResult.reason());
         return "register";
