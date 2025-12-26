@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -55,4 +56,18 @@ public class CitizenRequestController {
         requestService.openRequest(citizen, openRequestRequest);
         return "redirect:/citizen/requests";
     }
+    @GetMapping("/citizen/requests/{id}")
+    public String citizenRequestDetails(@PathVariable Long id, Model model) {
+        Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
+
+        var opt = requestService.getCitizenRequestDetails(id, citizen);
+        if (opt.isEmpty()) {
+            return "redirect:/citizen/requests";
+        }
+
+        model.addAttribute("r", opt.get());
+        model.addAttribute("messages", requestService.getCitizenMessages(id, citizen));
+        return "citizen/request-details";
+    }
+
 }

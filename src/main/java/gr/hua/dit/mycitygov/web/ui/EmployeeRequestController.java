@@ -43,7 +43,9 @@ public class EmployeeRequestController {
     }
 
     @GetMapping("/employee/requests/{id}")
-    public String requestDetails(@PathVariable Long id, Model model) {
+    public String requestDetails(@PathVariable Long id,
+                                 @RequestParam(required = false) String err,
+                                 Model model) {
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
 
         var opt = requestService.getMyRequestDetails(id, employee);
@@ -52,6 +54,9 @@ public class EmployeeRequestController {
         }
 
         model.addAttribute("r", opt.get());
+        model.addAttribute("messages", requestService.getMyRequestMessages(id, employee)); // ✅
+        model.addAttribute("err", err);
+
         return "employee/request-details";
     }
 
@@ -69,7 +74,15 @@ public class EmployeeRequestController {
                                @RequestParam(required = false) String redirectTo) {
 
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
-        requestService.updateStatus(requestId, employee, nextStatus, comment);
+
+        try {
+            requestService.updateStatus(requestId, employee, nextStatus, comment);
+        } catch (IllegalArgumentException ex) {
+            if ("COMMENT_REQUIRED".equals(ex.getMessage())) {
+                return "redirect:/employee/requests/" + requestId + "?err=commentRequired";
+            }
+            throw ex;
+        }
 
         String target = "/employee/requests-mine";
         if (redirectTo != null && redirectTo.startsWith("/employee/requests/")) {

@@ -24,4 +24,5 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findAllByAssignedServiceAndAssignedEmployeeIsNullOrderByCreatedAtDesc(MunicipalService service);
 
     Optional<Request> findByIdAndAssignedEmployee(Long id, Person employee);
+    Optional<Request> findByIdAndCitizen(Long id, Person citizen);
 }

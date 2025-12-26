@@ -4,6 +4,7 @@ import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.core.model.RequestStatus;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
+import gr.hua.dit.mycitygov.core.service.model.RequestMessageView;
 import gr.hua.dit.mycitygov.core.service.model.RequestView;
 
 import java.util.List;
@@ -14,6 +15,10 @@ public interface RequestService {
     RequestView openRequest(Person citizen, OpenRequestRequest openRequestRequest);
 
     List<RequestView> getRequestsOfCitizen(Person citizen);
+
+
+    Optional<RequestView> getCitizenRequestDetails(Long requestId, Person citizen);
+    List<RequestMessageView> getCitizenMessages(Long requestId, Person citizen);
 
     List<RequestView> getRequestsAssignedToEmployee(Person employee);
 
@@ -33,4 +38,5 @@ public interface RequestService {
     );
 
     Optional<RequestView> getMyRequestDetails(Long requestId, Person employee);
+    List<RequestMessageView> getMyRequestMessages(Long requestId, Person employee);
 }

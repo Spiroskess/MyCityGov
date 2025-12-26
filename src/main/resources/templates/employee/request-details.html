@@ -12,6 +12,10 @@
         <a th:href="@{/employee/requests-mine}" class="mc-nav-link">← Πίσω στα δικά μου</a>
     </div>
 
+    <div th:if="${err == 'commentRequired'}" style="padding:10px; border:1px solid rgba(255,255,255,0.35); margin:10px 0;">
+        Για αυτή την ενέργεια απαιτείται τεκμηρίωση/σχόλιο.
+    </div>
+
     <p><strong>Πρωτόκολλο:</strong> <span th:text="${r.protocolNumber()}"></span></p>
     <p><strong>Τύπος:</strong> <span th:text="${r.type()}"></span></p>
     <p><strong>Κατάσταση:</strong> <span th:text="${r.status()}"></span></p>
@@ -26,50 +30,49 @@
 
     <hr style="opacity:0.3; margin-top:16px;"/>
 
+    <h3>Ιστορικό Μηνυμάτων</h3>
+
+    <div th:if="${#lists.isEmpty(messages)}">— Δεν υπάρχουν μηνύματα ακόμα.</div>
+
+    <div th:each="m : ${messages}" style="margin:10px 0; padding:10px; border:1px solid rgba(255,255,255,0.20);">
+        <div style="opacity:0.9;">
+            <strong th:text="${m.type()}">GENERAL</strong>
+            • <span th:text="${m.createdAt()}"></span>
+            • <span th:text="${m.createdBy()}"></span>
+        </div>
+        <div th:text="${m.message()}" style="white-space:pre-wrap; margin-top:6px;"></div>
+    </div>
+
+    <hr style="opacity:0.3; margin-top:16px;"/>
+
     <h3>Ενέργειες</h3>
 
-    <!-- Κοινό σχόλιο (προαιρετικό). Για απόρριψη/αίτημα στοιχείων συνήθως το γράφουν -->
-    <form th:action="@{/employee/requests/status}" method="post" style="margin-top:10px;">
+    <form id="statusForm" th:action="@{/employee/requests/status}" method="post" style="margin-top:10px;">
         <input type="hidden" name="requestId" th:value="${r.id()}"/>
         <input type="hidden" name="redirectTo" th:value="@{/employee/requests/{id}(id=${r.id()})}"/>
 
-        <label style="display:block; margin-bottom:6px;">Σχόλιο (προαιρετικό)</label>
-        <input type="text" name="comment" style="width:min(520px, 100%);"
-               placeholder="π.χ. Ζητούνται επιπλέον στοιχεία / λόγος απόρριψης..."/>
+        <label style="display:block; margin-bottom:6px;">Σχόλιο (θα ζητηθεί όπου απαιτείται)</label>
+        <input id="comment" type="text" name="comment" style="width:min(520px, 100%);"
+               placeholder="π.χ. ζητήθηκαν δικαιολογητικά, λόγος απόρριψης..."/>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
 
-            <!-- SUBMITTED -> RECEIVED / REJECTED (σπάνιο για employee, αλλά το καλύπτουμε) -->
-            <button th:if="${r.status().name() == 'SUBMITTED'}"
-                    type="submit" name="nextStatus" value="RECEIVED"
-                    class="mc-nav-button">
-                Παραλαβή
-            </button>
-
-            <button th:if="${r.status().name() == 'SUBMITTED'}"
-                    type="submit" name="nextStatus" value="REJECTED"
-                    class="mc-nav-button">
-                Απόρριψη
-            </button>
-
-            <!-- RECEIVED -> IN_PROGRESS / REJECTED -->
             <button th:if="${r.status().name() == 'RECEIVED'}"
                     type="submit" name="nextStatus" value="IN_PROGRESS"
                     class="mc-nav-button">
                 Έναρξη επεξεργασίας
             </button>
 
-            <button th:if="${r.status().name() == 'RECEIVED'}"
-                    type="submit" name="nextStatus" value="REJECTED"
-                    class="mc-nav-button">
-                Απόρριψη
-            </button>
-
-            <!-- IN_PROGRESS -> WAITING_ADDITIONAL_INFO / COMPLETED / REJECTED -->
             <button th:if="${r.status().name() == 'IN_PROGRESS'}"
                     type="submit" name="nextStatus" value="WAITING_ADDITIONAL_INFO"
-                    class="mc-nav-button">
+                    class="mc-nav-button require-comment">
                 Ζήτηση επιπλέον στοιχείων
+            </button>
+
+            <button th:if="${r.status().name() == 'WAITING_ADDITIONAL_INFO'}"
+                    type="submit" name="nextStatus" value="IN_PROGRESS"
+                    class="mc-nav-button">
+                Συνέχεια (λήφθηκαν στοιχεία)
             </button>
 
             <button th:if="${r.status().name() == 'IN_PROGRESS'}"
@@ -78,32 +81,38 @@
                 Ολοκλήρωση
             </button>
 
-            <button th:if="${r.status().name() == 'IN_PROGRESS'}"
+            <button th:if="${r.status().name() == 'RECEIVED' or r.status().name() == 'IN_PROGRESS' or r.status().name() == 'WAITING_ADDITIONAL_INFO'}"
                     type="submit" name="nextStatus" value="REJECTED"
-                    class="mc-nav-button">
+                    class="mc-nav-button require-comment">
                 Απόρριψη
             </button>
 
-            <!-- WAITING_ADDITIONAL_INFO -> IN_PROGRESS / REJECTED -->
-            <button th:if="${r.status().name() == 'WAITING_ADDITIONAL_INFO'}"
-                    type="submit" name="nextStatus" value="IN_PROGRESS"
-                    class="mc-nav-button">
-                Συνέχεια (λήφθηκαν στοιχεία)
-            </button>
-
-            <button th:if="${r.status().name() == 'WAITING_ADDITIONAL_INFO'}"
-                    type="submit" name="nextStatus" value="REJECTED"
-                    class="mc-nav-button">
-                Απόρριψη
-            </button>
-
-            <!-- COMPLETED / REJECTED -> κανένα κουμπί -->
             <span th:if="${r.status().name() == 'COMPLETED' or r.status().name() == 'REJECTED'}">
                 Δεν υπάρχουν διαθέσιμες ενέργειες (τελική κατάσταση).
             </span>
 
         </div>
     </form>
+
+    <script>
+        // κάνει το comment "required" ΜΟΝΟ όταν πατάς κουμπί που το χρειάζεται
+        (function () {
+            const form = document.getElementById("statusForm");
+            const comment = document.getElementById("comment");
+
+            form.addEventListener("click", function (e) {
+                const btn = e.target;
+                if (!(btn instanceof HTMLButtonElement)) return;
+
+                const needs = btn.classList.contains("require-comment");
+                comment.required = needs;
+
+                if (needs && (!comment.value || comment.value.trim().length === 0)) {
+                    // browser will show validation bubble
+                }
+            });
+        })();
+    </script>
 
 </section>
 </html>

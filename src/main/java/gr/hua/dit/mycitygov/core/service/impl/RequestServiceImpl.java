@@ -1,18 +1,15 @@
 package gr.hua.dit.mycitygov.core.service.impl;
 
-import gr.hua.dit.mycitygov.core.model.Person;
-import gr.hua.dit.mycitygov.core.model.PersonRole;
-import gr.hua.dit.mycitygov.core.model.Request;
-import gr.hua.dit.mycitygov.core.model.RequestStatus;
-import gr.hua.dit.mycitygov.core.model.RequestType;
+import gr.hua.dit.mycitygov.core.model.*;
 import gr.hua.dit.mycitygov.core.port.SmsNotificationPort;
+import gr.hua.dit.mycitygov.core.repository.RequestMessageRepository;
 import gr.hua.dit.mycitygov.core.repository.RequestRepository;
 import gr.hua.dit.mycitygov.core.service.RequestService;
 import gr.hua.dit.mycitygov.core.service.RequestStatusTransitions;
 import gr.hua.dit.mycitygov.core.service.mapper.RequestMapper;
-import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
-import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
-import gr.hua.dit.mycitygov.core.service.model.RequestView;
+import gr.hua.dit.mycitygov.core.service.mapper.RequestMessageMapper;
+import gr.hua.dit.mycitygov.core.service.model.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,16 +23,22 @@ import java.util.UUID;
 public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
+    private final RequestMessageRepository requestMessageRepository;
     private final RequestMapper requestMapper;
+    private final RequestMessageMapper requestMessageMapper;
     private final SmsNotificationPort smsNotificationPort;
 
     public RequestServiceImpl(
         RequestRepository requestRepository,
+        RequestMessageRepository requestMessageRepository,
         RequestMapper requestMapper,
+        RequestMessageMapper requestMessageMapper,
         SmsNotificationPort smsNotificationPort
     ) {
         this.requestRepository = requestRepository;
+        this.requestMessageRepository = requestMessageRepository;
         this.requestMapper = requestMapper;
+        this.requestMessageMapper = requestMessageMapper;
         this.smsNotificationPort = smsNotificationPort;
     }
 
@@ -53,16 +56,14 @@ public class RequestServiceImpl implements RequestService {
         request.setUpdatedAt(Instant.now());
 
         request.setSlaDueDate(calculateSlaDueDate(openReq.type()));
-
         request.setAssignedService(inferService(openReq.type()));
 
-        request = requestRepository.save(request);
-        return requestMapper.convertRequestToView(request);
+        Request saved = requestRepository.save(request);
+        return requestMapper.convertRequestToView(saved);
     }
 
     private LocalDate calculateSlaDueDate(RequestType type) {
         LocalDate today = LocalDate.now();
-
         return switch (type) {
             case CERTIFICATE_RESIDENCE -> today.plusDays(10);
             case SIDEWALK_LICENSE      -> today.plusDays(15);
@@ -93,6 +94,26 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<RequestView> getCitizenRequestDetails(Long requestId, Person citizen) {
+        return requestRepository.findByIdAndCitizen(requestId, citizen)
+            .map(requestMapper::convertRequestToView);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RequestMessageView> getCitizenMessages(Long requestId, Person citizen) {
+        Request req = requestRepository.findByIdAndCitizen(requestId, citizen)
+            .orElseThrow(() -> new IllegalStateException("Request not found"));
+
+        return requestMessageRepository
+            .findAllByRequestAndVisibleToCitizenOrderByCreatedAtAsc(req, true)
+            .stream()
+            .map(requestMessageMapper::toView)
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<RequestView> getRequestsAssignedToEmployee(Person employee) {
         return requestRepository.findAllByAssignedEmployeeOrderByCreatedAtDesc(employee)
             .stream()
@@ -115,14 +136,10 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.findById(requestId)
             .map(request -> {
                 request.setAssignedService(service);
-
-                // Μόλις ανατεθεί σε υπηρεσία, μπαίνει σε RECEIVED
                 if (request.getStatus() == RequestStatus.SUBMITTED) {
                     request.setStatus(RequestStatus.RECEIVED);
                 }
-
                 request.setUpdatedAt(Instant.now());
-
                 Request saved = requestRepository.save(request);
                 return requestMapper.convertRequestToView(saved);
             });
@@ -151,7 +168,6 @@ public class RequestServiceImpl implements RequestService {
             .map(req -> {
                 req.setAssignedEmployee(employee);
                 req.setUpdatedAt(Instant.now());
-
                 Request saved = requestRepository.save(req);
                 return requestMapper.convertRequestToView(saved);
             });
@@ -162,25 +178,73 @@ public class RequestServiceImpl implements RequestService {
     public Optional<RequestView> updateStatus(Long requestId, Person employee, RequestStatus nextStatus, String comment) {
         return requestRepository.findById(requestId)
             .filter(req -> req.getAssignedEmployee() != null && req.getAssignedEmployee().getId().equals(employee.getId()))
-            .filter(req -> RequestStatusTransitions.canMove(req.getStatus(), nextStatus)) // ✅ ΤΟ ΔΙΚΟ ΣΟΥ
+            .filter(req -> RequestStatusTransitions.canMove(req.getStatus(), nextStatus))
             .map(req -> {
+
+                if (requiresComment(nextStatus)) {
+                    if (comment == null || comment.trim().isEmpty()) {
+                        throw new IllegalArgumentException("COMMENT_REQUIRED");
+                    }
+                }
+
                 req.setStatus(nextStatus);
                 req.setStatusComment(comment);
                 req.setUpdatedAt(Instant.now());
 
                 Request saved = requestRepository.save(req);
 
+                if (nextStatus == RequestStatus.WAITING_ADDITIONAL_INFO) {
+                    createCitizenMessage(saved, employee,
+                        RequestMessageType.REQUEST_ADDITIONAL_INFO,
+                        comment
+                    );
+                } else if (nextStatus == RequestStatus.REJECTED) {
+                    createCitizenMessage(saved, employee,
+                        RequestMessageType.REJECTION_REASON,
+                        comment
+                    );
+                }
+
                 notifyCitizenOnStatusChange(saved);
                 return requestMapper.convertRequestToView(saved);
             });
     }
 
+    private boolean requiresComment(RequestStatus nextStatus) {
+        return nextStatus == RequestStatus.WAITING_ADDITIONAL_INFO
+            || nextStatus == RequestStatus.REJECTED;
+    }
+
+    private void createCitizenMessage(Request request, Person employee, RequestMessageType type, String message) {
+        RequestMessage m = new RequestMessage();
+        m.setRequest(request);
+        m.setType(type);
+        m.setVisibleToCitizen(true);
+        m.setMessage(message);
+
+        String createdBy = "Employee: " + employee.getLastName() + " " + employee.getFirstName();
+        m.setCreatedBy(createdBy);
+
+        requestMessageRepository.save(m);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Optional<RequestView> getMyRequestDetails(Long requestId, Person employee) {
-        return requestRepository
-            .findByIdAndAssignedEmployee(requestId, employee)
+        return requestRepository.findByIdAndAssignedEmployee(requestId, employee)
             .map(requestMapper::convertRequestToView);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RequestMessageView> getMyRequestMessages(Long requestId, Person employee) {
+        Request req = requestRepository.findByIdAndAssignedEmployee(requestId, employee)
+            .orElseThrow(() -> new IllegalStateException("Request not found"));
+
+        return requestMessageRepository.findAllByRequestOrderByCreatedAtAsc(req)
+            .stream()
+            .map(requestMessageMapper::toView)
+            .toList();
     }
 
     private String generateProtocolNumber() {
@@ -199,12 +263,11 @@ public class RequestServiceImpl implements RequestService {
             case COMPLETED ->
                 "MyCityGov: Το αίτημά σου (" + protocol + ") ολοκληρώθηκε επιτυχώς.";
             case REJECTED ->
-                "MyCityGov: Το αίτημά σου (" + protocol + ") απορρίφθηκε. "
-                    + (request.getStatusComment() != null ? request.getStatusComment() : "");
+                "MyCityGov: Το αίτημά σου (" + protocol + ") απορρίφθηκε.";
             default -> null;
         };
 
-        if (msg != null) {
+        if (msg != null && phone != null && !phone.isBlank()) {
             smsNotificationPort.sendSms(phone, msg);
         }
     }

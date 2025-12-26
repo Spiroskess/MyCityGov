@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<title>Λεπτομέρειες αιτήματος</title>
+
+<section>
+    <h1 class="mc-title">Λεπτομέρειες αιτήματος</h1>
+
+    <div style="display:flex; gap:14px; margin:12px 0 18px 0; flex-wrap:wrap;">
+        <a th:href="@{/citizen/requests}" class="mc-nav-link">← Πίσω στα αιτήματά μου</a>
+    </div>
+
+    <p><strong>Πρωτόκολλο:</strong> <span th:text="${r.protocolNumber()}"></span></p>
+    <p><strong>Τύπος:</strong> <span th:text="${r.type()}"></span></p>
+    <p><strong>Κατάσταση:</strong> <span th:text="${r.status()}"></span></p>
+
+    <hr style="opacity:0.3;"/>
+
+    <p><strong>Θέμα:</strong></p>
+    <p th:text="${r.subject()}">—</p>
+
+    <p><strong>Περιγραφή:</strong></p>
+    <div th:text="${r.description()}" style="white-space:pre-wrap;">—</div>
+
+    <hr style="opacity:0.3; margin-top:16px;"/>
+
+    <h3>Μηνύματα από τον Δήμο</h3>
+
+    <div th:if="${#lists.isEmpty(messages)}">— Δεν υπάρχουν μηνύματα ακόμα.</div>
+
+    <div th:each="m : ${messages}" style="margin:10px 0; padding:10px; border:1px solid rgba(255,255,255,0.20);">
+        <div style="opacity:0.9;">
+            <strong th:text="${m.type()}">GENERAL</strong>
+            • <span th:text="${m.createdAt()}"></span>
+        </div>
+        <div th:text="${m.message()}" style="white-space:pre-wrap; margin-top:6px;"></div>
+    </div>
+</section>
+</html>
