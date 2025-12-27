@@ -1,7 +1,7 @@
 package gr.hua.dit.mycitygov.web.ui;
 
-
 import gr.hua.dit.mycitygov.core.model.Person;
+import gr.hua.dit.mycitygov.core.model.RequestStatus;
 import gr.hua.dit.mycitygov.core.security.CurrentUserProvider;
 import gr.hua.dit.mycitygov.core.service.RequestService;
 import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
@@ -26,12 +26,34 @@ public class CitizenRequestController {
         this.currentUserProvider = currentUserProvider;
     }
 
+    // ΕΝΕΡΓΑ αιτήματα
     @GetMapping("/citizen/requests")
     public String listCitizenRequests(Model model) {
         Person citizen = currentUserProvider.getCurrentPerson()
-            .orElseThrow(); //
-        model.addAttribute("requests", requestService.getRequestsOfCitizen(citizen));
+            .orElseThrow();
+
+        var all = requestService.getRequestsOfCitizen(citizen);
+        var active = all.stream()
+            .filter(r -> !isCompletedStatus(r.status()))
+            .toList();
+
+        model.addAttribute("requests", active);
         return "citizen/requests";
+    }
+
+    // ΟΛΟΚΛΗΡΩΜΕΝΑ αιτήματα
+    @GetMapping("/citizen/requests/completed")
+    public String listCitizenCompletedRequests(Model model) {
+        Person citizen = currentUserProvider.getCurrentPerson()
+            .orElseThrow();
+
+        var all = requestService.getRequestsOfCitizen(citizen);
+        var completed = all.stream()
+            .filter(r -> isCompletedStatus(r.status()))
+            .toList();
+
+        model.addAttribute("requests", completed);
+        return "citizen/requests-completed";
     }
 
     @GetMapping("/citizen/request-new")
@@ -56,6 +78,7 @@ public class CitizenRequestController {
         requestService.openRequest(citizen, openRequestRequest);
         return "redirect:/citizen/requests";
     }
+
     @GetMapping("/citizen/requests/{id}")
     public String citizenRequestDetails(@PathVariable Long id, Model model) {
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
@@ -70,4 +93,8 @@ public class CitizenRequestController {
         return "citizen/request-details";
     }
 
+    // "Ολοκληρωμένα" θεωρούμε: COMPLETED ή REJECTED
+    private boolean isCompletedStatus(RequestStatus status) {
+        return status == RequestStatus.COMPLETED || status == RequestStatus.REJECTED;
+    }
 }

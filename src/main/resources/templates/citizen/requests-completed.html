@@ -3,17 +3,17 @@
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <title>Τα αιτήματά μου</title>
+    <title>Ολοκληρωμένα αιτήματα</title>
 </head>
 
 <body>
 <section>
     <div class="mc-page-head">
-        <h2 class="mc-page-title">Τα ενεργά αιτήματά μου</h2>
+        <h2 class="mc-page-title">Ολοκληρωμένα αιτήματα</h2>
 
         <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/requests}">Ενεργά αιτήματα</a>
             <a class="mc-btn mc-btn-primary" th:href="@{/citizen/request-new}">Νέο αίτημα</a>
-            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/requests/completed}">Ολοκληρωμένα αιτήματα</a>
         </div>
     </div>
 
@@ -54,20 +54,16 @@
                 <td>
                     <span class="mc-badge"
                           th:classappend="${
-                            r.status.name() == 'SUBMITTED' ? ' mc-badge-info' :
-                            (r.status.name() == 'RECEIVED' ? ' mc-badge-neutral' :
-                            (r.status.name() == 'IN_PROGRESS' ? ' mc-badge-warn' :
-                            (r.status.name() == 'WAITING_ADDITIONAL_INFO' ? ' mc-badge-sky' :
-                            (r.status.name() == 'COMPLETED' ? ' mc-badge-success' :
-                            (r.status.name() == 'REJECTED' ? ' mc-badge-danger' : '')))))
+                            r.status.name() == 'COMPLETED' ? ' mc-badge-success' :
+                            (r.status.name() == 'REJECTED' ? ' mc-badge-danger' : ' mc-badge-neutral')
                           }">
                         <span th:switch="${r.status.name()}">
+                            <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
+                            <span th:case="'REJECTED'">Απορρίφθηκε</span>
                             <span th:case="'SUBMITTED'">Υποβλήθηκε</span>
                             <span th:case="'RECEIVED'">Σε παραλαβή</span>
                             <span th:case="'IN_PROGRESS'">Σε επεξεργασία</span>
                             <span th:case="'WAITING_ADDITIONAL_INFO'">Αναμονή στοιχείων</span>
-                            <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
-                            <span th:case="'REJECTED'">Απορρίφθηκε</span>
                             <span th:case="*"
                                   th:text="${#strings.replace(r.status.name(), '_', ' ')}">STATUS</span>
                         </span>
@@ -88,8 +84,8 @@
         </table>
 
         <div class="mc-empty" th:if="${#lists.isEmpty(requests)}">
-            Δεν υπάρχουν ενεργά αιτήματα.
-            <a class="mc-link" th:href="@{/citizen/requests/completed}">Δες τα ολοκληρωμένα</a>.
+            Δεν υπάρχουν ολοκληρωμένα αιτήματα.
+            <a class="mc-link" th:href="@{/citizen/requests}">Πίσω στα ενεργά</a>.
         </div>
     </div>
 </section>
