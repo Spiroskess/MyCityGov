@@ -4,10 +4,7 @@ import gr.hua.dit.mycitygov.core.service.AppointmentService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/citizen/appointments")
@@ -19,11 +16,20 @@ public class CitizenAppointmentsController {
         this.appointmentService = appointmentService;
     }
 
+    //Ενεργά ραντεβού menu:"Ραντεβού"
     @GetMapping
-    public String list(Authentication authentication, Model model) {
+    public String listActive(Authentication authentication, Model model) {
         Long citizenId = CurrentUserIds.currentUserId(authentication);
-        model.addAttribute("appointments", appointmentService.listForCitizen(citizenId));
+        model.addAttribute("appointments", appointmentService.listActiveForCitizen(citizenId));
         return "citizen/appointments";
+    }
+
+    //Ολοκληρωμένα/Ακυρωμένα
+    @GetMapping("/completed")
+    public String listCompleted(Authentication authentication, Model model) {
+        Long citizenId = CurrentUserIds.currentUserId(authentication);
+        model.addAttribute("appointments", appointmentService.listCompletedForCitizen(citizenId));
+        return "citizen/appointments-completed";
     }
 
     // Ακύρωση

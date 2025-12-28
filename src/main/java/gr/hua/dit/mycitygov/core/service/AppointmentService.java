@@ -23,6 +23,10 @@ public interface AppointmentService {
 
     List<Appointment> listForCitizen(Long citizenId);
 
+    List<Appointment> listActiveForCitizen(Long citizenId);
+
+    List<Appointment> listCompletedForCitizen(Long citizenId);
+
     List<Appointment> listForEmployee(Long employeeId);
 
     List<Appointment> listForAdmin();

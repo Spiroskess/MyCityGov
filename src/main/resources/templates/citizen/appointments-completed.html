@@ -3,17 +3,17 @@
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <title>Ραντεβού</title>
+    <title>Ολοκληρωμένα ραντεβού</title>
 </head>
 
 <body>
 <section>
     <div class="mc-page-head">
-        <h2 class="mc-page-title">Τα ραντεβού μου</h2>
+        <h2 class="mc-page-title">Ολοκληρωμένα ραντεβού</h2>
 
         <div class="mc-page-actions">
-            <a class="mc-btn mc-btn-primary" th:href="@{/citizen/booking}">Νέο ραντεβού</a>
-            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments/completed}">Ολοκληρωμένα ραντεβού</a>
+            <a class="mc-btn mc-btn-primary" th:href="@{/citizen/appointments}">Ενεργά ραντεβού</a>
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/booking}">Νέο ραντεβού</a>
         </div>
     </div>
 
@@ -32,7 +32,6 @@
             <tbody>
             <tr th:each="a : ${appointments}">
                 <td th:text="${a.id}">1</td>
-
                 <td th:text="${a.service}">KEP</td>
 
                 <td class="mc-muted"
@@ -43,12 +42,12 @@
                 <td>
                     <span class="mc-badge"
                           th:classappend="${
-                            a.status.name() == 'REQUESTED' ? ' mc-badge-warn' :
-                            (a.status.name() == 'CONFIRMED' ? ' mc-badge-success' : ' mc-badge-neutral')
+                            a.status.name() == 'COMPLETED' ? ' mc-badge-success' :
+                            (a.status.name() == 'CANCELLED' ? ' mc-badge-danger' : ' mc-badge-neutral')
                           }">
                         <span th:switch="${a.status.name()}">
-                            <span th:case="'REQUESTED'">Σε αναμονή</span>
-                            <span th:case="'CONFIRMED'">Επιβεβαιωμένο</span>
+                            <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
+                            <span th:case="'CANCELLED'">Ακυρώθηκε</span>
                             <span th:case="*"
                                   th:text="${#strings.replace(a.status.name(), '_', ' ')}">STATUS</span>
                         </span>
@@ -56,20 +55,15 @@
                 </td>
 
                 <td class="mc-col-actions">
-                    <form th:action="@{'/citizen/appointments/' + ${a.id} + '/cancel'}"
-                          method="post"
-                          onsubmit="return confirm('Να ακυρωθεί το ραντεβού;');"
-                          style="display:inline;">
-                        <button type="submit" class="mc-btn mc-btn-small mc-btn-outline">Ακύρωση</button>
-                    </form>
+                    <span class="mc-muted">—</span>
                 </td>
             </tr>
             </tbody>
         </table>
 
         <div class="mc-empty" th:if="${#lists.isEmpty(appointments)}">
-            Δεν υπάρχουν ενεργά ραντεβού.
-            <a class="mc-link" th:href="@{/citizen/appointments/completed}">Δες τα ολοκληρωμένα</a>.
+            Δεν υπάρχουν ολοκληρωμένα ραντεβού.
+            <a class="mc-link" th:href="@{/citizen/appointments}">Επιστροφή στα ενεργά</a>.
         </div>
     </div>
 </section>

@@ -2,54 +2,83 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<title>Διαθέσιμες ώρες</title>
+<head>
+    <title>Διαθέσιμες ώρες</title>
+</head>
 
+<body>
 <section>
-    <h1 class="mc-title">Διαθέσιμες ώρες</h1>
+    <div class="mc-page-head">
+        <h2 class="mc-page-title">Διαθέσιμες ώρες</h2>
 
-    <p style="margin-top:8px;">
-        <b>Υπηρεσία:</b> <span th:text="${service}"></span><br/>
-        <b>Ημερομηνία:</b> <span th:text="${date}"></span>
-    </p>
-
-    <p th:if="${error != null}" th:text="${error}"
-       style="margin-top:12px; color:#b00020; font-weight:700;"></p>
-
-    <div th:if="${#lists.isEmpty(times)}" style="margin-top:12px;">
-        <p>Δεν υπάρχουν διαθέσιμες ώρες για αυτή την ημερομηνία.</p>
-        <a th:href="@{/citizen/booking}" class="mc-nav-link" style="text-decoration:underline;">
-            Επιστροφή
-        </a>
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/booking}">Αλλαγή επιλογών</a>
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments}">Τα ραντεβού μου</a>
+        </div>
     </div>
 
-    <form th:if="${!#lists.isEmpty(times)}"
-          th:action="@{/citizen/booking/confirm}"
-          method="post"
-          style="margin-top:12px;">
+    <div class="mc-card mc-form-card">
+        <div class="mc-form-card-header">
+            <div class="mc-summary-row">
+                <span class="mc-summary-pill">
+                    <b>Υπηρεσία:</b>
+                    <span th:text="${service}">—</span>
+                </span>
 
-        <!-- ✅ ΑΠΑΡΑΙΤΗΤΟ -->
-        <input type="hidden" name="service" th:value="${service}"/>
-        <input type="hidden" name="date" th:value="${date}"/>
+                <span class="mc-summary-pill">
+                    <b>Ημερομηνία:</b>
+                    <span th:text="${date}">—</span>
+                </span>
+            </div>
 
-        <p style="font-weight:700;">Διάλεξε ώρα:</p>
-
-        <div style="display:grid; gap:8px; margin-top:8px; max-width:380px;">
-            <label th:each="t : ${times}"
-                   style="display:flex; gap:8px; align-items:center; padding:10px; border:1px solid #ddd; border-radius:10px; cursor:pointer;">
-                <input type="radio" name="time" th:value="${t}" required/>
-                <span th:text="${t}"></span>
-            </label>
+            <div class="mc-form-card-subtitle">Επίλεξε ώρα και πάτησε “Κλείσιμο ραντεβού”.</div>
         </div>
 
-        <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
-            <button type="submit" class="mc-btn" style="padding:10px 14px;">
-                Κλείσιμο ραντεβού
-            </button>
-            <a th:href="@{/citizen/booking}" class="mc-nav-link" style="text-decoration:underline;">
-                Ακύρωση
-            </a>
+        <div th:if="${error != null}" class="mc-alert mc-alert-danger" th:text="${error}">
+            Κάτι πήγε στραβά.
         </div>
-    </form>
+
+        <div th:if="${#lists.isEmpty(times)}" class="mc-empty mc-empty-tight">
+            <div class="mc-empty-title">Δεν υπάρχουν διαθέσιμες ώρες</div>
+            <div class="mc-empty-text">Δοκίμασε άλλη ημερομηνία ή άλλη υπηρεσία.</div>
+
+            <div class="mc-actions-row">
+                <a th:href="@{/citizen/booking}" class="mc-btn mc-btn-primary">Επιστροφή</a>
+            </div>
+        </div>
+
+        <form th:if="${!#lists.isEmpty(times)}"
+              class="mc-form"
+              th:action="@{/citizen/booking/confirm}"
+              method="post">
+
+            <input type="hidden" name="service" th:value="${service}"/>
+            <input type="hidden" name="date" th:value="${date}"/>
+
+            <div class="mc-field">
+                <div class="mc-label">Διάλεξε ώρα</div>
+
+                <div class="mc-times-grid">
+                    <label class="mc-time-option" th:each="t : ${times}">
+                        <input class="mc-time-radio" type="radio" name="time" th:value="${t}" required/>
+                        <span class="mc-time-pill" th:text="${t}">10:00</span>
+                    </label>
+                </div>
+
+                <div class="mc-help">Μπορείς να ακυρώσεις το ραντεβού αργότερα από τη σελίδα “Τα ραντεβού μου”.</div>
+            </div>
+
+            <div class="mc-actions-row">
+                <button type="submit" class="mc-btn mc-btn-primary">
+                    Κλείσιμο ραντεβού
+                </button>
+
+                <a th:href="@{/citizen/booking}" class="mc-btn mc-btn-ghost">
+                    Ακύρωση
+                </a>
+            </div>
+        </form>
+    </div>
 </section>
-
+</body>
 </html>

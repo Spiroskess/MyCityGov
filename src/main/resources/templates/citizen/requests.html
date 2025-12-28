@@ -9,7 +9,7 @@
 <body>
 <section>
     <div class="mc-page-head">
-        <h2 class="mc-page-title">Τα ενεργά αιτήματά μου</h2>
+        <h2 class="mc-page-title">Τα αιτήματά μου</h2>
 
         <div class="mc-page-actions">
             <a class="mc-btn mc-btn-primary" th:href="@{/citizen/request-new}">Νέο αίτημα</a>
@@ -89,7 +89,7 @@
 
         <div class="mc-empty" th:if="${#lists.isEmpty(requests)}">
             Δεν υπάρχουν ενεργά αιτήματα.
-            <a class="mc-link" th:href="@{/citizen/requests/completed}">Δες τα ολοκληρωμένα</a>.
+            <a class="mc-link" th:href="@{/citizen/requests/completed}">Δείτε τα ολοκληρωμένα</a>.
         </div>
     </div>
 </section>

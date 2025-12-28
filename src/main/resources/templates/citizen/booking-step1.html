@@ -2,31 +2,101 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<title>Κλείσιμο ραντεβού</title>
+<head>
+    <title>Κλείσιμο ραντεβού</title>
+</head>
 
+<body>
 <section>
-    <h1 class="mc-title">Κλείσιμο ραντεβού</h1>
+    <div class="mc-page-head">
+        <h2 class="mc-page-title">Κλείσιμο ραντεβού</h2>
 
-    <form th:action="@{/citizen/booking/times}" method="get"
-          style="margin-top:14px; display:grid; gap:12px; max-width:520px;">
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments}">Τα ραντεβού μου</a>
+        </div>
+    </div>
 
-        <div>
-            <label style="display:block; font-weight:600;">Υπηρεσία</label>
-            <select name="service" required>
-                <option value="">-- Επιλογή --</option>
-                <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
-            </select>
+    <div class="mc-card mc-form-card">
+        <div class="mc-form-card-header">
+            <div class="mc-form-card-title">Επίλεξε υπηρεσία και ημερομηνία</div>
+            <div class="mc-form-card-subtitle">Διάλεξε υπηρεσία και ημερομηνία για να δεις διαθέσιμες ώρες.</div>
         </div>
 
-        <div>
-            <label style="display:block; font-weight:600;">Ημερομηνία</label>
-            <input type="date" name="date" required/>
-        </div>
+        <form class="mc-form"
+              th:action="@{/citizen/booking/times}"
+              method="get">
 
-        <button type="submit" class="mc-btn" style="padding:10px 14px;">
-            Εμφάνιση διαθέσιμων ωρών
-        </button>
-    </form>
+            <!-- Service tiles -->
+            <div class="mc-field">
+                <div class="mc-label">Υπηρεσία</div>
+
+                <!-- hidden input που στέλνει service στο backend -->
+                <input type="hidden" id="service" name="service" required>
+
+                <div class="mc-service-grid">
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="KEP" required>
+                        <span class="mc-service-title">ΚΕΠ</span>
+                        <span class="mc-service-sub">Εξυπηρέτηση πολιτών</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="TECHNICAL_SERVICE">
+                        <span class="mc-service-title">Τεχνική Υπηρεσία</span>
+                        <span class="mc-service-sub">Άδειες, τεχνικά θέματα</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="SOCIAL_SERVICE">
+                        <span class="mc-service-title">Κοινωνική Υπηρεσία</span>
+                        <span class="mc-service-sub">Κοινωνική μέριμνα</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="FINANCIAL_SERVICE">
+                        <span class="mc-service-title">Οικονομική Υπηρεσία</span>
+                        <span class="mc-service-sub">Τέλη, οφειλές</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="ENVIRONMENT_SERVICE">
+                        <span class="mc-service-title">Περιβάλλον / Καθαριότητα</span>
+                        <span class="mc-service-sub">Καθαριότητα, περιβάλλον</span>
+                    </label>
+                </div>
+
+                <div class="mc-help">Διάλεξε την υπηρεσία που σε εξυπηρετεί.</div>
+            </div>
+
+            <!-- Date -->
+            <div class="mc-form-grid">
+                <div class="mc-field">
+                    <label class="mc-label" for="date">Ημερομηνία</label>
+                    <input class="mc-control mc-input" id="date" type="date" name="date" required/>
+                    <div class="mc-help">Διάλεξε ημερομηνία και πάτησε “Εμφάνιση διαθέσιμων ωρών”.</div>
+                </div>
+            </div>
+
+            <div class="mc-actions-row">
+                <button type="submit" class="mc-btn mc-btn-primary">
+                    Εμφάνιση διαθέσιμων ωρών
+                </button>
+
+                <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments}">
+                    Ακύρωση
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            const hidden = document.getElementById('service');
+            document.querySelectorAll('input[name="serviceChoice"]').forEach(r => {
+                r.addEventListener('change', () => hidden.value = r.value);
+            });
+        })();
+    </script>
 </section>
-
+</body>
 </html>

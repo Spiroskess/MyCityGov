@@ -8,35 +8,99 @@
 
 <body>
 <section>
-    <h2>Υποβολή νέου αιτήματος</h2>
+    <div class="mc-page-head">
+        <h2 class="mc-page-title">Υποβολή νέου αιτήματος</h2>
 
-    <form th:action="@{/citizen/request-new}" th:object="${openRequestRequest}" method="post">
-        <div>
-            <label for="type">Τύπος αίτηματος:</label>
-            <select id="type" th:field="*{type}">
-                <option th:each="t : ${T(gr.hua.dit.mycitygov.core.model.RequestType).values()}"
-                        th:value="${t}"
-                        th:text="${t}">CERTIFICATE_RESIDENCE</option>
-            </select>
-            <span th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></span>
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost mc-btn-small" th:href="@{/citizen/requests}">Τα αιτήματά μου</a>
+        </div>
+    </div>
+
+    <div class="mc-card mc-form-card mc-request-card">
+        <div class="mc-form-card-header">
+            <div class="mc-form-card-title">Στοιχεία αιτήματος</div>
+            <div class="mc-form-card-subtitle">
+                Συμπληρώστε τα πεδία και πατήστε “Υποβολή”.
+            </div>
         </div>
 
-        <div>
-            <label for="subject">Θέμα:</label>
-            <input id="subject" type="text" th:field="*{subject}"/>
-            <span th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></span>
-        </div>
+        <form class="mc-form"
+              th:action="@{/citizen/request-new}"
+              th:object="${openRequestRequest}"
+              method="post">
 
-        <div>
-            <label for="description">Περιγραφή:</label>
-            <textarea id="description" th:field="*{description}"></textarea>
-            <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
-        </div>
+            <div class="mc-request-grid">
+                <!-- Type -->
+                <div class="mc-field">
+                    <label class="mc-label" for="type">Τύπος αιτήματος</label>
 
-        <div>
-            <button type="submit">Υποβολή</button>
-        </div>
-    </form>
+                    <select class="mc-control mc-select" id="type" th:field="*{type}" required>
+                        <option value="">— Επιλογή —</option>
+
+                        <option th:each="t : ${T(gr.hua.dit.mycitygov.core.model.RequestType).values()}"
+                                th:value="${t}"
+                                th:text="${
+                                    t.name() == 'CERTIFICATE_RESIDENCE' ? 'Βεβαίωση μόνιμης κατοικίας' :
+                                    (t.name() == 'SIDEWALK_LICENSE' ? 'Άδεια κατάληψης πεζοδρομίου' :
+                                    (t.name() == 'LIGHTING_ISSUE' ? 'Αναφορά προβλήματος φωτισμού' :
+                                    (t.name() == 'ROAD_HOLE' ? 'Αναφορά λακκούβας' :
+                                    (t.name() == 'CLEANING_ISSUE' ? 'Αναφορά καθαριότητας' :
+                                    (t.name() == 'OTHER' ? 'Άλλο' : t.name())))))
+                                }">
+                        </option>
+                    </select>
+
+                    <div class="mc-help">Διαλέξτε την κατηγορία/τύπο αιτήματος.</div>
+
+                    <div class="mc-field-error" th:if="${#fields.hasErrors('type')}" th:errors="*{type}">
+                        Σφάλμα
+                    </div>
+                </div>
+
+                <!-- Subject -->
+                <div class="mc-field">
+                    <label class="mc-label" for="subject">Θέμα</label>
+
+                    <input class="mc-control mc-input"
+                           id="subject"
+                           type="text"
+                           th:field="*{subject}"
+                           placeholder="π.χ. Αίτηση για βεβαίωση μόνιμης κατοικίας"
+                           maxlength="120"
+                           required/>
+
+                    <div class="mc-help">Σύντομος τίτλος που περιγράφει το αίτημά σας.</div>
+
+                    <div class="mc-field-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}">
+                        Σφάλμα
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mc-field mc-span-2">
+                    <label class="mc-label" for="description">Περιγραφή</label>
+
+                    <textarea class="mc-control mc-textarea"
+                              id="description"
+                              th:field="*{description}"
+                              placeholder="Γράψε λίγες λεπτομέρειες για καλύτερη εξυπηρέτηση."
+                              rows="5"
+                              required></textarea>
+
+                    <div class="mc-help">Προσθέστε χρήσιμες λεπτομέρειες/στοιχεία για τον υπάλληλο.</div>
+
+                    <div class="mc-field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
+                        Σφάλμα
+                    </div>
+                </div>
+            </div>
+
+            <div class="mc-actions-row mc-actions-row-right">
+                <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/requests}">Ακύρωση</a>
+                <button type="submit" class="mc-btn mc-btn-primary">Υποβολή</button>
+            </div>
+        </form>
+    </div>
 </section>
 </body>
 </html>

@@ -1,9 +1,9 @@
 package gr.hua.dit.mycitygov.core.service.impl;
 
+import gr.hua.dit.mycitygov.core.model.Appointment;
 import gr.hua.dit.mycitygov.core.repository.AppointmentRepository;
 import gr.hua.dit.mycitygov.core.service.AppointmentService;
 import gr.hua.dit.mycitygov.core.service.AvailabilityService;
-import gr.hua.dit.mycitygov.core.model.Appointment;
 import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.transaction.Transactional;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.EnumSet;
 import java.util.List;
 
 @Service
@@ -19,6 +20,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final AvailabilityService availabilityService;
+
+    private static final EnumSet<AppointmentStatus> ACTIVE_STATUSES =
+        EnumSet.of(AppointmentStatus.REQUESTED, AppointmentStatus.CONFIRMED);
+
+    private static final EnumSet<AppointmentStatus> COMPLETED_STATUSES =
+        EnumSet.of(AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED);
 
     public AppointmentServiceImpl(AppointmentRepository appointmentRepository,
                                   AvailabilityService availabilityService) {
@@ -154,7 +161,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentRepository.save(a);
     }
 
-    // ✅ NEW
     @Override
     @Transactional
     public Appointment completeByEmployee(Long employeeId, Long appointmentId) {
@@ -179,6 +185,20 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<Appointment> listForCitizen(Long citizenId) {
         return appointmentRepository.findByCitizenId(citizenId);
+    }
+
+    @Override
+    public List<Appointment> listActiveForCitizen(Long citizenId) {
+        return appointmentRepository.findByCitizenIdAndStatusInOrderByAppointmentDateTimeDesc(
+            citizenId, ACTIVE_STATUSES
+        );
+    }
+
+    @Override
+    public List<Appointment> listCompletedForCitizen(Long citizenId) {
+        return appointmentRepository.findByCitizenIdAndStatusInOrderByAppointmentDateTimeDesc(
+            citizenId, COMPLETED_STATUSES
+        );
     }
 
     @Override
