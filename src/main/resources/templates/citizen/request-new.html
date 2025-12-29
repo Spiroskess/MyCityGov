@@ -27,7 +27,13 @@
         <form class="mc-form"
               th:action="@{/citizen/request-new}"
               th:object="${openRequestRequest}"
-              method="post">
+              method="post"
+              enctype="multipart/form-data">
+
+            <!-- ERROR από upload (MinIO) -->
+            <p th:if="${uploadError != null}" class="mc-alert mc-alert-error" th:text="${uploadError}">
+                Αποτυχία ανεβάσματος αρχείου.
+            </p>
 
             <div class="mc-request-grid">
                 <!-- Type -->
@@ -92,6 +98,24 @@
                     <div class="mc-field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
                         Σφάλμα
                     </div>
+
+                    <!-- Attachments (κάτω από την περιγραφή) -->
+                    <div style="margin-top: 10px;">
+                        <!-- κρυφό input -->
+                        <input id="attachments"
+                               type="file"
+                               name="attachments"
+                               multiple
+                               style="display:none;" />
+
+                        <!-- κουμπί -->
+                        <label for="attachments" class="mc-btn mc-btn-ghost mc-btn-small">
+                            Προσθήκη συνημμένου
+                        </label>
+
+                        <!-- λίστα επιλεγμένων αρχείων -->
+                        <div id="attachmentsList" class="mc-help" style="margin-top: 8px; display:none;"></div>
+                    </div>
                 </div>
             </div>
 
@@ -101,6 +125,27 @@
             </div>
         </form>
     </div>
+
+    <script>
+        (function () {
+            const input = document.getElementById('attachments');
+            const list = document.getElementById('attachmentsList');
+
+            if (!input || !list) return;
+
+            input.addEventListener('change', function () {
+                if (!input.files || input.files.length === 0) {
+                    list.style.display = 'none';
+                    list.textContent = '';
+                    return;
+                }
+
+                const names = Array.from(input.files).map(f => f.name);
+                list.textContent = "Επιλεγμένα: " + names.join(", ");
+                list.style.display = 'block';
+            });
+        })();
+    </script>
 </section>
 </body>
 </html>

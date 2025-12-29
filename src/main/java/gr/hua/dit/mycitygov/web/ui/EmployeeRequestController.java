@@ -3,21 +3,34 @@ package gr.hua.dit.mycitygov.web.ui;
 import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.core.model.RequestStatus;
 import gr.hua.dit.mycitygov.core.security.CurrentUserProvider;
+import gr.hua.dit.mycitygov.core.service.RequestAttachmentService;
 import gr.hua.dit.mycitygov.core.service.RequestService;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 public class EmployeeRequestController {
 
     private final RequestService requestService;
     private final CurrentUserProvider currentUserProvider;
+    private final RequestAttachmentService requestAttachmentService;
 
-    public EmployeeRequestController(RequestService requestService, CurrentUserProvider currentUserProvider) {
+    public EmployeeRequestController(RequestService requestService,
+                                     CurrentUserProvider currentUserProvider,
+                                     RequestAttachmentService requestAttachmentService) {
         this.requestService = requestService;
         this.currentUserProvider = currentUserProvider;
+        this.requestAttachmentService = requestAttachmentService;
     }
 
     @GetMapping("/employee/requests")
@@ -54,10 +67,39 @@ public class EmployeeRequestController {
         }
 
         model.addAttribute("r", opt.get());
-        model.addAttribute("messages", requestService.getMyRequestMessages(id, employee)); // ✅
+        model.addAttribute("messages", requestService.getMyRequestMessages(id, employee));
         model.addAttribute("err", err);
 
+        // attachments για το UI του υπαλλήλου
+        model.addAttribute("attachments", requestAttachmentService.listForEmployeeRequest(id, employee));
+
         return "employee/request-details";
+    }
+
+    // Download συνημμένου (μόνο αν το request είναι assigned στον υπάλληλο)
+    @GetMapping("/employee/requests/{requestId}/attachments/{attachmentId}/download")
+    @ResponseBody
+    public ResponseEntity<Resource> downloadEmployeeAttachment(@PathVariable Long requestId,
+                                                               @PathVariable Long attachmentId) {
+
+        Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
+        var dl = requestAttachmentService.downloadForEmployee(requestId, attachmentId, employee);
+
+        String filename = (dl.originalFilename() == null) ? "attachment" : dl.originalFilename();
+        String safe = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+
+        MediaType ct;
+        try {
+            ct = MediaType.parseMediaType(dl.contentType());
+        } catch (Exception e) {
+            ct = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + safe)
+            .contentType(ct)
+            .contentLength(dl.sizeBytes())
+            .body(new InputStreamResource(dl.inputStream()));
     }
 
     @PostMapping("/employee/requests/claim")

@@ -1151,3 +1151,155 @@ body.mc-body {
     font-weight: 800;
 }
 
+/* Για employee/request-details */
+.mc-links-row{
+  display:flex;
+  gap:14px;
+  margin:12px 0 18px 0;
+  flex-wrap:wrap;
+}
+
+.mc-sep{
+  opacity:0.3;
+}
+
+.mc-sep-spaced{
+  margin-top:16px;
+}
+
+.mc-prewrap{
+  white-space:pre-wrap;
+}
+
+.mc-note{
+  padding:10px;
+  margin:10px 0;
+}
+
+.mc-note-warn{
+  border:1px solid rgba(255,255,255,0.35);
+}
+
+.mc-message-card{
+  margin:10px 0;
+  padding:10px;
+  border:1px solid rgba(255,255,255,0.20);
+}
+
+.mc-message-head{
+  opacity:0.9;
+}
+
+.mc-message-body{
+  margin-top:6px;
+}
+
+.mc-dot{
+  margin:0 6px;
+  opacity:0.9;
+}
+
+/* Attachments */
+.mc-attachments-list{
+  margin-top:8px;
+  padding-left:18px;
+}
+
+.mc-attachments-item{
+  margin:6px 0;
+}
+
+.mc-attachment-link{
+  text-decoration:underline;
+}
+
+.mc-attachment-meta{
+  opacity:0.7;
+  margin-left:6px;
+}
+
+/* Actions form layout */
+.mc-form-top{
+  margin-top:10px;
+}
+
+.mc-label-block{
+  display:block;
+  margin-bottom:6px;
+}
+
+.mc-input-wide{
+  width:min(520px, 100%);
+}
+
+.mc-actions-wrap{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+
+/* Για citizen/request-details */
+
+/* row με links πάνω */
+.mc-links-row{
+  display:flex;
+  gap:14px;
+  margin:12px 0 18px 0;
+  flex-wrap:wrap;
+}
+
+/* διαχωριστική γραμμή */
+.mc-sep{
+  opacity:0.3;
+}
+
+.mc-sep-spaced{
+  margin-top:16px;
+}
+
+/* pre-wrap για περιγραφή/μηνύματα */
+.mc-prewrap{
+  white-space:pre-wrap;
+}
+
+/* messages */
+.mc-message-card{
+  margin:10px 0;
+  padding:10px;
+  border:1px solid rgba(255,255,255,0.20);
+}
+
+.mc-message-head{
+  opacity:0.9;
+}
+
+.mc-message-body{
+  margin-top:6px;
+}
+
+.mc-dot{
+  margin:0 6px;
+  opacity:0.9;
+}
+
+/* attachments list */
+.mc-attachments-list{
+  margin-top:8px;
+  padding-left:18px; /* για να φαίνονται ωραία bullets */
+}
+
+.mc-attachments-item{
+  margin:6px 0;
+}
+
+.mc-attachment-link{
+  text-decoration:underline;
+}
+
+.mc-attachment-meta{
+  opacity:0.7;
+  margin-left:6px;
+}
+

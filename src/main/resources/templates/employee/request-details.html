@@ -8,11 +8,11 @@
 <section>
     <h1 class="mc-title">Πληροφορίες αιτήματος</h1>
 
-    <div style="display:flex; gap:14px; margin:12px 0 18px 0; flex-wrap:wrap;">
+    <div class="mc-links-row">
         <a th:href="@{/employee/requests-mine}" class="mc-nav-link">← Πίσω στα δικά μου</a>
     </div>
 
-    <div th:if="${err == 'commentRequired'}" style="padding:10px; border:1px solid rgba(255,255,255,0.35); margin:10px 0;">
+    <div th:if="${err == 'commentRequired'}" class="mc-note mc-note-warn">
         Για αυτή την ενέργεια απαιτείται τεκμηρίωση/σχόλιο.
     </div>
 
@@ -20,42 +20,62 @@
     <p><strong>Τύπος:</strong> <span th:text="${r.type()}"></span></p>
     <p><strong>Κατάσταση:</strong> <span th:text="${r.status()}"></span></p>
 
-    <hr style="opacity:0.3;"/>
+    <hr class="mc-sep"/>
 
     <p><strong>Θέμα:</strong></p>
     <p th:text="${r.subject()}">—</p>
 
     <p><strong>Περιγραφή:</strong></p>
-    <div th:text="${r.description()}" style="white-space:pre-wrap;">—</div>
+    <div class="mc-prewrap" th:text="${r.description()}">—</div>
 
-    <hr style="opacity:0.3; margin-top:16px;"/>
+    <hr class="mc-sep mc-sep-spaced"/>
+
+    <!-- Συνημμένα -->
+    <h3>Συνημμένα</h3>
+
+    <div th:if="${#lists.isEmpty(attachments)}">— Δεν υπάρχουν συνημμένα.</div>
+
+    <ul th:if="${!#lists.isEmpty(attachments)}" class="mc-attachments-list">
+        <li th:each="a : ${attachments}" class="mc-attachments-item">
+            <a th:href="@{/employee/requests/{rid}/attachments/{aid}/download(rid=${r.id()},aid=${a.id()})}"
+               th:text="${a.originalFilename()}"
+               class="mc-attachment-link">αρχείο</a>
+            <span class="mc-attachment-meta"
+                  th:text="${' (' + a.sizeBytes() + ' bytes)'}"></span>
+        </li>
+    </ul>
+
+    <hr class="mc-sep mc-sep-spaced"/>
 
     <h3>Ιστορικό Μηνυμάτων</h3>
 
     <div th:if="${#lists.isEmpty(messages)}">— Δεν υπάρχουν μηνύματα ακόμα.</div>
 
-    <div th:each="m : ${messages}" style="margin:10px 0; padding:10px; border:1px solid rgba(255,255,255,0.20);">
-        <div style="opacity:0.9;">
+    <div th:each="m : ${messages}" class="mc-message-card">
+        <div class="mc-message-head">
             <strong th:text="${m.type()}">GENERAL</strong>
-            • <span th:text="${m.createdAt()}"></span>
-            • <span th:text="${m.createdBy()}"></span>
+            <span class="mc-dot">•</span>
+            <span th:text="${m.createdAt()}"></span>
+            <span class="mc-dot">•</span>
+            <span th:text="${m.createdBy()}"></span>
         </div>
-        <div th:text="${m.message()}" style="white-space:pre-wrap; margin-top:6px;"></div>
+        <div class="mc-prewrap mc-message-body" th:text="${m.message()}"></div>
     </div>
 
-    <hr style="opacity:0.3; margin-top:16px;"/>
+    <hr class="mc-sep mc-sep-spaced"/>
 
     <h3>Ενέργειες</h3>
 
-    <form id="statusForm" th:action="@{/employee/requests/status}" method="post" style="margin-top:10px;">
+    <form id="statusForm" th:action="@{/employee/requests/status}" method="post" class="mc-form-top">
         <input type="hidden" name="requestId" th:value="${r.id()}"/>
         <input type="hidden" name="redirectTo" th:value="@{/employee/requests/{id}(id=${r.id()})}"/>
 
-        <label style="display:block; margin-bottom:6px;">Σχόλιο (θα ζητηθεί όπου απαιτείται)</label>
-        <input id="comment" type="text" name="comment" style="width:min(520px, 100%);"
+        <label class="mc-label-block">Σχόλιο (θα ζητηθεί όπου απαιτείται)</label>
+
+        <input id="comment" type="text" name="comment" class="mc-input-wide"
                placeholder="π.χ. ζητήθηκαν δικαιολογητικά, λόγος απόρριψης..."/>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+        <div class="mc-actions-wrap">
 
             <button th:if="${r.status().name() == 'RECEIVED'}"
                     type="submit" name="nextStatus" value="IN_PROGRESS"
@@ -99,6 +119,8 @@
         (function () {
             const form = document.getElementById("statusForm");
             const comment = document.getElementById("comment");
+
+            if (!form || !comment) return;
 
             form.addEventListener("click", function (e) {
                 const btn = e.target;

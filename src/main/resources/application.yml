@@ -31,3 +31,10 @@ mycitygov:
     base-url: "http://localhost:8081"
     sms:
       active: true
+  storage:
+    s3:
+      endpoint: "http://localhost:9000"
+      access-key: "minioadmin"
+      secret-key: "minioadmin"
+      bucket: "mycitygov"
+      region: "us-east-1"
