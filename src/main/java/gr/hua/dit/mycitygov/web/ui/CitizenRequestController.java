@@ -20,6 +20,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -155,4 +157,61 @@ public class CitizenRequestController {
     private boolean isCompletedStatus(RequestStatus status) {
         return status == RequestStatus.COMPLETED || status == RequestStatus.REJECTED;
     }
+
+    @PostMapping("/citizen/requests/{id}/attachments/upload")
+    public String uploadAdditionalInfo(@PathVariable Long id,
+                                       @RequestParam(name = "attachments", required = false) MultipartFile[] attachments,
+                                       @RequestParam(name = "note", required = false) String note,
+                                       RedirectAttributes ra) {
+
+        Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
+
+        if (attachments == null || attachments.length == 0) {
+            ra.addFlashAttribute("uploadError", "Δεν επιλέχθηκαν αρχεία.");
+            return "redirect:/citizen/requests/" + id;
+        }
+
+        int uploaded = 0;
+
+        for (MultipartFile f : attachments) {
+            if (f == null || f.isEmpty()) continue;
+
+            try {
+                var upload = new AttachmentUpload(
+                    f.getOriginalFilename(),
+                    f.getContentType(),
+                    f.getSize(),
+                    f.getInputStream()
+                );
+
+                // ✅ επιτρέπεται μόνο όταν WAITING_ADDITIONAL_INFO
+                requestAttachmentService.addAdditionalInfoForCitizenRequest(id, citizen, upload);
+                uploaded++;
+
+            } catch (IllegalStateException st) {
+                ra.addFlashAttribute("uploadError", "Δεν μπορείς να ανεβάσεις αρχεία σε αυτή την κατάσταση αιτήματος.");
+                return "redirect:/citizen/requests/" + id;
+            } catch (Exception e) {
+                String name = (f.getOriginalFilename() == null) ? "file" : f.getOriginalFilename();
+                ra.addFlashAttribute("uploadError", "Αποτυχία ανεβάσματος αρχείου: " + name);
+                return "redirect:/citizen/requests/" + id;
+            }
+        }
+
+        if (uploaded == 0) {
+            ra.addFlashAttribute("uploadError", "Δεν ανέβηκε κανένα αρχείο (ίσως ήταν κενά).");
+            return "redirect:/citizen/requests/" + id;
+        }
+
+        // ✅ γράφει μήνυμα στο ιστορικό ώστε να το δει και ο υπάλληλος
+        try {
+            requestService.citizenSubmittedAdditionalInfo(id, citizen, uploaded, note);
+        } catch (Exception ignored) {
+            // Αν αποτύχει το “μήνυμα”, δεν κόβουμε το upload.
+        }
+
+        ra.addFlashAttribute("uploadOk", "Ανέβηκαν επιτυχώς " + uploaded + " αρχείο(α).");
+        return "redirect:/citizen/requests/" + id;
+    }
+
 }

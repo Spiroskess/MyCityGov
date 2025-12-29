@@ -3,57 +3,164 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<title>Λεπτομέρειες αιτήματος</title>
+<head>
+    <title>Λεπτομέρειες αιτήματος</title>
+</head>
 
 <section>
-    <h1 class="mc-title">Λεπτομέρειες αιτήματος</h1>
+    <div class="mc-page-head">
+        <div>
+            <h2 class="mc-page-title">Λεπτομέρειες αιτήματος</h2>
+            <div class="mc-subtitle">
+                <a class="mc-link" th:href="@{/citizen/requests}">← Πίσω στα αιτήματά μου</a>
+                <span class="mc-dot">•</span>
+                <span class="mc-muted">Πρωτόκολλο:</span>
+                <strong th:text="${r.protocolNumber()}">PR</strong>
+            </div>
+        </div>
 
-    <div class="mc-links-row">
-        <a th:href="@{/citizen/requests}" class="mc-nav-link">← Πίσω στα αιτήματά μου</a>
+        <div class="mc-page-actions">
+            <span class="mc-badge"
+                  th:classappend="${
+                    r.status().name() == 'SUBMITTED' ? ' mc-badge-info' :
+                    (r.status().name() == 'RECEIVED' ? ' mc-badge-neutral' :
+                    (r.status().name() == 'IN_PROGRESS' ? ' mc-badge-warn' :
+                    (r.status().name() == 'WAITING_ADDITIONAL_INFO' ? ' mc-badge-sky' :
+                    (r.status().name() == 'COMPLETED' ? ' mc-badge-success' :
+                    (r.status().name() == 'REJECTED' ? ' mc-badge-danger' : '')))))
+                  }">
+                <span th:switch="${r.status().name()}">
+                    <span th:case="'SUBMITTED'">Υποβλήθηκε</span>
+                    <span th:case="'RECEIVED'">Σε παραλαβή</span>
+                    <span th:case="'IN_PROGRESS'">Σε επεξεργασία</span>
+                    <span th:case="'WAITING_ADDITIONAL_INFO'">Αναμονή στοιχείων</span>
+                    <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
+                    <span th:case="'REJECTED'">Απορρίφθηκε</span>
+                    <span th:case="*" th:text="${#strings.replace(r.status().name(), '_', ' ')}">STATUS</span>
+                </span>
+            </span>
+        </div>
     </div>
 
-    <p><strong>Πρωτόκολλο:</strong> <span th:text="${r.protocolNumber()}"></span></p>
-    <p><strong>Τύπος:</strong> <span th:text="${r.type()}"></span></p>
-    <p><strong>Κατάσταση:</strong> <span th:text="${r.status()}"></span></p>
+    <!-- flash messages από upload -->
+    <div th:if="${uploadOk != null}" class="mc-alert" th:text="${uploadOk}">OK</div>
+    <div th:if="${uploadError != null}" class="mc-alert mc-alert-danger" th:text="${uploadError}">ERR</div>
 
-    <hr class="mc-sep"/>
+    <div class="mc-detail-grid mc-detail-grid-single">
+        <div class="mc-detail-main">
+            <div class="mc-card mc-form-card">
+                <div class="mc-section-title">Περιεχόμενο αιτήματος</div>
 
-    <p><strong>Θέμα:</strong></p>
-    <p th:text="${r.subject()}">—</p>
+                <div class="mc-kv">
+                    <div class="mc-kv-item">
+                        <div class="mc-kv-label">Τύπος</div>
+                        <div class="mc-kv-value">
+                            <span th:switch="${r.type().name()}">
+                                <span th:case="'CERTIFICATE_RESIDENCE'">Βεβαίωση μόνιμης κατοικίας</span>
+                                <span th:case="'SIDEWALK_LICENSE'">Άδεια κατάληψης πεζοδρομίου</span>
+                                <span th:case="'LIGHTING_ISSUE'">Αναφορά προβλήματος φωτισμού</span>
+                                <span th:case="'ROAD_HOLE'">Αναφορά λακκούβας</span>
+                                <span th:case="'CLEANING_ISSUE'">Αναφορά καθαριότητας</span>
+                                <span th:case="'OTHER'">Άλλο</span>
+                                <span th:case="*" th:text="${#strings.replace(r.type().name(), '_', ' ')}">TYPE</span>
+                            </span>
+                        </div>
+                    </div>
 
-    <p><strong>Περιγραφή:</strong></p>
-    <div class="mc-prewrap" th:text="${r.description()}">—</div>
+                    <div class="mc-kv-item">
+                        <div class="mc-kv-label">Ημ/νία υποβολής</div>
+                        <div class="mc-kv-value mc-muted"
+                             th:text="${#temporals.format(r.createdAt(), 'dd/MM/yyyy HH:mm')}">—</div>
+                    </div>
 
-    <hr class="mc-sep mc-sep-spaced"/>
+                    <div class="mc-kv-item mc-kv-wide">
+                        <div class="mc-kv-label">Θέμα</div>
+                        <div class="mc-kv-value" th:text="${r.subject()}">—</div>
+                    </div>
 
-    <h3>Συνημμένα</h3>
+                    <div class="mc-kv-item mc-kv-wide">
+                        <div class="mc-kv-label">Περιγραφή</div>
+                        <div class="mc-kv-value mc-prewrap" th:text="${r.description()}">—</div>
+                    </div>
+                </div>
+            </div>
 
-    <div th:if="${#lists.isEmpty(attachments)}">— Δεν υπάρχουν συνημμένα.</div>
+            <!-- Μηνύματα / Ιστορικό -->
+            <div class="mc-card mc-form-card">
+                <div class="mc-section-title">Μηνύματα / Ιστορικό</div>
 
-    <ul th:if="${!#lists.isEmpty(attachments)}" class="mc-attachments-list">
-        <li th:each="a : ${attachments}" class="mc-attachments-item">
-            <a th:href="@{/citizen/requests/{rid}/attachments/{aid}/download(rid=${r.id()},aid=${a.id()})}"
-               th:text="${a.originalFilename()}"
-               class="mc-attachment-link">αρχείο</a>
+                <div th:if="${#lists.isEmpty(messages)}" class="mc-muted">— Δεν υπάρχουν μηνύματα ακόμα.</div>
 
-            <span class="mc-attachment-meta"
-                  th:text="${' (' + a.sizeBytes() + ' bytes)'}"></span>
-        </li>
-    </ul>
+                <div th:if="${!#lists.isEmpty(messages)}" class="mc-timeline">
+                    <div th:each="m : ${messages}" class="mc-timeline-item">
+                        <div class="mc-timeline-head">
+                            <span class="mc-timeline-type" th:switch="${m.type().name()}">
+                                <span th:case="'REQUEST_ADDITIONAL_INFO'">Μήνυμα Δήμου</span>
+                                <span th:case="'REJECTION_REASON'">Απόρριψη</span>
+                                <span th:case="'CITIZEN_ADDITIONAL_INFO'">Υποβολή αρχείων</span>
+                                <span th:case="'GENERAL'">Μήνυμα</span>
+                                <span th:case="*" th:text="${m.type()}">TYPE</span>
+                            </span>
+                            <span class="mc-dot">•</span>
+                            <span class="mc-muted" th:text="${#temporals.format(m.createdAt(), 'dd/MM/yyyy HH:mm')}">—</span>
+                        </div>
 
-    <hr class="mc-sep mc-sep-spaced"/>
+                        <div class="mc-prewrap mc-timeline-body" th:text="${m.message()}">—</div>
+                    </div>
+                </div>
+            </div>
 
-    <h3>Μηνύματα από τον Δήμο</h3>
+            <div class="mc-card mc-form-card">
+                <div class="mc-section-title">Συνημμένα</div>
 
-    <div th:if="${#lists.isEmpty(messages)}">— Δεν υπάρχουν μηνύματα ακόμα.</div>
+                <div th:if="${#lists.isEmpty(attachments)}" class="mc-muted">— Δεν υπάρχουν συνημμένα.</div>
 
-    <div th:each="m : ${messages}" class="mc-message-card">
-        <div class="mc-message-head">
-            <strong th:text="${m.type()}">GENERAL</strong>
-            <span class="mc-dot">•</span>
-            <span th:text="${m.createdAt()}"></span>
+                <ul th:if="${!#lists.isEmpty(attachments)}" class="mc-attachments-list">
+                    <li th:each="a : ${attachments}" class="mc-attachments-item">
+                        <a th:href="@{/citizen/requests/{rid}/attachments/{aid}/download(rid=${r.id()},aid=${a.id()})}"
+                           th:text="${a.originalFilename()}"
+                           class="mc-attachment-link">αρχείο</a>
+
+                        <span class="mc-attachment-meta"
+                              th:text="${' (' + a.sizeBytes() + ' bytes)'}"></span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Upload extra files -->
+            <div class="mc-card mc-form-card"
+                 th:if="${r.status().name() == 'WAITING_ADDITIONAL_INFO'}">
+
+                <div class="mc-section-title">Αποστολή επιπλέον αρχείων</div>
+                <div class="mc-help">
+                    Ο Δήμος ζήτησε συμπληρωματικά στοιχεία. Μπορείς να ανεβάσεις τα αρχεία εδώ.
+                </div>
+
+                <form class="mc-form mc-upload-form"
+                      th:action="@{/citizen/requests/{id}/attachments/upload(id=${r.id()})}"
+                      method="post"
+                      enctype="multipart/form-data">
+
+                    <div class="mc-field">
+                        <label class="mc-label" for="attachments">Επιλογή αρχείων</label>
+                        <input id="attachments" class="mc-control mc-file" type="file" name="attachments" multiple>
+                        <div class="mc-help">Μπορείς να ανεβάσεις πάνω από 1 αρχείο.</div>
+                    </div>
+
+                    <div class="mc-field">
+                        <label class="mc-label" for="note">Σημείωση (προαιρετικό)</label>
+                        <textarea id="note" class="mc-control mc-textarea" name="note"
+                                  placeholder="Π.χ. ανεβάζω τα δικαιολογητικά που ζητήθηκαν..."></textarea>
+                    </div>
+
+                    <div class="mc-actions-row">
+                        <button type="submit" class="mc-btn mc-btn-primary">Ανέβασμα αρχείων</button>
+                    </div>
+                </form>
+            </div>
+
         </div>
-        <div class="mc-prewrap mc-message-body" th:text="${m.message()}"></div>
     </div>
 </section>
+
 </html>

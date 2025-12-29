@@ -13,6 +13,7 @@ import gr.hua.dit.mycitygov.core.service.model.AttachmentUpload;
 import gr.hua.dit.mycitygov.core.service.model.AttachmentView;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import gr.hua.dit.mycitygov.core.model.RequestStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -132,4 +133,37 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
         return new AttachmentDownload(a.getOriginalFilename(), ct, a.getSizeBytes(), in);
     }
+    @Override
+    public void addAdditionalInfoForCitizenRequest(Long requestId, Person citizen, AttachmentUpload upload) {
+        Request req = requestRepository.findById(requestId)
+            .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
+
+        if (req.getCitizen() == null || !req.getCitizen().getId().equals(citizen.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException("NOT_YOUR_REQUEST");
+        }
+
+        if (req.getStatus() != RequestStatus.WAITING_ADDITIONAL_INFO) {
+            throw new IllegalStateException("REQUEST_NOT_WAITING_ADDITIONAL_INFO");
+        }
+
+        String original = (upload.originalFilename() == null || upload.originalFilename().isBlank())
+            ? "file"
+            : upload.originalFilename();
+
+        original = original.replace("\\", "_").replace("/", "_");
+
+        String key = "requests/" + requestId + "/" + java.util.UUID.randomUUID() + "_" + original;
+
+        fileStorageService.put(key, upload.inputStream(), upload.sizeBytes(), upload.contentType());
+
+        RequestAttachment a = new RequestAttachment();
+        a.setRequest(req);
+        a.setObjectKey(key);
+        a.setOriginalFilename(original);
+        a.setContentType(upload.contentType());
+        a.setSizeBytes(upload.sizeBytes());
+
+        attachmentRepository.save(a);
+    }
+
 }

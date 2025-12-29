@@ -98,24 +98,21 @@
                     <div class="mc-field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
                         Σφάλμα
                     </div>
+                </div>
 
-                    <!-- Attachments (κάτω από την περιγραφή) -->
-                    <div style="margin-top: 10px;">
-                        <!-- κρυφό input -->
-                        <input id="attachments"
-                               type="file"
-                               name="attachments"
-                               multiple
-                               style="display:none;" />
+                <!-- Attachments (ίδιο στυλ με citizen/requests/{id}) -->
+                <div class="mc-field mc-span-2">
+                    <label class="mc-label" for="attachments">Επιλογή αρχείων</label>
 
-                        <!-- κουμπί -->
-                        <label for="attachments" class="mc-btn mc-btn-ghost mc-btn-small">
-                            Προσθήκη συνημμένου
-                        </label>
+                    <input id="attachments"
+                           class="mc-control mc-file"
+                           type="file"
+                           name="attachments"
+                           multiple/>
 
-                        <!-- λίστα επιλεγμένων αρχείων -->
-                        <div id="attachmentsList" class="mc-help" style="margin-top: 8px; display:none;"></div>
-                    </div>
+                    <div class="mc-help">Μπορείς να ανεβάσεις πάνω από 1 αρχείο.</div>
+
+                    <div id="attachmentsList" class="mc-help" style="display:none;"></div>
                 </div>
             </div>
 

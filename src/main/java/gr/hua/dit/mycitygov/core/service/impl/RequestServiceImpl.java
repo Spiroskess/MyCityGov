@@ -246,6 +246,39 @@ public class RequestServiceImpl implements RequestService {
             .map(requestMessageMapper::toView)
             .toList();
     }
+    @Override
+    @Transactional
+    public void citizenSubmittedAdditionalInfo(Long requestId, Person citizen, int uploadedFilesCount, String note) {
+        Request req = requestRepository.findByIdAndCitizen(requestId, citizen)
+            .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
+
+        if (req.getStatus() != RequestStatus.WAITING_ADDITIONAL_INFO) {
+            throw new IllegalStateException("REQUEST_NOT_WAITING_ADDITIONAL_INFO");
+        }
+
+        String base = (uploadedFilesCount == 1)
+            ? "Ο πολίτης ανέβασε 1 επιπλέον αρχείο."
+            : "Ο πολίτης ανέβασε " + uploadedFilesCount + " επιπλέον αρχεία.";
+
+        String msg = base;
+        if (note != null && !note.trim().isEmpty()) {
+            msg += "\n\nΣημείωση πολίτη: " + note.trim();
+        }
+
+        RequestMessage m = new RequestMessage();
+        m.setRequest(req);
+        m.setType(RequestMessageType.CITIZEN_ADDITIONAL_INFO);
+        m.setVisibleToCitizen(true);
+        m.setMessage(msg);
+
+        String createdBy = "Citizen: " + citizen.getLastName() + " " + citizen.getFirstName();
+        m.setCreatedBy(createdBy);
+
+        requestMessageRepository.save(m);
+
+        req.setUpdatedAt(Instant.now());
+        requestRepository.save(req);
+    }
 
     private String generateProtocolNumber() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();

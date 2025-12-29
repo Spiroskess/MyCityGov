@@ -16,7 +16,6 @@ public interface RequestService {
 
     List<RequestView> getRequestsOfCitizen(Person citizen);
 
-
     Optional<RequestView> getCitizenRequestDetails(Long requestId, Person citizen);
     List<RequestMessageView> getCitizenMessages(Long requestId, Person citizen);
 
@@ -39,4 +38,6 @@ public interface RequestService {
 
     Optional<RequestView> getMyRequestDetails(Long requestId, Person employee);
     List<RequestMessageView> getMyRequestMessages(Long requestId, Person employee);
+
+    void citizenSubmittedAdditionalInfo(Long requestId, Person citizen, int uploadedFilesCount, String note);
 }

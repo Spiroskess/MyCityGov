@@ -11,6 +11,8 @@ public interface RequestAttachmentService {
 
     void addForCitizenRequest(Long requestId, Person citizen, AttachmentUpload upload);
 
+    void addAdditionalInfoForCitizenRequest(Long requestId, Person citizen, AttachmentUpload upload);
+
     List<AttachmentView> listForCitizenRequest(Long requestId, Person citizen);
 
     List<AttachmentView> listForEmployeeRequest(Long requestId, Person employee);

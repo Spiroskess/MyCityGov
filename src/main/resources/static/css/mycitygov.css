@@ -1303,3 +1303,153 @@ body.mc-body {
   margin-left:6px;
 }
 
+/* =========================================================
+   Request Details (Citizen/Employee) – Professional layout
+   ========================================================= */
+
+.mc-subtitle{
+    margin-top: 8px;
+    opacity: .92;
+    line-height: 1.35;
+}
+
+.mc-badge-tight{
+    padding: 6px 10px;
+}
+
+.mc-detail-grid{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 16px;
+    align-items: start;
+}
+
+.mc-detail-grid-single{
+    grid-template-columns: 1fr;
+}
+
+.mc-detail-main,
+.mc-detail-aside{
+    display: grid;
+    gap: 16px;
+}
+
+@media (max-width: 980px){
+    .mc-detail-grid{
+        grid-template-columns: 1fr;
+    }
+}
+
+/* “Key-Value” tiles */
+.mc-kv{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px 14px;
+    margin-top: 10px;
+}
+
+.mc-kv-item{
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(0,0,0,.12);
+    padding: 12px 12px;
+}
+
+.mc-kv-wide{
+    grid-column: span 2;
+}
+
+.mc-kv-label{
+    font-size: 12.5px;
+    font-weight: 900;
+    letter-spacing: .2px;
+    opacity: .88;
+}
+
+.mc-kv-value{
+    margin-top: 6px;
+    font-weight: 900;
+}
+
+@media (max-width: 720px){
+    .mc-kv{
+        grid-template-columns: 1fr;
+    }
+    .mc-kv-wide{
+        grid-column: auto;
+    }
+}
+
+/* Section title inside cards */
+.mc-section-title{
+    font-size: 16px;
+    font-weight: 950;
+    letter-spacing: .2px;
+    margin: 0 0 10px 0;
+}
+
+/* Timeline */
+.mc-timeline{
+    display: grid;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.mc-timeline-item{
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(0,0,0,.10);
+    padding: 12px 12px;
+}
+
+.mc-timeline-head{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: baseline;
+}
+
+.mc-timeline-type{
+    font-weight: 950;
+    letter-spacing: .2px;
+}
+
+.mc-timeline-body{
+    margin-top: 8px;
+}
+
+/* File input polish (native αλλά πιο “δεμένο”) */
+.mc-file{
+    padding: 10px 12px;
+}
+
+.mc-upload-form{
+    margin-top: 10px;
+}
+
+/* Links πάνω σε μπλε φόντο (attachments κλπ) */
+.mc-link,
+.mc-attachment-link{
+    color: rgba(255,255,255,0.95);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+}
+
+.mc-link:hover,
+.mc-attachment-link:hover{
+    color: #ffffff;
+    text-decoration-thickness: 3px;
+}
+
+/* Προαιρετικό: να ξεχωρίζει και το μέγεθος (bytes) */
+.mc-attachment-meta{
+    color: rgba(255,255,255,0.75);
+}
+
+/* Προαιρετικό: λίγο καλύτερη στοίχιση λίστας */
+.mc-attachments-list{
+    margin: 8px 0 0 0;
+    padding-left: 18px;
+}
+
