@@ -1447,7 +1447,7 @@ body.mc-body {
     color: rgba(255,255,255,0.75);
 }
 
-/* Προαιρετικό: λίγο καλύτερη στοίχιση λίστας */
+/* λίγο καλύτερη στοίχιση λίστας */
 .mc-attachments-list{
     margin: 8px 0 0 0;
     padding-left: 18px;
