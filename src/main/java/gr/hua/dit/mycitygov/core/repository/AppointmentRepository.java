@@ -4,6 +4,8 @@ import gr.hua.dit.mycitygov.core.model.Appointment;
 import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -13,8 +15,6 @@ import java.util.Optional;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
     List<Appointment> findByCitizenId(Long citizenId);
-
-    List<Appointment> findByEmployeeId(Long employeeId);
 
     List<Appointment> findByCitizenIdAndStatusInOrderByAppointmentDateTimeDesc(
         Long citizenId,
@@ -36,13 +36,44 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         LocalDateTime end
     );
 
-    Optional<Appointment> findByServiceAndAppointmentDateTime(
+    List<Appointment> findByServiceAndStatusInOrderByAppointmentDateTimeDesc(
         MunicipalService service,
-        LocalDateTime appointmentDateTime
+        Collection<AppointmentStatus> statuses
     );
 
-    Optional<Appointment> findByEmployeeIdAndAppointmentDateTime(
-        Long employeeId,
-        LocalDateTime appointmentDateTime
+    Optional<Appointment> findFirstByCitizenIdAndServiceAndStatusInOrderByAppointmentDateTimeDesc(
+        Long citizenId,
+        MunicipalService service,
+        Collection<AppointmentStatus> statuses
+    );
+
+    @Query("""
+        select (count(a) > 0)
+        from Appointment a
+        where a.service = :service
+          and a.appointmentDateTime = :slot
+          and a.status in :activeStatuses
+          and (:excludeId is null or a.id <> :excludeId)
+        """)
+    boolean existsActiveServiceClash(
+        @Param("service") MunicipalService service,
+        @Param("slot") LocalDateTime slot,
+        @Param("activeStatuses") Collection<AppointmentStatus> activeStatuses,
+        @Param("excludeId") Long excludeId
+    );
+
+    @Query("""
+        select (count(a) > 0)
+        from Appointment a
+        where a.employeeId = :employeeId
+          and a.appointmentDateTime = :slot
+          and a.status in :activeStatuses
+          and (:excludeId is null or a.id <> :excludeId)
+        """)
+    boolean existsActiveEmployeeClash(
+        @Param("employeeId") Long employeeId,
+        @Param("slot") LocalDateTime slot,
+        @Param("activeStatuses") Collection<AppointmentStatus> activeStatuses,
+        @Param("excludeId") Long excludeId
     );
 }

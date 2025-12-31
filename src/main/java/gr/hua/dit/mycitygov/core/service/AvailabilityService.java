@@ -23,23 +23,37 @@ public class AvailabilityService {
     }
 
     public List<LocalTime> getAvailableTimes(MunicipalService service, LocalDate date) {
-        DayOfWeek day = date.getDayOfWeek();
+        return getAvailableTimes(service, date, null);
+    }
 
+    /**
+     * Όπως το getAvailableTimes, αλλά μπορεί να αγνοήσει ένα συγκεκριμένο ραντεβού
+     * (χρήσιμο σε reschedule ώστε να επιτρέπεται να κρατήσεις το ίδιο slot).
+     */
+    public List<LocalTime> getAvailableTimes(MunicipalService service, LocalDate date, Long excludeAppointmentId) {
+        if (service == null) throw new IllegalArgumentException("service is null");
+        if (date == null) throw new IllegalArgumentException("date is null");
+
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
         ServiceSchedule schedule = scheduleRepository
-            .findByServiceAndDayOfWeek(service, day)
+            .findByServiceAndDayOfWeek(service, dayOfWeek)
             .orElse(null);
 
-        if (schedule == null) return List.of();
+        if (schedule == null || !schedule.isEnabled()) {
+            return List.of();
+        }
 
-        LocalDateTime from = date.atStartOfDay();
-        LocalDateTime to = date.plusDays(1).atStartOfDay();
+        LocalDateTime start = LocalDateTime.of(date, schedule.getStartTime());
+        LocalDateTime end = LocalDateTime.of(date, schedule.getEndTime());
 
         Set<LocalTime> booked = new HashSet<>();
-        appointmentRepository.findByServiceAndAppointmentDateTimeBetween(service, from, to)
-            .stream()
-            .filter(a -> a.getStatus() == AppointmentStatus.REQUESTED
-                || a.getStatus() == AppointmentStatus.CONFIRMED)
-            .forEach(a -> booked.add(a.getAppointmentDateTime().toLocalTime()));
+        appointmentRepository.findByServiceAndAppointmentDateTimeBetween(service, start, end)
+            .forEach(a -> {
+                if (excludeAppointmentId != null && excludeAppointmentId.equals(a.getId())) return;
+                if (a.getStatus() == AppointmentStatus.REQUESTED || a.getStatus() == AppointmentStatus.CONFIRMED) {
+                    booked.add(a.getAppointmentDateTime().toLocalTime());
+                }
+            });
 
         List<LocalTime> slots = new ArrayList<>();
         LocalTime t = schedule.getStartTime();

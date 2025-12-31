@@ -2,6 +2,7 @@ package gr.hua.dit.mycitygov.core.model;
 
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.persistence.*;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
@@ -26,6 +27,9 @@ public class ServiceSchedule {
     @Column(nullable = false)
     private LocalTime endTime;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
+
     private int slotMinutes = 15;
 
     public Long getId() { return id; }
@@ -44,4 +48,7 @@ public class ServiceSchedule {
 
     public int getSlotMinutes() { return slotMinutes; }
     public void setSlotMinutes(int slotMinutes) { this.slotMinutes = slotMinutes; }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }
