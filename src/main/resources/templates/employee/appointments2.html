@@ -2,66 +2,119 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
-<title>Διαχείριση Ραντεβού</title>
+<head>
+    <title>Διαχείριση ραντεβού</title>
+</head>
 
 <section>
-    <h1 class="mc-title">Διαχείριση Ραντεβού</h1>
+    <div class="mc-page-head">
+        <div>
+            <h2 class="mc-page-title">Διαχείριση ραντεβού</h2>
+            <div class="mc-subtitle">
+                Εμφανίζονται τα ραντεβού που έχουν ανατεθεί σε εσένα
+                <span class="mc-dot">•</span>
+                <span class="mc-muted">Σύνολο:</span>
+                <strong th:text="${#lists.size(appointments)}">0</strong>
+            </div>
+        </div>
 
-    <table style="margin-top:16px; width:100%; border-collapse:collapse;">
-        <thead>
-        <tr style="text-align:left; border-bottom:1px solid #ddd;">
-            <th style="padding:10px;">ID</th>
-            <th style="padding:10px;">Υπηρεσία</th>
-            <th style="padding:10px;">Ημ/νία & Ώρα</th>
-            <th style="padding:10px;">Κατάσταση</th>
-            <th style="padding:10px;">Ενέργειες</th>
-        </tr>
-        </thead>
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost mc-btn-small" th:href="@{/employee/appointments}">Ανανέωση</a>
+        </div>
+    </div>
 
-        <tbody>
-        <tr th:if="${#lists.isEmpty(appointments)}">
-            <td colspan="5" style="padding:12px; opacity:0.85;">Δεν υπάρχουν ραντεβού.</td>
-        </tr>
+    <div class="mc-card">
+        <table class="mc-table" th:if="${!#lists.isEmpty(appointments)}">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Υπηρεσία</th>
+                <th>Ημερομηνία &amp; Ώρα</th>
+                <th>Κατάσταση</th>
+                <th class="mc-col-actions">Ενέργειες</th>
+            </tr>
+            </thead>
 
-        <tr th:each="a : ${appointments}" style="border-bottom:1px solid #eee;">
-            <td style="padding:10px;" th:text="${a.id}">1</td>
-            <td style="padding:10px;" th:text="${a.service}">KEP</td>
-            <td style="padding:10px;"
-                th:text="${a.appointmentDateTime != null ? #temporals.format(a.appointmentDateTime,'dd/MM/yyyy HH:mm') : '-'}">
-            </td>
-            <td style="padding:10px;">
-                <span th:text="${a.status}" style="padding:4px 8px; border:1px solid #ccc; border-radius:999px;"></span>
-            </td>
+            <tbody>
+            <tr th:each="a : ${appointments}">
+                <td data-label="ID">
+                    <span class="mc-muted" th:text="${a.id}">1</span>
+                </td>
 
-            <td style="padding:10px; display:flex; gap:8px; flex-wrap:wrap;">
-                <form th:action="@{'/employee/appointments/' + ${a.id} + '/confirm'}"
-                      method="post" style="display:inline;"
-                      th:if="${a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).REQUESTED}">
-                    <button type="submit" class="mc-btn" style="padding:8px 12px;">Confirm</button>
-                </form>
+                <td data-label="Υπηρεσία">
+                    <span th:if="${a.service == null}">—</span>
+                    <span th:if="${a.service != null}" th:switch="${a.service.name()}">
+                        <span th:case="'KEP'">ΚΕΠ</span>
+                        <span th:case="'TECHNICAL_SERVICE'">Τεχνική Υπηρεσία</span>
+                        <span th:case="'SOCIAL_SERVICE'">Κοινωνική Υπηρεσία</span>
+                        <span th:case="'FINANCIAL_SERVICE'">Οικονομική Υπηρεσία</span>
+                        <span th:case="'ENVIRONMENT_SERVICE'">Περιβάλλον / Καθαριότητα</span>
+                        <span th:case="*" th:text="${#strings.replace(a.service.name(), '_', ' ')}">ΥΠΗΡΕΣΙΑ</span>
+                    </span>
+                </td>
 
-                <a th:href="@{'/employee/appointments/' + ${a.id} + '/reschedule'}"
-                   class="mc-nav-link" style="text-decoration:underline;"
-                   th:if="${a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
-                           and a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}">
-                    Reschedule
-                </a>
+                <td data-label="Ημερομηνία &amp; Ώρα">
+                    <span th:if="${a.appointmentDateTime != null}"
+                          th:text="${#temporals.format(a.appointmentDateTime,'dd/MM/yyyy HH:mm')}">01/01/2026 10:30</span>
+                    <span th:if="${a.appointmentDateTime == null}">—</span>
+                </td>
 
-                <form th:action="@{'/employee/appointments/' + ${a.id} + '/cancel'}"
-                      method="post" style="display:inline;"
-                      onsubmit="return confirm('Να ακυρωθεί το ραντεβού;');"
-                      th:if="${a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
-                              and a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}">
-                    <button type="submit" class="mc-btn" style="padding:8px 12px;">Cancel</button>
-                </form>
+                <td data-label="Κατάσταση">
+                    <span class="mc-badge mc-badge-tight"
+                          th:classappend="${
+                            a.status.name() == 'REQUESTED' ? ' mc-badge-warn' :
+                            (a.status.name() == 'CONFIRMED' ? ' mc-badge-success' :
+                            (a.status.name() == 'CANCELLED' ? ' mc-badge-danger' :
+                            (a.status.name() == 'COMPLETED' ? ' mc-badge-neutral' : '')))
+                          }">
+                        <span th:switch="${a.status.name()}">
+                            <span th:case="'REQUESTED'">Ζητήθηκε</span>
+                            <span th:case="'CONFIRMED'">Επιβεβαιώθηκε</span>
+                            <span th:case="'CANCELLED'">Ακυρώθηκε</span>
+                            <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
+                            <span th:case="*" th:text="${a.status.name()}">STATUS</span>
+                        </span>
+                    </span>
+                </td>
 
-                <span th:if="${a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
-                              or a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}"
-                      style="opacity:0.7;">—</span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <td data-label="Ενέργειες" class="mc-col-actions">
+                    <div class="mc-appointment-actions">
+                        <form th:action="@{'/employee/appointments/' + ${a.id} + '/confirm'}"
+                              method="post"
+                              th:if="${a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).REQUESTED}">
+                            <button type="submit" class="mc-btn mc-btn-small mc-btn-primary">Επιβεβαίωση</button>
+                        </form>
+
+                        <a th:href="@{'/employee/appointments/' + ${a.id} + '/reschedule'}"
+                           class="mc-btn mc-btn-small mc-btn-outline"
+                           th:if="${a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
+                                   and a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}">
+                            Αλλαγή ώρας
+                        </a>
+
+                        <form th:action="@{'/employee/appointments/' + ${a.id} + '/cancel'}"
+                              method="post"
+                              onsubmit="return confirm('Να ακυρωθεί το ραντεβού;');"
+                              th:if="${a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
+                                      and a.status != T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}">
+                            <button type="submit" class="mc-btn mc-btn-small mc-btn-danger">Ακύρωση</button>
+                        </form>
+
+                        <span class="mc-muted"
+                              th:if="${a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).CANCELLED
+                                      or a.status == T(gr.hua.dit.mycitygov.core.service.model.AppointmentStatus).COMPLETED}">
+                            —
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="mc-empty" th:if="${#lists.isEmpty(appointments)}">
+            Δεν υπάρχουν ραντεβού.
+        </div>
+    </div>
 </section>
 
 </html>

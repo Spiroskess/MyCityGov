@@ -1453,3 +1453,42 @@ body.mc-body {
     padding-left: 18px;
 }
 
+/* =========================================================
+   Employee Appointments
+   ========================================================= */
+
+.mc-appointment-actions{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.mc-btn-danger{
+    background: rgba(255, 107, 107, 0.14);
+    border-color: rgba(255, 107, 107, 0.48);
+}
+
+.mc-btn-danger:hover{
+    background: rgba(255, 107, 107, 0.22);
+    border-color: rgba(255, 107, 107, 0.68);
+}
+
+@media (max-width: 920px){
+    .mc-appointment-actions{
+        justify-content: flex-start;
+    }
+}
+
+/* =========================================================
+   Employee Reschedule – Form layout
+   ========================================================= */
+
+.mc-form-narrow{
+    max-width: 760px;
+}
+
+.mc-form-card .mc-summary-row{
+    margin: 10px 0 14px;
+}
