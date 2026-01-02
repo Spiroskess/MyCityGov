@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-/**
- * Controller για την εγγραφή χρηστών (Πολιτών κ.λπ.).
- */
 @Controller
 public class RegistrationController {
 
@@ -30,15 +27,12 @@ public class RegistrationController {
     private final PersonService personService;
 
     public RegistrationController(final PersonService personService) {
+        if (personService == null) throw new NullPointerException("personService");
         this.personService = personService;
     }
 
-    /**
-     * Εμφάνιση φόρμας εγγραφής.
-     */
     @GetMapping("/register")
-    public String showRegisterForm(final Authentication authentication, final Model model) {
-        // Αν είναι ήδη συνδεδεμένος, στείλ' τον στο profile ή σε home σελίδα ρόλου
+    public String showRegister(final Authentication authentication, final Model model) {
         if (authentication != null && authentication.isAuthenticated()
             && !"anonymousUser".equals(authentication.getPrincipal())) {
             return "redirect:/profile";
@@ -53,16 +47,13 @@ public class RegistrationController {
             "",                 // mobilePhoneNumber
             "",                 // afm
             "",                 // amka
-            ""                  // rawPassword
+            ""                  // password
         );
 
         model.addAttribute("createPersonRequest", form);
         return "register";
     }
 
-    /**
-     * Υποβολή φόρμας εγγραφής.
-     */
     @PostMapping("/register")
     public String handleRegister(
         final Authentication authentication,
@@ -70,25 +61,22 @@ public class RegistrationController {
         final BindingResult bindingResult,
         final Model model
     ) {
-        // Αν είναι ήδη συνδεδεμένος, μην τον αφήνεις να ξανακάνει register.
         if (authentication != null && authentication.isAuthenticated()
             && !"anonymousUser".equals(authentication.getPrincipal())) {
             return "redirect:/profile";
         }
 
-        // Bean Validation
         if (bindingResult.hasErrors()) {
-            LOGGER.warn("Registration validation errors: {}", bindingResult.getAllErrors());
+            model.addAttribute("createPersonRequest", createPersonRequest);
             return "register";
         }
 
         // Κανονική δημιουργία χρήστη μέσω service
-        CreatePersonResult createPersonResult = this.personService.createPerson(createPersonRequest,true);
+        CreatePersonResult createPersonResult = this.personService.createPerson(createPersonRequest, true);
 
         if (createPersonResult.created()) {
             LOGGER.info("New person registered with email={}", createPersonRequest.emailAddress());
-            //μετά την εγγραφή τον στέλνουμε στο login
-            return "redirect:/login?registered";
+            return "redirect:/?registered=1";
         }
 
         // Αν απέτυχε στείλε μήνυμα λάθους

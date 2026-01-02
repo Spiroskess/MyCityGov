@@ -32,34 +32,35 @@ public class SecurityConfig {
         throws Exception {
 
         http
-
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
-                //  ΕΔΩ προσθέτουμε το /h2-console/**
+                // Public pages/assets
                 .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/h2-console/**")
                 .permitAll()
+
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/employee/**").hasRole("EMPLOYEE")
                 .requestMatchers("/citizen/**").hasRole("CITIZEN")
                 .anyRequest().authenticated()
             )
 
-            //  ΕΔΩ επιτρέπουμε frames για να δουλέψει το H2 console
+            // H2 console frames
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
             )
 
             .formLogin(form -> form
-                .loginPage("/login")
+                .loginPage("/")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/profile", true)
-                .failureUrl("/login?error")
+                .defaultSuccessUrl("/", false)
+                .failureUrl("/?error=1")
                 .permitAll()
             )
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
+                .logoutSuccessUrl("/?logout=1") // πίσω στην αρχική μετά logout
                 .permitAll()
             );
 

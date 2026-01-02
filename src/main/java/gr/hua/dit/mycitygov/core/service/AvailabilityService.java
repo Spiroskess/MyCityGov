@@ -1,10 +1,10 @@
 package gr.hua.dit.mycitygov.core.service;
 
+import gr.hua.dit.mycitygov.core.model.ServiceSchedule;
 import gr.hua.dit.mycitygov.core.repository.AppointmentRepository;
 import gr.hua.dit.mycitygov.core.repository.ServiceScheduleRepository;
 import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
-import gr.hua.dit.mycitygov.core.model.ServiceSchedule;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -28,23 +28,29 @@ public class AvailabilityService {
 
     /**
      * Όπως το getAvailableTimes, αλλά μπορεί να αγνοήσει ένα συγκεκριμένο ραντεβού
-     * (χρήσιμο σε reschedule ώστε να επιτρέπεται να κρατήσεις το ίδιο slot).
      */
     public List<LocalTime> getAvailableTimes(MunicipalService service, LocalDate date, Long excludeAppointmentId) {
         if (service == null) throw new IllegalArgumentException("service is null");
         if (date == null) throw new IllegalArgumentException("date is null");
 
         DayOfWeek dayOfWeek = date.getDayOfWeek();
-        ServiceSchedule schedule = scheduleRepository
-            .findByServiceAndDayOfWeek(service, dayOfWeek)
-            .orElse(null);
+        List<ServiceSchedule> schedules = scheduleRepository
+            .findAllByServiceAndDayOfWeekAndEnabledTrueOrderByStartTimeAsc(service, dayOfWeek);
 
-        if (schedule == null || !schedule.isEnabled()) {
+        if (schedules.isEmpty()) {
             return List.of();
         }
 
-        LocalDateTime start = LocalDateTime.of(date, schedule.getStartTime());
-        LocalDateTime end = LocalDateTime.of(date, schedule.getEndTime());
+        // 1 query για τη μέρα (από πρώτο start έως τελευταίο end)
+        LocalTime minStart = schedules.get(0).getStartTime();
+        LocalTime maxEnd = schedules.get(0).getEndTime();
+        for (ServiceSchedule s : schedules) {
+            if (s.getStartTime().isBefore(minStart)) minStart = s.getStartTime();
+            if (s.getEndTime().isAfter(maxEnd)) maxEnd = s.getEndTime();
+        }
+
+        LocalDateTime start = LocalDateTime.of(date, minStart);
+        LocalDateTime end = LocalDateTime.of(date, maxEnd);
 
         Set<LocalTime> booked = new HashSet<>();
         appointmentRepository.findByServiceAndAppointmentDateTimeBetween(service, start, end)
@@ -55,19 +61,17 @@ public class AvailabilityService {
                 }
             });
 
+        // Slots για ΚΑΘΕ διάστημα της ημέρας
         List<LocalTime> slots = new ArrayList<>();
-        LocalTime t = schedule.getStartTime();
-        while (!t.isAfter(schedule.getEndTime())) {
-            // να χωράει το slot (π.χ. end 15:30, slot 30 -> τελευταίο 15:00)
-            LocalTime endCandidate = t.plusMinutes(schedule.getSlotMinutes());
-            if (endCandidate.isAfter(schedule.getEndTime().plusSeconds(1))) break;
-
-            if (!booked.contains(t)) {
-                slots.add(t);
+        for (ServiceSchedule s : schedules) {
+            int step = s.getSlotMinutes() > 0 ? s.getSlotMinutes() : 15;
+            LocalTime t = s.getStartTime();
+            while (!t.plusMinutes(step).isAfter(s.getEndTime())) {
+                if (!booked.contains(t)) slots.add(t);
+                t = t.plusMinutes(step);
             }
-            t = t.plusMinutes(schedule.getSlotMinutes());
         }
 
-        return slots;
+        return slots.stream().distinct().sorted().toList();
     }
 }

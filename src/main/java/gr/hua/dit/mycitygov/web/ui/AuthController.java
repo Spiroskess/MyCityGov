@@ -1,43 +1,37 @@
 package gr.hua.dit.mycitygov.web.ui;
 
-
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Απλός controller για login/logout views.
+ * Δεν υπάρχει πια login view.
+ * Κρατάμε το /login μόνο για redirect (παλιά links / Spring redirects).
  */
 @Controller
 public class AuthController {
 
     @GetMapping("/login")
-    public String login(
-        final Authentication authentication,
-        final HttpServletRequest request,
-        final Model model
-    ) {
+    public String loginRedirect(final Authentication authentication,
+                                final HttpServletRequest request) {
+
+        // Αν είναι ήδη συνδεδεμένος, πήγαινέ τον στο "/" 
         if (AuthUtils.isAuthenticated(authentication)) {
-            return "redirect:/profile";
+            return "redirect:/";
         }
 
+        // Μεταφέρουμε τα query params στο homepage για να εμφανίζονται τα alerts εκεί
         if (request.getParameter("error") != null) {
-            model.addAttribute("error", "Invalid email or password.");
+            return "redirect:/?error=1";
         }
         if (request.getParameter("logout") != null) {
-            model.addAttribute("message", "You have been logged out.");
+            return "redirect:/?logout=1";
         }
-        return "login";
-    }
+        if (request.getParameter("registered") != null) {
+            return "redirect:/?registered=1";
+        }
 
-    @GetMapping("/logout")
-    public String logout(final Authentication authentication) {
-        if (AuthUtils.isAnonymous(authentication)) {
-            return "redirect:/login";
-        }
-        return "logout";
+        return "redirect:/";
     }
 }

@@ -49,9 +49,9 @@
         <p th:if="${param.error}" class="mc-alert mc-alert-error">
             Λάθος email ή κωδικός.
         </p>
-        <p th:if="${param.logout}" class="mc-alert mc-alert-info">
+        <div th:if="${param.logout}" class="mc-alert mc-alert-info">
             Έχετε αποσυνδεθεί.
-        </p>
+        </div>
         <p th:if="${param.registered}" class="mc-alert mc-alert-success">
             Η εγγραφή ολοκληρώθηκε. Συνδεθείτε.
         </p>
