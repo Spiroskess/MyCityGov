@@ -1,43 +1,110 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{base :: layout(~{::title}, ~{::section})}">
 
 <head>
     <title>Ανάθεση αιτήματος</title>
 </head>
 
-<body>
 <section>
-    <h2>Ανάθεση Αιτήματος σε Υπηρεσία</h2>
 
-    <p>Request ID: <strong th:text="${requestId}">1</strong></p>
-
-    <form th:action="@{/admin/requests/{id}/assign(id=${requestId})}"
-          th:object="${form}"
-          method="post">
-
-        <div th:if="${#fields.hasErrors('*')}">
-            <p>Υπάρχουν σφάλματα στη φόρμα.</p>
-        </div>
-
+    <div class="mc-page-head">
         <div>
-            <label>Υπηρεσία</label>
-            <select th:field="*{service}" required>
-                <option value="">-- Επιλογή --</option>
-                <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
-            </select>
+            <h2 class="mc-page-title">Ανάθεση Αιτήματος</h2>
+            <div class="mc-subtitle">
+                Επιλογή υπηρεσίας για ανάθεση
+                <span class="mc-dot">•</span>
+                <span class="mc-muted">Αίτημα:</span>
+                <strong th:text="${requestId}">1</strong>
+            </div>
         </div>
 
-        <div th:if="${#fields.hasErrors('service')}">
-            <span th:errors="*{service}"></span>
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost"
+               th:href="@{/admin/requests(view=${view != null ? view : 'all'})}">
+                Πίσω
+            </a>
         </div>
+    </div>
 
-        <div style="margin-top:12px;">
-            <a th:href="@{/admin/requests}">Πίσω</a>
-            <button type="submit">Ανάθεση</button>
+    <div class="mc-card mc-form-card">
+        <div class="mc-card-body">
+
+            <form th:action="@{/admin/requests/{id}/assign(id=${requestId}, view=${view != null ? view : 'all'})}"
+                  th:object="${form}"
+                  method="post">
+
+                <!-- ✅ Γενικό μήνυμα σφαλμάτων (ΠΡΕΠΕΙ να είναι μέσα στο form) -->
+                <div class="mc-alert mc-alert-danger" th:if="${#fields.hasAnyErrors()}">
+                    Υπάρχουν σφάλματα στη φόρμα. Διόρθωσέ τα και ξαναπροσπάθησε.
+                </div>
+
+                <div class="mc-form-grid">
+
+                    <div class="mc-form-box">
+                        <div class="mc-form-title">Στοιχεία ανάθεσης</div>
+                        <div class="mc-form-hint">
+                            Επίλεξε τη δημοτική υπηρεσία που θα χειριστεί το αίτημα.
+                        </div>
+
+                        <div class="mc-field">
+                            <label class="mc-label" for="service">Υπηρεσία</label>
+
+                            <select id="service"
+                                    class="mc-input"
+                                    th:field="*{service}"
+                                    required
+                                    th:classappend="${#fields.hasErrors('service')} ? ' is-invalid' : ''">
+
+                                <option value="">— Επιλογή —</option>
+
+                                <option th:each="s : ${services}"
+                                        th:value="${s}"
+                                        th:with="label=${s.name() == 'KEP' ? 'ΚΕΠ'
+                                            : (s.name() == 'TECHNICAL_SERVICE' ? 'Τεχνική Υπηρεσία'
+                                            : (s.name() == 'SOCIAL_SERVICE' ? 'Κοινωνική Υπηρεσία'
+                                            : (s.name() == 'FINANCIAL_SERVICE' ? 'Οικονομική Υπηρεσία'
+                                            : (s.name() == 'ENVIRONMENT_SERVICE' ? 'Περιβάλλον / Καθαριότητα'
+                                            : s.name()))))}"
+                                        th:text="${label}">
+                                </option>
+                            </select>
+
+                            <div class="mc-field-error"
+                                 th:if="${#fields.hasErrors('service')}"
+                                 th:errors="*{service}">
+                                Σφάλμα
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mc-form-box mc-form-side">
+                        <div class="mc-form-title">Τι θα συμβεί μετά</div>
+                        <ul class="mc-form-list">
+                            <li>Το αίτημα θα εμφανιστεί στην ουρά της επιλεγμένης υπηρεσίας.</li>
+                            <li>Αν είναι “Υποβλήθηκε”, θα γίνει “Σε παραλαβή”.</li>
+                            <li>Μπορεί να το αναλάβει υπάλληλος της υπηρεσίας.</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="mc-form-actions">
+                    <a class="mc-btn mc-btn-ghost"
+                       th:href="@{/admin/requests(view=${view != null ? view : 'all'})}">
+                        Ακύρωση
+                    </a>
+
+                    <button type="submit" class="mc-btn mc-btn-primary">
+                        Ανάθεση
+                    </button>
+                </div>
+
+            </form>
+
         </div>
-    </form>
+    </div>
+
 </section>
-</body>
-
 </html>

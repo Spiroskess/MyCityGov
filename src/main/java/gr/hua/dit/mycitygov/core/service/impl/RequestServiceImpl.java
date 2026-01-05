@@ -42,6 +42,10 @@ public class RequestServiceImpl implements RequestService {
         this.smsNotificationPort = smsNotificationPort;
     }
 
+    // ---------------------------
+    // Citizen: open + view
+    // ---------------------------
+
     @Override
     @Transactional
     public RequestView openRequest(Person citizen, OpenRequestRequest openReq) {
@@ -112,6 +116,10 @@ public class RequestServiceImpl implements RequestService {
             .toList();
     }
 
+    // ---------------------------
+    // Employee: list + queue + claim
+    // ---------------------------
+
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getRequestsAssignedToEmployee(Person employee) {
@@ -121,14 +129,43 @@ public class RequestServiceImpl implements RequestService {
             .toList();
     }
 
+    // ---------------------------
+    // Admin: lists (sorted + filters)
+    // ---------------------------
+
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getAllRequests() {
-        return requestRepository.findAll()
+        // ✅ πιο πρόσφατα πρώτα
+        return requestRepository.findAllByOrderByCreatedAtDesc()
             .stream()
             .map(requestMapper::convertRequestToView)
             .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RequestView> getUnassignedRequests() {
+        // ✅ assignedEmployee == null
+        return requestRepository.findAllByAssignedEmployeeIsNullOrderByCreatedAtDesc()
+            .stream()
+            .map(requestMapper::convertRequestToView)
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RequestView> getAssignedRequests() {
+        // ✅ assignedEmployee != null
+        return requestRepository.findAllByAssignedEmployeeIsNotNullOrderByCreatedAtDesc()
+            .stream()
+            .map(requestMapper::convertRequestToView)
+            .toList();
+    }
+
+    // ---------------------------
+    // Admin/Workflow: assign to service
+    // ---------------------------
 
     @Override
     @Transactional
@@ -136,9 +173,11 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.findById(requestId)
             .map(request -> {
                 request.setAssignedService(service);
+
                 if (request.getStatus() == RequestStatus.SUBMITTED) {
                     request.setStatus(RequestStatus.RECEIVED);
                 }
+
                 request.setUpdatedAt(Instant.now());
                 Request saved = requestRepository.save(request);
                 return requestMapper.convertRequestToView(saved);
@@ -172,6 +211,10 @@ public class RequestServiceImpl implements RequestService {
                 return requestMapper.convertRequestToView(saved);
             });
     }
+
+    // ---------------------------
+    // Employee: status update + messages + notify
+    // ---------------------------
 
     @Override
     @Transactional
@@ -228,6 +271,10 @@ public class RequestServiceImpl implements RequestService {
         requestMessageRepository.save(m);
     }
 
+    // ---------------------------
+    // Employee: view my request + messages
+    // ---------------------------
+
     @Override
     @Transactional(readOnly = true)
     public Optional<RequestView> getMyRequestDetails(Long requestId, Person employee) {
@@ -246,6 +293,11 @@ public class RequestServiceImpl implements RequestService {
             .map(requestMessageMapper::toView)
             .toList();
     }
+
+    // ---------------------------
+    // Citizen: additional info
+    // ---------------------------
+
     @Override
     @Transactional
     public void citizenSubmittedAdditionalInfo(Long requestId, Person citizen, int uploadedFilesCount, String note) {
@@ -279,6 +331,10 @@ public class RequestServiceImpl implements RequestService {
         req.setUpdatedAt(Instant.now());
         requestRepository.save(req);
     }
+
+    // ---------------------------
+    // Helpers
+    // ---------------------------
 
     private String generateProtocolNumber() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();

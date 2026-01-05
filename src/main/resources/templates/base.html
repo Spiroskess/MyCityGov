@@ -79,7 +79,6 @@
 <!-- Auto-dismiss success alerts -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Auto-dismiss ΜΟΝΟ τα success alerts
       const alerts = document.querySelectorAll('.mc-alert-success');
 
       alerts.forEach((el) => {
@@ -88,19 +87,18 @@
         window.setTimeout(() => {
           el.classList.add('mc-alert-hide');
 
-          // remove μετά το transition
           const removeLater = () => el.remove();
           el.addEventListener('transitionend', removeLater, { once: true });
 
-          // fallback αν δεν “πιάσει” transitionend
           window.setTimeout(() => {
             if (document.body.contains(el)) el.remove();
           }, 800);
         }, delay);
       });
     });
-</script>\
-<script>
+</script>
+
+<script defer>
     function hideAlert(el) {
       if (!el || el.classList.contains("mc-alert-hide")) return;
       el.classList.add("mc-alert-hide");
@@ -111,20 +109,17 @@
       document.querySelectorAll(".mc-alert").forEach(hideAlert);
     }
 
-    // 1) Αν πατήσεις πάνω στο alert φεύγει
     document.addEventListener("click", function (e) {
       const a = e.target.closest(".mc-alert");
       if (a) hideAlert(a);
     });
 
-    // 2) Αν πατήσεις σε πεδίο φεύγουν τα alerts
     document.addEventListener("pointerdown", function (e) {
       if (e.target.closest("input, textarea, select, [contenteditable='true']")) {
         hideAllAlerts();
       }
     });
 
-    // 3) Backup: όταν πάρει focus (keyboard tab κλπ) φεύγουν τα alerts
     document.addEventListener("focusin", function (e) {
       if (e.target.closest("input, textarea, select, [contenteditable='true']")) {
         hideAllAlerts();

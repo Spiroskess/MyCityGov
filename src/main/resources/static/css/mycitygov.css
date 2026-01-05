@@ -1,2131 +1,1580 @@
 :root {
-    --mc-blue-50: #e6f1ff;
-    --mc-blue-100: #c5e0ff;
-    --mc-blue-500: #2684ff;
-    --mc-blue-600: #135bba;
-    --mc-blue-700: #0f5abb;
-    --mc-blue-800: #0b3a73;
-    --mc-text-main: #0f172a;
-    --mc-text-muted: #64748b;
-    --mc-white: #ffffff;
-    --mc-radius-xl: 32px;
-    --mc-radius-lg: 20px;
-    --mc-shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.25);
-}
-
-/* Βασικά */
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-}
-
-body.mc-body {
-    min-height: 100vh;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: var(--mc-white);
-    background: radial-gradient(circle at top left, #4f9cff 0%, #0b63d8 40%, #05337a 100%);
-}
-
-/* Header */
-
-.mc-header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    padding: 16px 40px;
-    backdrop-filter: blur(18px);
-    background: linear-gradient(to bottom, rgba(5, 37, 94, 0.65), rgba(5, 37, 94, 0.15));
-}
-
-.mc-header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 32px;
-}
-
-.mc-logo-area {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.mc-logo-circle {
-    width: 42px;
-    height: 42px;
-    border-radius: 999px;
-    background: radial-gradient(circle at 30% 30%, #ffffff 0%, #dbeafe 40%, #1d4ed8 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 18px;
-    color: #0f172a;
-}
-
-.mc-logo-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.mc-logo-title {
-    font-weight: 700;
-    font-size: 22px;
-}
-
-.mc-logo-subtitle {
-    font-size: 12px;
-    opacity: 0.9;
-}
-
-.mc-nav {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    flex: 1;
-    justify-content: flex-start;
-    font-size: 15px;
-}
-
-.mc-header-auth {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.mc-nav-link {
-    color: rgba(241, 245, 249, 0.9);
-    text-decoration: none;
-    padding: 6px 10px;
-    border-radius: 999px;
-    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-    white-space: nowrap;
-}
-
-.mc-nav-link:hover {
-    background: rgba(15, 23, 42, 0.25);
-    color: #ffffff;
-    transform: translateY(-1px);
-}
-
-.mc-nav-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
-    border-radius: 999px;
-    background: linear-gradient(to right, var(--mc-blue-500), var(--mc-blue-600));
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
-}
-
-.mc-nav-button:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.03);
-    box-shadow: 0 16px 35px rgba(37, 99, 235, 0.55);
-}
-
-.mc-nav-logout {
-    opacity: 0.8;
-}
-
-/* Κύριο περιεχόμενο */
-
-.mc-main {
-    max-width: 1200px;
-    margin: 32px auto 40px;
-    padding: 0 24px;
-}
-
-/* Hero αρχικής */
-
-.mc-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.05fr);
-    gap: 42px;
-    align-items: stretch;
-}
-
-.mc-hero-left {
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.05));
-    border-radius: 40px;
-    padding: 40px 40px 36px;
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.55);
-    position: relative;
-    overflow: hidden;
-}
-
-.mc-hero-left::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 10% 0, rgba(191, 219, 254, 0.15), transparent 55%),
-                radial-gradient(circle at 90% 100%, rgba(56, 189, 248, 0.18), transparent 50%);
-    opacity: 0.8;
-    pointer-events: none;
-}
-
-.mc-hero-left > * {
-    position: relative;
-    z-index: 1;
-}
-
-.mc-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 15px;
-    border-radius: 999px;
-    background: rgba(15, 23, 42, 0.75);
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
-    font-size: 13px;
-}
-
-.mc-badge-circle {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    background: radial-gradient(circle at 30% 30%, #ffffff, #dbeafe 50%, #1d4ed8 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: #0f172a;
-    font-size: 13px;
-}
-
-.mc-hero-left h1 {
-    margin: 22px 0 14px;
-    font-size: clamp(32px, 3.5vw, 44px);
-    line-height: 1.12;
-    letter-spacing: -0.04em;
-}
-
-.mc-hero-text {
-    margin: 0 0 20px;
-    max-width: 560px;
-    font-size: 16px;
-    color: rgba(226, 232, 240, 0.92);
-}
-
-.mc-hero-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.mc-hero-list li {
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.mc-hero-list li::before {
-    content: "•";
-    font-size: 18px;
-    margin-right: 4px;
-    color: #a5f3fc;
-}
-
-.mc-hero-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
-    font-size: 13px;
-    color: rgba(226, 232, 240, 0.9);
-}
-
-.mc-hero-logo {
-    font-weight: 600;
-}
-
-/* Κάρτα σύνδεσης / φόρμες */
-
-.mc-auth-card {
-    background: #f9fafb;
-    border-radius: 40px;
-    padding: 32px 32px 30px;
-    color: var(--mc-text-main);
-    box-shadow: var(--mc-shadow-soft);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-width: 0;
-}
-
-.mc-auth-card-centered {
-    max-width: 420px;
-    margin: 40px auto;
-}
-
-.mc-auth-card-wide {
-    max-width: 640px;
-    margin: 40px auto;
-}
-
-.mc-auth-header {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.mc-auth-label {
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--mc-blue-600);
-    font-weight: 600;
-}
-
-.mc-auth-header h2 {
-    margin: 0;
-    font-size: 24px;
-}
-
-.mc-auth-subtitle {
-    margin: 4px 0 0;
-    font-size: 14px;
-    color: var(--mc-text-muted);
-}
-
-.mc-auth-subtitle a {
-    color: var(--mc-blue-600);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.mc-auth-subtitle a:hover {
-    text-decoration: underline;
-}
-
-/* Alerts */
-
-.mc-alert {
-    padding: 10px 12px;
-    border-radius: 12px;
-    font-size: 13px;
-}
-
-.mc-alert-error {
-    background: #fef2f2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-}
-
-.mc-alert-info {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
-}
-
-.mc-alert-success {
-    background: #ecfdf5;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
-}
-
-/* Φόρμες */
-
-.mc-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.mc-form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    column-gap: 16px;
-    row-gap: 14px;
-}
-
-.mc-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 14px;
-}
-
-.mc-form-group-full {
-    grid-column: 1 / -1;
-}
-
-.mc-form-group label {
-    color: var(--mc-text-main);
-    font-weight: 500;
-}
-
-.mc-form-group input {
-    border-radius: 999px;
-    border: 1px solid #e5e7eb;
-    padding: 10px 14px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.mc-form-group input:focus {
-    border-color: var(--mc-blue-500);
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
-    background: #ffffff;
-}
-
-.mc-form-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 4px;
-    font-size: 13px;
-    color: var(--mc-text-muted);
-}
-
-.mc-checkbox {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.mc-checkbox input {
-    width: 14px;
-    height: 14px;
-}
-
-.mc-link-muted {
-    color: var(--mc-text-muted);
-    text-decoration: none;
-}
-
-.mc-link-muted:hover {
-    text-decoration: underline;
-}
-
-.mc-button-primary {
-    border: none;
-    border-radius: 999px;
-    padding: 11px 16px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    background: linear-gradient(to right, var(--mc-blue-500), var(--mc-blue-700));
-    color: #ffffff;
-    box-shadow: 0 16px 35px rgba(37, 99, 235, 0.55);
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
-}
-
-.mc-button-primary:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
-}
-
-.mc-button-full {
-    width: 100%;
-}
-
-.mc-form-terms {
-    margin: 8px 0 0;
-    font-size: 12px;
-    color: var(--mc-text-muted);
-}
-
-.mc-form-actions {
-    margin-top: 6px;
-}
-
-.mc-field-error {
-    font-size: 12px;
-    color: #b91c1c;
-}
-
-/* Σελίδες auth (login/register) */
-
-.mc-auth-page {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: calc(100vh - 140px);
-}
-
-/* Footer */
-
-.mc-footer {
-    padding: 12px 24px 20px;
-    color: rgba(226, 232, 240, 0.85);
-    font-size: 13px;
-}
-
-.mc-footer-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    opacity: 0.9;
-}
-
-.mc-footer-secondary {
-    opacity: 0.8;
-}
-
-/* Responsive */
-
-@media (max-width: 960px) {
-    .mc-header-inner {
-        flex-wrap: wrap;
-        gap: 14px;
-    }
-
-    .mc-nav {
-        order: 3;
-        flex-wrap: wrap;
-        gap: 10px;
-        font-size: 14px;
-    }
-
-    .mc-main {
-        margin-top: 20px;
-    }
-
-    .mc-hero {
-        grid-template-columns: 1fr;
-    }
-
-    .mc-hero-left {
-        padding: 26px 22px 24px;
-        border-radius: 30px;
-    }
-
-    .mc-auth-card {
-        margin-top: 8px;
-    }
-}
-
-@media (max-width: 640px) {
-    .mc-header {
-        padding-inline: 18px;
-    }
-
-    .mc-header-inner {
-        align-items: flex-start;
-    }
-
-    .mc-footer-inner {
-        flex-direction: column;
-        gap: 4px;
-    }
+  --mc-blue-50: #e6f1ff;
+  --mc-blue-100: #c5e0ff;
+  --mc-blue-500: #2684ff;
+  --mc-blue-600: #135bba;
+  --mc-blue-700: #0f5abb;
+  --mc-blue-800: #0b3a73;
+
+  --mc-text-main: #0f172a;
+  --mc-text-muted: #64748b;
+  --mc-white: #ffffff;
+
+  --mc-radius-xl: 32px;
+  --mc-radius-lg: 20px;
+  --mc-shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.25);
 }
 
 /* =========================================================
-   Citizen Requests – Table/Card/Button/Badges
+   0) Reset / Base
    ========================================================= */
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
-.mc-page-head{
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap:16px;
-    flex-wrap:wrap;
-    margin: 10px 0 16px 0;
+html, body { margin: 0; padding: 0; }
+
+body.mc-body{
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--mc-white);
+  background: radial-gradient(circle at top left, #4f9cff 0%, #0b63d8 40%, #05337a 100%);
+  overflow-x: hidden; /* safety against 1-2px overflow */
 }
 
-.mc-page-title{
-    margin:0;
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: .2px;
+/* =========================================================
+   1) Header / Navigation
+   ========================================================= */
+.mc-header{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 16px 40px;
+  backdrop-filter: blur(18px);
+  background: linear-gradient(to bottom, rgba(5, 37, 94, 0.65), rgba(5, 37, 94, 0.15));
 }
 
-.mc-page-actions{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
+.mc-header-inner{
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 32px;
 }
 
-/* Card container */
+.mc-logo-area{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.mc-logo-circle{
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #dbeafe 40%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.mc-logo-text{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mc-logo-title{ font-weight: 700; font-size: 22px; }
+.mc-logo-subtitle{ font-size: 12px; opacity: 0.9; }
+
+.mc-nav{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1;
+  justify-content: flex-start;
+  font-size: 15px;
+}
+
+.mc-header-auth{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mc-nav-link{
+  color: rgba(241, 245, 249, 0.9);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.mc-nav-link:hover{
+  background: rgba(15, 23, 42, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.mc-nav-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--mc-blue-500), var(--mc-blue-600));
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.mc-nav-button:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+  box-shadow: 0 16px 35px rgba(37, 99, 235, 0.55);
+}
+
+.mc-nav-logout{ opacity: 0.8; }
+
+/* =========================================================
+   2) Main layout + Footer
+   ========================================================= */
+.mc-main{
+  max-width: 1200px;
+  margin: 32px auto 40px;
+  padding: 0 24px;
+}
+
+.mc-footer{
+  padding: 12px 24px 20px;
+  color: rgba(226, 232, 240, 0.85);
+  font-size: 13px;
+}
+
+.mc-footer-inner{
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.9;
+}
+
+.mc-footer-secondary{ opacity: 0.8; }
+
+/* =========================================================
+   3) Common UI Components (Cards, Links, Buttons, Badges, Alerts)
+   ========================================================= */
+.mc-link,
+.mc-attachment-link{
+  color: rgba(255,255,255,0.95);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+.mc-link:hover,
+.mc-attachment-link:hover{
+  color: #ffffff;
+  text-decoration-thickness: 3px;
+}
+
+.mc-muted{ opacity: .88; }
+
 .mc-card{
-    background: rgba(0,0,0,.14);
-    border: 1px solid rgba(255,255,255,.14);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  background: rgba(0,0,0,.14);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,.12);
 }
 
-/* Table */
-.mc-table{
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.mc-table thead th{
-    text-align:left;
-    padding: 14px 16px;
-    font-weight: 800;
-    letter-spacing: .25px;
-    background: rgba(0,0,0,.10);
-    border-bottom: 1px solid rgba(255,255,255,.16);
-    white-space: nowrap;
-}
-
-.mc-table tbody td{
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(255,255,255,.10);
-    vertical-align: middle;
-}
-
-.mc-table tbody tr:hover{
-    background: rgba(255,255,255,.06);
-}
-
-.mc-col-actions{
-    width: 1%;
-    white-space: nowrap;
-}
-
-.mc-muted{
-    opacity: .88;
-}
-
-/* Links */
-.mc-link{
-    color: #e8f1ff;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-}
-
-/* Buttons (reuse-friendly) */
+/* Buttons */
 .mc-btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-
-    padding: 10px 14px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 800;
-
-    border: 1px solid rgba(255,255,255,.28);
-    background: rgba(255,255,255,.12);
-    color: #fff;
-
-    transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,.28);
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
 }
-
 .mc-btn:hover{
-    background: rgba(255,255,255,.18);
-    border-color: rgba(255,255,255,.40);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.40);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+}
+.mc-btn-primary{ background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.42); }
+.mc-btn-ghost{ background: rgba(0,0,0,.10); }
+.mc-btn-outline{ background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.42); }
+.mc-btn-small{ padding: 8px 12px; border-radius: 14px; font-size: 14px; font-weight: 900; }
+
+.mc-btn-danger{
+  background: rgba(255, 107, 107, 0.14);
+  border-color: rgba(255, 107, 107, 0.48);
+}
+.mc-btn-danger:hover{
+  background: rgba(255, 107, 107, 0.22);
+  border-color: rgba(255, 107, 107, 0.68);
 }
 
-.mc-btn-primary{
-    background: rgba(255,255,255,.22);
-    border-color: rgba(255,255,255,.42);
-}
-
-.mc-btn-ghost{
-    background: rgba(0,0,0,.10);
-}
-
-.mc-btn-outline{
-    background: rgba(255,255,255,.18);
-    border-color: rgba(255,255,255,.42);
-}
-
-.mc-btn-small{
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-weight: 900;
-}
-
-/* Badges */
+/* Generic badge/pill */
 .mc-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-
-    padding: 6px 10px;
-    border-radius: 999px;
-
-    font-size: 12px;
-    font-weight: 900;
-    letter-spacing: .3px;
-
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(255,255,255,.10);
-    white-space: nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .3px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.10);
+  white-space: nowrap;
 }
-
 .mc-badge::before{
-    content:"";
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.65);
+  content:"";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.65);
 }
-
-/* Status color variants */
 .mc-badge-success{ background: rgba(0,0,0,.14); }
 .mc-badge-success::before{ background: #57d38c; }
-
 .mc-badge-danger{ background: rgba(0,0,0,.14); }
 .mc-badge-danger::before{ background: #ff6b6b; }
-
 .mc-badge-warn{ background: rgba(255,255,255,.12); }
 .mc-badge-warn::before{ background: #ffd166; }
-
-.mc-badge-sky{ background: rgba(255,255,255,.10); }
-.mc-badge-sky::before{ background: #8ecae6; }
-
+.mc-badge-info{ background: rgba(255,255,255,.10); }
+.mc-badge-info::before{ background: #a3cef1; }
 .mc-badge-neutral{ background: rgba(0,0,0,.12); }
 .mc-badge-neutral::before{ background: #bdbdbd; }
 
-.mc-badge-info{ background: rgba(255,255,255,.10); }
-.mc-badge-info::before{ background: #a3cef1; }
-
-/* Empty state */
-.mc-empty{
-    padding: 16px;
-    opacity: .9;
+/* Alerts (dark UI) */
+.mc-alert{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.10);
+  color: rgba(255,255,255,.95);
+  font-weight: 800;
+  letter-spacing: .2px;
+  line-height: 1.35;
+  margin: 12px 0 16px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.20);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
-
-/* Mobile-friendly table */
-@media (max-width: 920px){
-    .mc-table thead{ display:none; }
-    .mc-table, .mc-table tbody, .mc-table tr, .mc-table td{ display:block; width:100%; }
-    .mc-table tbody tr{ border-bottom: 1px solid rgba(255,255,255,.14); }
-    .mc-table tbody td{
-        border-bottom: none;
-        padding: 10px 16px;
-        display:flex;
-        justify-content:space-between;
-        gap:14px;
-    }
-    .mc-table tbody td::before{
-        content: attr(data-label);
-        font-weight: 900;
-        opacity: .9;
-    }
+.mc-alert::before{
+  content: "i";
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  flex: 0 0 auto;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.18);
+}
+.mc-alert-info{
+  border-color: rgba(59, 130, 246, 0.55);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.08));
+  color: rgba(255,255,255,.98);
+}
+.mc-alert-info::before{
+  content:"i";
+  background: rgba(59, 130, 246, 0.26);
+  border-color: rgba(59, 130, 246, 0.55);
+}
+.mc-alert-success{
+  border-color: rgba(46, 204, 113, 0.55);
+  background: linear-gradient(90deg, rgba(46, 204, 113, 0.20), rgba(46, 204, 113, 0.08));
+}
+.mc-alert-success::before{
+  content:"✓";
+  background: rgba(46, 204, 113, 0.28);
+  border-color: rgba(46, 204, 113, 0.55);
+}
+.mc-alert-danger,
+.mc-alert-error{
+  border-color: rgba(255, 107, 107, 0.55);
+  background: linear-gradient(90deg, rgba(255, 107, 107, 0.22), rgba(255, 107, 107, 0.08));
+}
+.mc-alert-danger::before,
+.mc-alert-error::before{
+  content:"!";
+  background: rgba(255, 107, 107, 0.26);
+  border-color: rgba(255, 107, 107, 0.55);
 }
 
 /* =========================================================
-   Booking UI (Citizen) – Form/Card/Controls/Times
+   Alerts: smooth appear + smooth dismiss
    ========================================================= */
 
-.mc-form-card{
-    padding: 18px 18px 16px;
+@keyframes mc-alert-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.mc-form-card-header{
-    padding: 8px 6px 14px;
-    border-bottom: 1px solid rgba(255,255,255,.12);
-    margin-bottom: 14px;
+.mc-alert{
+  /* κρατάς ό,τι έχεις ήδη και προσθέτεις αυτά: */
+  overflow: hidden;
+  will-change: opacity, transform, max-height, margin, padding;
+
+  animation: mc-alert-in 180ms ease-out both;
+
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease,
+    max-height 260ms ease,
+    margin 260ms ease,
+    padding 260ms ease;
 }
 
-.mc-form-card-title{
-    font-size: 18px;
+/* Αυτό το class το βάζει το JS σου πριν κάνει remove() */
+.mc-alert-hide{
+  opacity: 0 !important;
+  transform: translateY(-6px) !important;
+
+  max-height: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   4) Tables (default)
+   ========================================================= */
+.mc-table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mc-table thead th{
+  text-align:left;
+  padding: 14px 16px;
+  font-weight: 800;
+  letter-spacing: .25px;
+  background: rgba(0,0,0,.10);
+  border-bottom: 1px solid rgba(255,255,255,.16);
+  white-space: nowrap;
+}
+
+.mc-table tbody td{
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  vertical-align: middle;
+}
+
+.mc-table tbody tr:hover{ background: rgba(255,255,255,.06); }
+
+.mc-col-actions{ width: 1%; white-space: nowrap; }
+
+.mc-table-wrap{ overflow-x: auto; }
+
+/* Responsive “card table” */
+@media (max-width: 920px){
+  .mc-table thead{ display:none; }
+  .mc-table, .mc-table tbody, .mc-table tr, .mc-table td{ display:block; width:100%; }
+  .mc-table tbody tr{ border-bottom: 1px solid rgba(255,255,255,.14); }
+  .mc-table tbody td{
+    border-bottom: none;
+    padding: 10px 16px;
+    display:flex;
+    justify-content:space-between;
+    gap:14px;
+  }
+  .mc-table tbody td::before{
+    content: attr(data-label);
     font-weight: 900;
-    letter-spacing: .2px;
-}
-
-.mc-form-card-subtitle{
-    margin-top: 6px;
     opacity: .9;
-    font-size: 14px;
+  }
 }
 
-.mc-form{
-    display: grid;
-    gap: 14px;
-}
+/* =========================================================
+   5) Forms / Inputs (dark UI)
+   ========================================================= */
+.mc-form{ display:flex; flex-direction:column; gap:14px; }
 
 .mc-form-grid{
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  column-gap: 16px;
+  row-gap: 14px;
+}
+.mc-form-group{ display:flex; flex-direction:column; gap:6px; font-size:14px; }
+.mc-form-group-full{ grid-column: 1 / -1; }
+
+.mc-field-error{ font-size: 13px; font-weight: 800; color: rgba(255,190,190,.95); }
+
+.mc-control,
+.mc-input{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.16);
+  color: #fff;
+  padding: 11px 12px;
+  outline: none;
+  transition: border-color .12s ease, background .12s ease, transform .08s ease, box-shadow .12s ease;
 }
 
-.mc-field{
-    display: grid;
-    gap: 8px;
+.mc-control:focus,
+.mc-input:focus{
+  border-color: rgba(255,255,255,.45);
+  background: rgba(0,0,0,.22);
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  transform: translateY(-1px);
 }
 
-.mc-label{
-    font-weight: 900;
-    letter-spacing: .2px;
-}
-
-.mc-help{
-    font-size: 12.5px;
-    opacity: .88;
-    line-height: 1.35;
-}
-
-/* Controls */
-.mc-control{
-    width: 100%;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.22);
-    background: rgba(0,0,0,.16);
-    color: #fff;
-    padding: 11px 12px;
-    outline: none;
-    transition: border-color .12s ease, background .12s ease, transform .08s ease, box-shadow .12s ease;
-}
-
-.mc-control:focus{
-    border-color: rgba(255,255,255,.45);
-    background: rgba(0,0,0,.22);
-    box-shadow: 0 10px 24px rgba(0,0,0,.18);
-    transform: translateY(-1px);
-}
-
-/* Improve native select arrow feel */
 .mc-select{
-    appearance: none;
-    background-image:
-        linear-gradient(45deg, transparent 50%, rgba(255,255,255,.85) 50%),
-        linear-gradient(135deg, rgba(255,255,255,.85) 50%, transparent 50%),
-        linear-gradient(to right, transparent, transparent);
-    background-position:
-        calc(100% - 18px) calc(1em + 2px),
-        calc(100% - 13px) calc(1em + 2px),
-        100% 0;
-    background-size: 5px 5px, 5px 5px, 2.5em 2.5em;
-    background-repeat: no-repeat;
-    padding-right: 42px;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,.85) 50%),
+    linear-gradient(135deg, rgba(255,255,255,.85) 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+  background-position:
+    calc(100% - 18px) calc(1em + 2px),
+    calc(100% - 13px) calc(1em + 2px),
+    100% 0;
+  background-size: 5px 5px, 5px 5px, 2.5em 2.5em;
+  background-repeat: no-repeat;
+  padding-right: 42px;
 }
 
-/* Actions row */
-.mc-actions-row{
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 2px;
-}
-
-/* Summary pills */
-.mc-summary-row{
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.mc-summary-pill{
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(0,0,0,.14);
-    font-size: 13px;
-    font-weight: 700;
-}
-
-/* Alerts */
-.mc-alert{
-    padding: 12px 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(0,0,0,.12);
-    margin-bottom: 12px;
-    font-weight: 800;
-}
-
-.mc-alert-danger{
-    border-color: rgba(255,107,107,.55);
-    background: rgba(255,107,107,.12);
-}
-
-/* Empty state tighter */
-.mc-empty-tight{
-    padding: 14px 6px 4px;
-}
-
-.mc-empty-title{
-    font-size: 16px;
-    font-weight: 900;
-    margin-bottom: 6px;
-}
-
-.mc-empty-text{
-    opacity: .9;
-    margin-bottom: 10px;
-}
-
-/* Times grid */
-.mc-times-grid{
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-    margin-top: 6px;
-}
-
-.mc-time-option{
-    display: block;
-    cursor: pointer;
-}
-
-.mc-time-radio{
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.mc-time-pill{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 10px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.22);
-    background: rgba(0,0,0,.16);
-    font-weight: 900;
-    transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
-    user-select: none;
-}
-
-.mc-time-option:hover .mc-time-pill{
-    background: rgba(255,255,255,.14);
-    border-color: rgba(255,255,255,.36);
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(0,0,0,.16);
-}
-
-.mc-time-radio:checked + .mc-time-pill{
-    background: rgba(255,255,255,.22);
-    border-color: rgba(255,255,255,.55);
-    box-shadow: 0 14px 30px rgba(0,0,0,.20);
-    transform: translateY(-1px);
-}
-
-/* Responsive */
-@media (max-width: 980px){
-    .mc-form-grid{
-        grid-template-columns: 1fr;
-    }
-    .mc-times-grid{
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 520px){
-    .mc-times-grid{
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
+select.mc-input option{ color:#111 !important; background:#fff !important; }
+select.mc-input option[disabled]{ color:#666 !important; }
 
 /* =========================================================
-   Booking Step1
+   6) Page Head (used in many pages)
    ========================================================= */
-
-.mc-service-grid{
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 6px;
-}
-
-.mc-service-tile{
-    position: relative;
-    display: grid;
-    gap: 6px;
-    padding: 14px 14px 12px;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(0,0,0,.12);
-    cursor: pointer;
-    transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
-    user-select: none;
-}
-
-.mc-service-tile:hover{
-    background: rgba(255,255,255,.12);
-    border-color: rgba(255,255,255,.34);
-    transform: translateY(-1px);
-    box-shadow: 0 12px 26px rgba(0,0,0,.18);
-}
-
-.mc-service-radio{
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.mc-service-title{
-    font-weight: 950;
-    font-size: 14.5px;
-    letter-spacing: .2px;
-    line-height: 1.15;
-}
-
-.mc-service-sub{
-    font-size: 12.5px;
-    opacity: .88;
-    line-height: 1.25;
-}
-
-/* Selected state */
-.mc-service-radio:checked ~ .mc-service-title,
-.mc-service-radio:checked ~ .mc-service-sub{
-    opacity: 1;
-}
-
-.mc-service-radio:checked ~ .mc-service-title{
-    text-shadow: 0 10px 24px rgba(0,0,0,.25);
-}
-
-.mc-service-radio:checked ~ .mc-service-sub{
-    opacity: .92;
-}
-
-.mc-service-radio:checked ~ .mc-service-title,
-.mc-service-radio:checked ~ .mc-service-sub{
-    color: #fff;
-}
-
-.mc-service-tile:has(.mc-service-radio:checked){
-    background: rgba(255,255,255,.18);
-    border-color: rgba(255,255,255,.55);
-    box-shadow: 0 16px 34px rgba(0,0,0,.22);
-    transform: translateY(-1px);
-}
-
-.mc-service-radio:checked{
-    /* no-op */
-}
-
-/* Responsive */
-@media (max-width: 980px){
-    .mc-service-grid{
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 520px){
-    .mc-service-grid{
-        grid-template-columns: 1fr;
-    }
-}
-
-/* =========================================================
-   New Request UI (Citizen) – Card/Form polish
-   ========================================================= */
-
-.mc-request-card{
-    max-width: 980px;
-}
-
-.mc-request-grid{
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
-}
-
-/* Span helper */
-.mc-span-2{
-    grid-column: span 2;
-}
-
-/* Textarea */
-.mc-textarea{
-    resize: vertical;
-    min-height: 120px;
-    line-height: 1.4;
-}
-
-/* Field errors */
-.mc-field-error{
-    margin-top: 6px;
-    padding: 10px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,107,107,.55);
-    background: rgba(255,107,107,.12);
-    font-weight: 800;
-    font-size: 13px;
-}
-
-/* Actions alignment */
-.mc-actions-row-right{
-    justify-content: flex-end;
-}
-
-/* Responsive */
-@media (max-width: 980px){
-    .mc-request-grid{
-        grid-template-columns: 1fr;
-    }
-    .mc-span-2{
-        grid-column: auto;
-    }
-}
-
-/* =========================================================
-   Citizen - New Request Form (Professional UI)
-   ========================================================= */
-
-.mc-request-card{
-    max-width: 980px;
-}
-
-.mc-request-grid{
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
-}
-
-.mc-span-2{
-    grid-column: span 2;
-}
-
-.mc-textarea{
-    resize: vertical;
-    min-height: 130px;
-    line-height: 1.45;
-}
-
-/* nicer field errors (instead of raw span) */
-.mc-field-error{
-    margin-top: 6px;
-    padding: 10px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,107,107,.55);
-    background: rgba(255,107,107,.12);
-    font-weight: 800;
-    font-size: 13px;
-}
-
-/* right-aligned actions for forms */
-.mc-actions-row-right{
-    justify-content: flex-end;
-}
-
-/* Responsive */
-@media (max-width: 980px){
-    .mc-request-grid{
-        grid-template-columns: 1fr;
-    }
-    .mc-span-2{
-        grid-column: auto;
-    }
-}
-
-/* Smaller button variant */
-.mc-btn-small{
-    padding: 8px 12px !important;
-    border-radius: 14px !important;
-    font-size: 14px !important;
-    font-weight: 900 !important;
-}
-
-/* καλύτερη αναγνωσιμότητα dropdown */
-.mc-select option{
-    background: #0b2456;
-    color: #ffffff;
-    font-weight: 800;
-}
-
-/* Για employee/request-details */
-.mc-links-row{
+.mc-page-head{
   display:flex;
-  gap:14px;
-  margin:12px 0 18px 0;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
   flex-wrap:wrap;
+  margin: 10px 0 16px 0;
 }
-
-.mc-sep{
-  opacity:0.3;
+.mc-page-title{
+  margin:0;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: .2px;
 }
-
-.mc-sep-spaced{
-  margin-top:16px;
-}
-
-.mc-prewrap{
-  white-space:pre-wrap;
-}
-
-.mc-note{
-  padding:10px;
-  margin:10px 0;
-}
-
-.mc-note-warn{
-  border:1px solid rgba(255,255,255,0.35);
-}
-
-.mc-message-card{
-  margin:10px 0;
-  padding:10px;
-  border:1px solid rgba(255,255,255,0.20);
-}
-
-.mc-message-head{
-  opacity:0.9;
-}
-
-.mc-message-body{
-  margin-top:6px;
-}
-
-.mc-dot{
-  margin:0 6px;
-  opacity:0.9;
-}
-
-/* Attachments */
-.mc-attachments-list{
-  margin-top:8px;
-  padding-left:18px;
-}
-
-.mc-attachments-item{
-  margin:6px 0;
-}
-
-.mc-attachment-link{
-  text-decoration:underline;
-}
-
-.mc-attachment-meta{
-  opacity:0.7;
-  margin-left:6px;
-}
-
-/* Actions form layout */
-.mc-form-top{
-  margin-top:10px;
-}
-
-.mc-label-block{
-  display:block;
-  margin-bottom:6px;
-}
-
-.mc-input-wide{
-  width:min(520px, 100%);
-}
-
-.mc-actions-wrap{
+.mc-page-actions{
   display:flex;
   gap:10px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
-
-
-/* Για citizen/request-details */
-
-/* row με links πάνω */
-.mc-links-row{
-  display:flex;
-  gap:14px;
-  margin:12px 0 18px 0;
+  align-items:center;
   flex-wrap:wrap;
 }
-
-/* διαχωριστική γραμμή */
-.mc-sep{
-  opacity:0.3;
-}
-
-.mc-sep-spaced{
-  margin-top:16px;
-}
-
-/* pre-wrap για περιγραφή/μηνύματα */
-.mc-prewrap{
-  white-space:pre-wrap;
-}
-
-/* messages */
-.mc-message-card{
-  margin:10px 0;
-  padding:10px;
-  border:1px solid rgba(255,255,255,0.20);
-}
-
-.mc-message-head{
-  opacity:0.9;
-}
-
-.mc-message-body{
-  margin-top:6px;
-}
-
-.mc-dot{
-  margin:0 6px;
-  opacity:0.9;
-}
-
-/* attachments list */
-.mc-attachments-list{
-  margin-top:8px;
-  padding-left:18px; /* για να φαίνονται ωραία bullets */
-}
-
-.mc-attachments-item{
-  margin:6px 0;
-}
-
-.mc-attachment-link{
-  text-decoration:underline;
-}
-
-.mc-attachment-meta{
-  opacity:0.7;
-  margin-left:6px;
-}
+.mc-dot{ margin:0 6px; opacity:0.9; }
+.mc-subtitle{ margin-top: 8px; opacity: .92; line-height: 1.35; }
 
 /* =========================================================
-   Request Details (Citizen/Employee) – Professional layout
+   7) Auth UI (Login/Register) – White panel overrides
    ========================================================= */
-
-.mc-subtitle{
-    margin-top: 8px;
-    opacity: .92;
-    line-height: 1.35;
-}
-
-.mc-badge-tight{
-    padding: 6px 10px;
-}
-
-.mc-detail-grid{
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 380px;
-    gap: 16px;
-    align-items: start;
-}
-
-.mc-detail-grid-single{
-    grid-template-columns: 1fr;
-}
-
-.mc-detail-main,
-.mc-detail-aside{
-    display: grid;
-    gap: 16px;
-}
-
-@media (max-width: 980px){
-    .mc-detail-grid{
-        grid-template-columns: 1fr;
-    }
-}
-
-/* “Key-Value” tiles */
-.mc-kv{
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 12px 14px;
-    margin-top: 10px;
-}
-
-.mc-kv-item{
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,.14);
-    background: rgba(0,0,0,.12);
-    padding: 12px 12px;
-}
-
-.mc-kv-wide{
-    grid-column: span 2;
-}
-
-.mc-kv-label{
-    font-size: 12.5px;
-    font-weight: 900;
-    letter-spacing: .2px;
-    opacity: .88;
-}
-
-.mc-kv-value{
-    margin-top: 6px;
-    font-weight: 900;
-}
-
-@media (max-width: 720px){
-    .mc-kv{
-        grid-template-columns: 1fr;
-    }
-    .mc-kv-wide{
-        grid-column: auto;
-    }
-}
-
-/* Section title inside cards */
-.mc-section-title{
-    font-size: 16px;
-    font-weight: 950;
-    letter-spacing: .2px;
-    margin: 0 0 10px 0;
-}
-
-/* Timeline */
-.mc-timeline{
-    display: grid;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.mc-timeline-item{
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,.14);
-    background: rgba(0,0,0,.10);
-    padding: 12px 12px;
-}
-
-.mc-timeline-head{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: baseline;
-}
-
-.mc-timeline-type{
-    font-weight: 950;
-    letter-spacing: .2px;
-}
-
-.mc-timeline-body{
-    margin-top: 8px;
-}
-
-/* File input polish (native αλλά πιο “δεμένο”) */
-.mc-file{
-    padding: 10px 12px;
-}
-
-.mc-upload-form{
-    margin-top: 10px;
-}
-
-/* Links πάνω σε μπλε φόντο (attachments κλπ) */
-.mc-link,
-.mc-attachment-link{
-    color: rgba(255,255,255,0.95);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 2px;
-}
-
-.mc-link:hover,
-.mc-attachment-link:hover{
-    color: #ffffff;
-    text-decoration-thickness: 3px;
-}
-
-/* Προαιρετικό: να ξεχωρίζει και το μέγεθος (bytes) */
-.mc-attachment-meta{
-    color: rgba(255,255,255,0.75);
-}
-
-/* λίγο καλύτερη στοίχιση λίστας */
-.mc-attachments-list{
-    margin: 8px 0 0 0;
-    padding-left: 18px;
-}
-
-/* =========================================================
-   Employee Appointments
-   ========================================================= */
-
-.mc-appointment-actions{
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-}
-
-.mc-btn-danger{
-    background: rgba(255, 107, 107, 0.14);
-    border-color: rgba(255, 107, 107, 0.48);
-}
-
-.mc-btn-danger:hover{
-    background: rgba(255, 107, 107, 0.22);
-    border-color: rgba(255, 107, 107, 0.68);
-}
-
-@media (max-width: 920px){
-    .mc-appointment-actions{
-        justify-content: flex-start;
-    }
-}
-
-/* =========================================================
-   Employee Reschedule – Form layout
-   ========================================================= */
-
-.mc-form-narrow{
-    max-width: 760px;
-}
-
-.mc-form-card .mc-summary-row{
-    margin: 10px 0 14px;
-}
-
-/* =========================================================
-   Admin schedules – Multiple intervals per day
-   ========================================================= */
-
-.mc-mt-16{ margin-top: 16px; }
-
-/* Danger button (delete/cancel) */
-.mc-btn-danger{
-    background: rgba(255, 107, 107, 0.14);
-    border-color: rgba(255, 107, 107, 0.48);
-}
-
-.mc-btn-danger:hover{
-    background: rgba(255, 107, 107, 0.22);
-    border-color: rgba(255, 107, 107, 0.68);
-}
-
-/* Success alert variant that matches dark/blue UI */
-.mc-alert-success{
-    border-color: rgba(46, 204, 113, 0.55);
-    background: rgba(46, 204, 113, 0.12);
-}
-
-/* Details (collapsible) */
-.mc-details{
-    margin-top: 10px;
-}
-
-.mc-details-summary{
-    list-style: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    user-select: none;
-    font-weight: 900;
-    letter-spacing: .2px;
-    padding: 10px 2px;
-}
-
-.mc-details-summary::-webkit-details-marker{ display:none; }
-
-.mc-details-icon{
-    display:inline-flex;
-    width: 22px;
-    height: 22px;
-    align-items:center;
-    justify-content:center;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(0,0,0,.12);
-}
-
-details[open] .mc-details-icon{ transform: rotate(180deg); }
-
-.mc-details-title{ font-weight: 900; }
-
-.mc-details-subtitle{
-    opacity: .85;
-    font-weight: 700;
-    font-size: 13px;
-}
-
-.mc-details-body{
-    margin-top: 10px;
-    padding: 14px;
-}
-
-@media (max-width: 720px){
-    .mc-details-subtitle{ display:none; }
-}
-
-/* =========================================================
-   Better alerts (success/error) – higher contrast & nicer
-   ========================================================= */
-
-.mc-alert{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.14);
-    background: rgba(0,0,0,.10);
-    color: rgba(255,255,255,.95);
-    font-weight: 800;
-    letter-spacing: .2px;
-    line-height: 1.35;
-    margin: 12px 0 16px;
-    box-shadow: 0 10px 26px rgba(0,0,0,.20);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    animation: mc-alert-in .18s ease-out;
-}
-
-/* Icon bubble (works without changing HTML) */
-.mc-alert::before{
-    content: "✓";
-    display: inline-flex;
-    width: 26px;
-    height: 26px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 900;
-    flex: 0 0 auto;
-    background: rgba(255,255,255,.12);
-    border: 1px solid rgba(255,255,255,.18);
-}
-
-/* Success */
-.mc-alert-success{
-    border-color: rgba(46, 204, 113, 0.55);
-    background: linear-gradient(90deg,
-        rgba(46, 204, 113, 0.20),
-        rgba(46, 204, 113, 0.08)
-    );
-    color: rgba(255,255,255,.98);
-}
-
-.mc-alert-success::before{
-    background: rgba(46, 204, 113, 0.28);
-    border-color: rgba(46, 204, 113, 0.55);
-}
-
-/* Error */
-.mc-alert-danger{
-    border-color: rgba(255, 107, 107, 0.55);
-    background: linear-gradient(90deg,
-        rgba(255, 107, 107, 0.22),
-        rgba(255, 107, 107, 0.08)
-    );
-    color: rgba(255,255,255,.98);
-}
-
-.mc-alert-danger::before{
-    content: "!";
-    background: rgba(255, 107, 107, 0.26);
-    border-color: rgba(255, 107, 107, 0.55);
-}
-
-/* Nice entrance */
-@keyframes mc-alert-in{
-    from { transform: translateY(-6px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-}
-
-/* Mobile spacing */
-@media (max-width: 720px){
-    .mc-alert{
-        padding: 12px 14px;
-        border-radius: 12px;
-    }
-}
-
-/* =========================================================
-   Auto-dismiss alerts (fade + collapse)
-   ========================================================= */
-
-.mc-alert{
-    /* κρατάει χώρο για “collapse” */
-    max-height: 220px;
-    overflow: hidden;
-
-    /* smooth hide */
-    transition:
-        opacity .22s ease,
-        transform .22s ease,
-        max-height .26s ease,
-        margin .26s ease,
-        padding .26s ease;
-}
-
-.mc-alert.mc-alert-hide{
-    opacity: 0;
-    transform: translateY(-6px);
-    max-height: 0;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* =========================================================
-   Stronger SUCCESS green
-   ========================================================= */
-
-.mc-alert-success{
-    /* πιο έντονο περίγραμμα */
-    border-color: rgba(0, 255, 153, 0.95);
-    /* πιο φωτεινό gradient */
-    background: linear-gradient(90deg,
-        rgba(0, 255, 153, 0.34),
-        rgba(0, 255, 153, 0.14)
-    );
-    /* πιο έντονο “glow” */
-    box-shadow:
-        0 10px 26px rgba(0,0,0,.20),
-        0 0 0 1px rgba(0, 255, 153, 0.25) inset,
-        0 0 22px rgba(0, 255, 153, 0.22);
-}
-
-/* το “μπιλάκι” με το tik γίνεται επίσης πιο έντονο */
-.mc-alert-success::before{
-    background: rgba(0, 255, 153, 0.38);
-    border-color: rgba(0, 255, 153, 0.95);
-    box-shadow: 0 0 16px rgba(0, 255, 153, 0.35);
-}
-
-/* δυναμώνει λίγο το ίδιο το κείμενο */
-.mc-alert-success{
-    color: #ffffff; /* καθαρό άσπρο για μέγιστη αντίθεση */
-}
-
-/* =========================================================
-   FIX: Alerts μέσα σε auth pages (λευκή κάρτα login/register)
-   ========================================================= */
-
-.mc-auth-page .mc-alert{
-    /* επαναφορά για light card */
-    color: #0b1a2e;
-    background: rgba(0,0,0,.05);
-    border: 1px solid rgba(0,0,0,.10);
-    box-shadow: 0 10px 26px rgba(0,0,0,.12);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-/* Αν δεν θες καθόλου το “bubble”/icon μέσα στη λευκή κάρτα */
-.mc-auth-page .mc-alert::before{
-    display: none;
-}
-
-/* Κρατάμε τα κλασικά info/success/error χρώματα για login card */
-.mc-auth-page .mc-alert-info{
-    background: #eff6ff;
-    color: #1d4ed8;
-    border-color: #bfdbfe;
-}
-
-.mc-auth-page .mc-alert-success{
-    background: #ecfdf5;
-    color: #15803d;
-    border-color: #bbf7d0;
-}
-
-/* Καλύπτει και mc-alert-error και mc-alert-danger */
-.mc-auth-page .mc-alert-error,
-.mc-auth-page .mc-alert-danger{
-    background: #fef2f2;
-    color: #b91c1c;
-    border-color: #fecaca;
-}
-
-/* =========================================================
-   Professional Auth UI (login/register)
-   ========================================================= */
-
 .mc-auth-page{
-    padding: 36px 18px 44px;
-    align-items: center;
-    min-height: calc(100vh - 160px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 36px 18px 44px;
+  min-height: calc(100vh - 160px);
 }
 
 .mc-auth-shell{
-    width: min(980px, 100%);
-    display: grid;
-    grid-template-columns: 1.05fr 1fr;
-    border-radius: 36px;
-    overflow: hidden;
-    box-shadow: 0 26px 70px rgba(0,0,0,.28);
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.06);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 0 26px 70px rgba(0,0,0,.28);
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .mc-auth-side{
-    position: relative;
-    padding: 32px 30px;
-    color: rgba(255,255,255,.96);
-    background: linear-gradient(160deg, rgba(37,99,235,.82), rgba(2,6,23,.55));
+  position: relative;
+  padding: 32px 30px;
+  color: rgba(255,255,255,.96);
+  background: linear-gradient(160deg, rgba(37,99,235,.82), rgba(2,6,23,.55));
 }
-
 .mc-auth-side::before{
-    content:"";
-    position:absolute;
-    inset:-40px;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(0,255,153,.18), transparent 45%),
-        radial-gradient(circle at 80% 30%, rgba(255,255,255,.14), transparent 40%),
-        radial-gradient(circle at 50% 90%, rgba(59,130,246,.22), transparent 45%);
-    pointer-events:none;
-    filter: blur(2px);
+  content:"";
+  position:absolute;
+  inset:-40px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0,255,153,.18), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,.14), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(59,130,246,.22), transparent 45%);
+  pointer-events:none;
+  filter: blur(2px);
 }
-
 .mc-auth-side > *{ position: relative; }
 
+.mc-auth-main{
+  background: #f9fafb;
+  padding: 32px 30px;
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+  color: var(--mc-text-main);
+}
+
+.mc-auth-title{ margin: 0; font-size: 28px; font-weight: 900; letter-spacing: .2px; color:#0b1a2e; }
+.mc-auth-label{ font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mc-blue-600); font-weight: 600; }
+.mc-auth-subtitle{ margin: 4px 0 0; font-size: 14px; color: var(--mc-text-muted); }
+.mc-auth-subtitle a{ color: var(--mc-blue-600); text-decoration: none; font-weight: 600; }
+.mc-auth-subtitle a:hover{ text-decoration: underline; }
+
+/* Auth inputs */
+.mc-auth-main .mc-form-group label{ color: var(--mc-text-main); font-weight: 500; }
+.mc-auth-main .mc-form-group input{
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 8px 22px rgba(2, 6, 23, 0.06);
+  color: var(--mc-text-main);
+}
+.mc-auth-main .mc-form-group input:focus{
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+/* Auth alerts (override dark style) */
+.mc-auth-main .mc-alert,
+.mc-auth-card .mc-alert{
+  color: #0b1a2e !important;
+  background: #f3f4f6 !important;
+  border-color: rgba(15,23,42,.18) !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,.12) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.mc-auth-main .mc-alert::before,
+.mc-auth-card .mc-alert::before{ display:none !important; }
+
+.mc-auth-main .mc-alert-info,
+.mc-auth-card .mc-alert-info{
+  background: #dbeafe !important;
+  border-color: #1d4ed8 !important;
+  color: #0b2a6f !important;
+  font-weight: 900 !important;
+}
+.mc-auth-main .mc-alert-success,
+.mc-auth-card .mc-alert-success{
+  background: #dcfce7 !important;
+  border-color: #16a34a !important;
+  color: #14532d !important;
+}
+.mc-auth-main .mc-alert-danger,
+.mc-auth-main .mc-alert-error,
+.mc-auth-card .mc-alert-danger,
+.mc-auth-card .mc-alert-error{
+  background: #fee2e2 !important;
+  border-color: #dc2626 !important;
+  color: #7f1d1d !important;
+}
+
+@media (max-width: 860px){
+  .mc-auth-shell{ grid-template-columns: 1fr; }
+  .mc-auth-side{ padding: 22px 22px; }
+  .mc-auth-main{ padding: 24px 22px; }
+}
+
+/* --- Auth side panel details (NEW register look) --- */
 .mc-auth-side-top{
-    display:flex;
-    align-items:center;
-    gap: 14px;
-    margin-bottom: 18px;
+  display:flex;
+  align-items:center;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
 .mc-auth-mark{
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight: 900;
-    letter-spacing: .5px;
-    background: rgba(255,255,255,.14);
-    border: 1px solid rgba(255,255,255,.20);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 900;
+  letter-spacing: .5px;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.20);
 }
 
 .mc-auth-side-title{
-    font-weight: 900;
-    font-size: 18px;
-    letter-spacing: .2px;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: .2px;
 }
 
 .mc-auth-side-subtitle{
-    font-size: 13px;
-    opacity: .9;
+  font-size: 13px;
+  opacity: .9;
 }
 
 .mc-auth-side-body{
-    margin-top: 18px;
+  margin-top: 18px;
 }
 
 .mc-auth-side-headline{
-    margin: 0 0 10px 0;
-    font-size: 22px;
-    font-weight: 900;
+  margin: 0 0 10px 0;
+  font-size: 22px;
+  font-weight: 900;
 }
 
 .mc-auth-side-text{
-    margin: 0 0 14px 0;
-    font-size: 14px;
-    line-height: 1.45;
-    opacity: .95;
+  margin: 0 0 14px 0;
+  font-size: 14px;
+  line-height: 1.45;
+  opacity: .95;
 }
 
 .mc-auth-side-list{
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display:flex;
-    flex-direction:column;
-    gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
 }
 
 .mc-auth-side-list li{
-    display:flex;
-    gap: 10px;
-    align-items:flex-start;
-    font-size: 14px;
-    opacity: .95;
+  display:flex;
+  gap: 10px;
+  align-items:flex-start;
+  font-size: 14px;
+  opacity: .95;
 }
 
 .mc-auth-side-list li::before{
-    content:"✓";
-    display:inline-flex;
-    width: 20px;
-    height: 20px;
-    align-items:center;
-    justify-content:center;
-    border-radius: 999px;
-    font-weight: 900;
-    background: rgba(0,255,153,.22);
-    border: 1px solid rgba(0,255,153,.35);
-    flex: 0 0 auto;
-    margin-top: 1px;
+  content:"✓";
+  display:inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items:center;
+  justify-content:center;
+  border-radius: 999px;
+  font-weight: 900;
+  background: rgba(0,255,153,.22);
+  border: 1px solid rgba(0,255,153,.35);
+  flex: 0 0 auto;
+  margin-top: 1px;
 }
 
 .mc-auth-side-footer{
-    margin-top: 18px;
-    font-size: 12px;
-    opacity: .85;
+  margin-top: 18px;
+  font-size: 12px;
+  opacity: .85;
 }
 
-.mc-auth-main{
-    background: #f9fafb;
-    padding: 32px 30px;
-    display:flex;
-    flex-direction:column;
-    gap: 16px;
-}
+/* small extras used by your register template */
+.mc-auth-submit{ margin-top: 2px; }
 
-.mc-auth-title{
-    margin: 0;
-    font-size: 28px;
-    font-weight: 900;
-    letter-spacing: .2px;
-}
-
-/* Inputs with icon */
-.mc-input{
-    position: relative;
-}
-
-.mc-input-ico{
-    position:absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    opacity: .60;
-    pointer-events:none;
-}
-
-.mc-auth-main .mc-form-group input{
-    border-radius: 16px;
-    padding: 12px 14px 12px 44px; /* space for icon */
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.10);
-    box-shadow: 0 8px 22px rgba(2, 6, 23, 0.06);
-}
-
-.mc-auth-main .mc-form-group input:focus{
-    border-color: rgba(37, 99, 235, 0.55);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
-}
-
-/* Better button feel in auth */
-.mc-auth-submit{
-    margin-top: 2px;
-}
-
-/* Footnote */
 .mc-auth-footnote{
-    margin-top: 10px;
-    font-size: 12px;
-    color: rgba(15, 23, 42, 0.62);
-    line-height: 1.35;
-}
-
-/* Responsive: stack panels */
-@media (max-width: 860px){
-    .mc-auth-shell{
-        grid-template-columns: 1fr;
-    }
-    .mc-auth-side{
-        padding: 22px 22px;
-    }
-    .mc-auth-main{
-        padding: 24px 22px;
-    }
+  margin-top: 10px;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.62);
+  line-height: 1.35;
 }
 
 /* =========================================================
-   Fix Register: remove icons + make title visible
+   Register layout (όπως το παλιό UI): 2 στήλες σε desktop
    ========================================================= */
 
-/* Τίτλοι στο δεξί (λευκό) panel να είναι σκούροι/ορατοί */
-.mc-auth-main .mc-auth-title{
-    color: #0b1a2e;
-    text-shadow: none;
+.mc-auth-main { min-width: 0; } /* safety */
+
+.mc-register-form.mc-form-grid{
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 14px;
 }
 
-/* Μικρό boost και στο label/subtitle */
-.mc-auth-main .mc-auth-label{ color: rgba(37, 99, 235, .95); }
-.mc-auth-main .mc-auth-subtitle{ color: rgba(15, 23, 42, .72); }
-
-/* Register form: καθαρά inputs χωρίς icon padding */
-.mc-register-form .mc-auth-input{
-    width: 100%;
-    border-radius: 16px;
-    padding: 12px 14px; /* χωρίς χώρο για icon */
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.10);
-    box-shadow: 0 8px 22px rgba(2, 6, 23, 0.06);
+/* Email/AMKA/Password full width */
+.mc-register-form .mc-form-group-full{
+  grid-column: 1 / -1;
 }
 
-.mc-register-form .mc-auth-input:focus{
-    outline: none;
-    border-color: rgba(37, 99, 235, 0.55);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+/* Mobile -> 1 στήλη */
+@media (max-width: 720px){
+  .mc-register-form.mc-form-grid{
+    grid-template-columns: 1fr;
+  }
 }
 
-/* =========================================================
-   Register inputs: remove “indent” completely
-   ========================================================= */
-
-.mc-register-form input,
-.mc-register-form select,
-.mc-register-form textarea{
-    padding-left: 14px !important;   /* κανονική απόσταση */
-    text-indent: 0 !important;       /* αν κάπου υπάρχει */
-    background-clip: padding-box;
-}
-
-/* Αν κάπου τυχαίνει να μπαίνει μέσα σε wrapper .mc-input */
-.mc-register-form .mc-input-ico{ display: none !important; }
-.mc-register-form .mc-input input{
-    padding-left: 14px !important;
-}
-/* =========================================================
-   Info alert (blue)
-   ========================================================= */
-
-.mc-alert-info{
-    border-color: rgba(59, 130, 246, 0.55);
-    background: linear-gradient(90deg,
-        rgba(59, 130, 246, 0.18),
-        rgba(59, 130, 246, 0.08)
-    );
-    color: rgba(255,255,255,.98);
-}
-
-.mc-alert-info::before{
-    content: "i";
-    background: rgba(59, 130, 246, 0.26);
-    border-color: rgba(59, 130, 246, 0.55);
-}
-
-/* =========================================================
-   Stronger INFO alert inside auth (white panel)
-   ========================================================= */
-
-.mc-auth-main .mc-alert-info{
-    background: #dbeafe;            /* πιο γεμάτο μπλε */
-    border-color: #2563eb;          /* έντονο μπλε border */
-    color: #0b2a6f;                 /* σκούρο μπλε κείμενο */
-    box-shadow:
-        0 10px 26px rgba(0,0,0,.14),
-        0 0 0 1px rgba(37,99,235,.10) inset;
-}
-
-.mc-auth-main .mc-alert-info::before{
-    content: "i";
-    background: #2563eb;            /* γεμάτο μπλε “bubble” */
-    border-color: #1d4ed8;
-    color: #ffffff;                 /* άσπρο το i */
-    box-shadow: 0 0 0 3px rgba(37,99,235,.15);
-}
-
-/* Αν θες το κείμενο ακόμα πιο bold */
-.mc-auth-main .mc-alert-info{
-    font-weight: 900;
-}
 
 
 /* =========================================================
-   FORCE proper alerts inside the WHITE auth panel
+   8) Request Details (Citizen/Employee)
    ========================================================= */
-
-/* Base inside auth panel (fixes white text / grey look) */
-.mc-auth-main .mc-alert{
-    color: #0b1a2e !important;
-    background: #f3f4f6 !important;
-    border-color: rgba(15,23,42,.18) !important;
-    box-shadow: 0 10px 26px rgba(0,0,0,.12) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+.mc-detail-grid{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+  align-items: start;
 }
+.mc-detail-grid-single{ grid-template-columns: 1fr; }
 
-/* Default icon bubble inside auth panel */
-.mc-auth-main .mc-alert::before{
-    background: rgba(15,23,42,.10) !important;
-    border-color: rgba(15,23,42,.18) !important;
-    color: #0b1a2e !important;
+.mc-detail-main,
+.mc-detail-aside{ display: grid; gap: 16px; }
+
+@media (max-width: 980px){
+  .mc-detail-grid{ grid-template-columns: 1fr; }
 }
 
-/* INFO (logout) – darker & readable */
-.mc-auth-main .mc-alert-info{
-    background: #dbeafe !important;
-    border-color: #1d4ed8 !important;
-    color: #0b2a6f !important;
-}
-.mc-auth-main .mc-alert-info::before{
-    content: "i" !important;
-    background: #1d4ed8 !important;
-    border-color: #1e40af !important;
-    color: #ffffff !important;
+.mc-section-title{
+  font-size: 16px;
+  font-weight: 950;
+  letter-spacing: .2px;
+  margin: 0 0 10px 0;
 }
 
-/* SUCCESS (registered etc) */
-.mc-auth-main .mc-alert-success{
-    background: #dcfce7 !important;
-    border-color: #16a34a !important;
-    color: #14532d !important;
+.mc-kv{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px 14px;
+  margin-top: 10px;
 }
-.mc-auth-main .mc-alert-success::before{
-    content: "✓" !important;
-    background: #16a34a !important;
-    border-color: #15803d !important;
-    color: #ffffff !important;
+.mc-kv-item{
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.12);
+  padding: 12px 12px;
+}
+.mc-kv-wide{ grid-column: span 2; }
+.mc-kv-label{ font-size: 12.5px; font-weight: 900; letter-spacing: .2px; opacity: .88; }
+.mc-kv-value{ margin-top: 6px; font-weight: 900; }
+
+@media (max-width: 720px){
+  .mc-kv{ grid-template-columns: 1fr; }
+  .mc-kv-wide{ grid-column: auto; }
 }
 
-/* ERROR/DANGER */
-.mc-auth-main .mc-alert-danger,
-.mc-auth-main .mc-alert-error{
-    background: #fee2e2 !important;
-    border-color: #dc2626 !important;
-    color: #7f1d1d !important;
+.mc-links-row{ display:flex; gap:14px; margin:12px 0 18px 0; flex-wrap:wrap; }
+.mc-sep{ opacity:0.3; }
+.mc-sep-spaced{ margin-top:16px; }
+.mc-prewrap{ white-space:pre-wrap; }
+
+.mc-message-card{
+  margin:10px 0;
+  padding:10px;
+  border:1px solid rgba(255,255,255,0.20);
 }
-.mc-auth-main .mc-alert-danger::before,
-.mc-auth-main .mc-alert-error::before{
-    content: "!" !important;
-    background: #dc2626 !important;
-    border-color: #b91c1c !important;
-    color: #ffffff !important;
+.mc-message-head{ opacity:0.9; }
+.mc-message-body{ margin-top:6px; }
+
+.mc-attachments-list{ margin: 8px 0 0 0; padding-left: 18px; }
+.mc-attachments-item{ margin:6px 0; }
+.mc-attachment-meta{ color: rgba(255,255,255,0.75); opacity:0.9; margin-left:6px; }
+
+/* =========================================================
+   9) Booking UI (Citizen)
+   ========================================================= */
+.mc-form-card{ padding: 18px 18px 16px; }
+.mc-form-card-header{
+  padding: 8px 6px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  margin-bottom: 14px;
+}
+.mc-form-card-title{ font-size: 18px; font-weight: 900; letter-spacing: .2px; }
+.mc-form-card-subtitle{ margin-top: 6px; opacity: .9; font-size: 14px; }
+
+.mc-actions-row{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.mc-actions-row-right{ justify-content:flex-end; }
+
+.mc-summary-row{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.mc-summary-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.14);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* times */
+.mc-times-grid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+.mc-time-option{ display:block; cursor:pointer; }
+.mc-time-radio{ position:absolute; opacity:0; pointer-events:none; }
+.mc-time-pill{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding: 10px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.16);
+  font-weight: 900;
+  transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  user-select: none;
+}
+.mc-time-option:hover .mc-time-pill{
+  background: rgba(255,255,255,.14);
+  border-color: rgba(255,255,255,.36);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.16);
+}
+.mc-time-radio:checked + .mc-time-pill{
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.55);
+  box-shadow: 0 14px 30px rgba(0,0,0,.20);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 980px){
+  .mc-times-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 520px){
+  .mc-times-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* booking step1 tiles */
+.mc-service-grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 6px;
+}
+.mc-service-tile{
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 14px 14px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.12);
+  cursor: pointer;
+  transition: transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  user-select: none;
+}
+.mc-service-tile:hover{
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.34);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(0,0,0,.18);
+}
+.mc-service-radio{ position:absolute; opacity:0; pointer-events:none; }
+.mc-service-title{ font-weight: 950; font-size: 14.5px; letter-spacing: .2px; line-height: 1.15; }
+.mc-service-sub{ font-size: 12.5px; opacity: .88; line-height: 1.25; }
+
+.mc-service-tile:has(.mc-service-radio:checked){
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.55);
+  box-shadow: 0 16px 34px rgba(0,0,0,.22);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 980px){
+  .mc-service-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px){
+  .mc-service-grid{ grid-template-columns: 1fr; }
 }
 
 /* =========================================================
-   FIX: Logout / INFO alert readable inside the WHITE auth card
-   (homepage uses .mc-auth-card, not .mc-auth-main)
+   10) New Request UI (Citizen)
    ========================================================= */
+.mc-request-card{ max-width: 980px; }
+.mc-request-grid{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.mc-span-2{ grid-column: span 2; }
 
-.mc-auth-card .mc-alert-info,
-.mc-auth-main .mc-alert-info,
-.mc-auth-page .mc-alert-info{
-    background: linear-gradient(90deg,
-        rgba(30, 64, 175, 0.95),
-        rgba(29, 78, 216, 0.92)
-    ) !important;
-    border-color: rgba(30, 58, 138, 0.95) !important;
-    color: #ffffff !important;
-    font-weight: 900 !important;
-    text-shadow: 0 1px 0 rgba(0,0,0,.22) !important;
+.mc-textarea{ resize: vertical; min-height: 130px; line-height: 1.45; }
+
+@media (max-width: 980px){
+  .mc-request-grid{ grid-template-columns: 1fr; }
+  .mc-span-2{ grid-column: auto; }
 }
 
-/* Icon bubble */
-.mc-auth-card .mc-alert-info::before,
-.mc-auth-main .mc-alert-info::before,
-.mc-auth-page .mc-alert-info::before{
-    content: "i" !important;
-    background: rgba(255,255,255,.18) !important;
-    border-color: rgba(255,255,255,.35) !important;
-    color: #ffffff !important;
+/* =========================================================
+   11) Employee Appointments
+   ========================================================= */
+.mc-appointment-actions{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+@media (max-width: 920px){
+  .mc-appointment-actions{ justify-content: flex-start; }
+}
+
+/* =========================================================
+   12) Admin schedules – details
+   ========================================================= */
+.mc-mt-16{ margin-top: 16px; }
+
+.mc-details{ margin-top: 10px; }
+.mc-details-summary{
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  font-weight: 900;
+  letter-spacing: .2px;
+  padding: 10px 2px;
+}
+.mc-details-summary::-webkit-details-marker{ display:none; }
+
+.mc-details-icon{
+  display:inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items:center;
+  justify-content:center;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.12);
+}
+details[open] .mc-details-icon{ transform: rotate(180deg); }
+
+.mc-details-title{ font-weight: 900; }
+.mc-details-subtitle{ opacity: .85; font-weight: 700; font-size: 13px; }
+.mc-details-body{ margin-top: 10px; padding: 14px; }
+
+@media (max-width: 720px){
+  .mc-details-subtitle{ display:none; }
+}
+
+/* =========================================================
+   13) Admin Requests (FINAL, no duplicates)
+   ========================================================= */
+.mc-admin-requests-card{ border-radius: 18px; }
+
+/* IMPORTANT: no horizontal scroll */
+.mc-admin-requests-card .mc-table-wrap{
+  overflow-x: hidden !important;
+  padding: 0 16px !important; /* δεξί/αριστερό κενό ώστε να μη “κόβεται” το κουμπί */
+  box-sizing: border-box;
+}
+
+/* Table layout: fit always */
+.mc-admin-requests-table{
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.mc-admin-requests-table thead th{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 12px 12px !important;
+  white-space: nowrap;
+}
+
+.mc-admin-requests-table tbody td{
+  padding: 12px 12px !important;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: normal;  /* σπάει μόνο σε κενά */
+  word-break: normal;     /* όχι σπάσιμο μέσα στη λέξη */
+  hyphens: none;
+}
+
+
+.mc-admin-requests-table tbody tr:hover{ background: rgba(255,255,255,.07); }
+
+/* protocol */
+.mc-protocol{
+  display:inline-flex;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 950;
+  letter-spacing: .6px;
+  font-size: 12.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.14);
+  white-space: nowrap;
+}
+
+/* type/service pills */
+.mc-pill{
+  display:inline-flex;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12.5px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+  white-space: nowrap;
+}
+.mc-pill-muted{ opacity: .9; background: rgba(0,0,0,.10); }
+
+/* in admin table, allow wrap so it doesn't expand */
+.mc-admin-requests-table .mc-pill{
+  display: inline-block !important;
+  white-space: normal !important;
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* SLA */
+.mc-sla{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  align-items:flex-start;
+}
+.mc-sla-date{ font-weight: 900; letter-spacing: .2px; white-space: nowrap; }
+
+/* names wrap nicely */
+.mc-name-cell{
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+/* column widths (only the “hard” columns) */
+.mc-admin-requests-table th:nth-child(1),
+.mc-admin-requests-table td:nth-child(1){ width: 120px !important; } /* Πρωτόκολλο */
+.mc-admin-requests-table th:nth-child(7),
+.mc-admin-requests-table td:nth-child(7){ width: 160px !important; } /* SLA */
+.mc-admin-requests-table th:nth-child(8),
+.mc-admin-requests-table td:nth-child(8){ width: 150px !important; } /* Ενέργειες */
+
+/* separation Protocol ↔ Type */
+.mc-admin-requests-table th:nth-child(2),
+.mc-admin-requests-table td:nth-child(2){ padding-left: 18px !important; }
+
+/* actions */
+.mc-col-actions{ width: 1%; white-space: nowrap; }
+.mc-admin-action-btn{ text-decoration:none; white-space: nowrap; margin-right: 4px; }
+
+.mc-admin-requests-table th.mc-col-actions,
+.mc-admin-requests-table td.mc-col-actions{
+  text-align: right;
+  padding-right: 16px !important; /* το “μικρό κενό” που ζήτησες */
+}
+
+/* segmented filter */
+.mc-seg{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 8px 22px rgba(0,0,0,.16);
+}
+.mc-seg-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 900;
+  color: rgba(255,255,255,.85);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+}
+.mc-seg-item:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+.mc-seg-item.is-active{
+  background: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.22);
+  color: #fff;
+}
+.mc-seg-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .2px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.10);
+  color: rgba(255,255,255,.92);
+}
+
+/* Mobile: your global table-to-cards kicks in; just ensure pills don't overflow */
+@media (max-width: 920px){
+  .mc-pill, .mc-protocol{ white-space: normal; }
+}
+
+/* =========================================================
+   14) Responsive tweaks (header/footer)
+   ========================================================= */
+@media (max-width: 960px){
+  .mc-header-inner{ flex-wrap: wrap; gap: 14px; }
+  .mc-nav{ order: 3; flex-wrap: wrap; gap: 10px; font-size: 14px; }
+  .mc-main{ margin-top: 20px; }
+}
+
+@media (max-width: 640px){
+  .mc-header{ padding-inline: 18px; }
+  .mc-header-inner{ align-items: flex-start; }
+  .mc-footer-inner{ flex-direction: column; gap: 4px; }
+}
+
+/* =========================================================
+   HOME PAGE (homepage.html) + SIMPLE LOGIN CARD (login.html)
+   ========================================================= */
+
+/* --- Hero layout --- */
+.mc-hero{
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.05fr);
+  gap: 42px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.mc-hero-left{
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.05));
+  border-radius: 40px;
+  padding: 40px 40px 36px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.55);
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.mc-hero-left::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 0, rgba(191, 219, 254, 0.15), transparent 55%),
+    radial-gradient(circle at 90% 100%, rgba(56, 189, 248, 0.18), transparent 50%);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.mc-hero-left > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero badge (SCOPED) ώστε να μη χαλάσει τα status badges (.mc-badge) */
+.mc-hero-left .mc-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.75);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+  font-size: 13px;
+  border: none;          /* override από τα table badges */
+  letter-spacing: 0;
+}
+
+.mc-hero-left .mc-badge::before{
+  display: none;         /* σβήνει την τελίτσα που βάζουν τα status badges */
+}
+
+.mc-hero-left .mc-badge-circle{
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #dbeafe 50%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.mc-hero-left h1{
+  margin: 22px 0 14px;
+  font-size: clamp(32px, 3.5vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+
+.mc-hero-text{
+  margin: 0 0 20px;
+  max-width: 560px;
+  font-size: 16px;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+.mc-hero-list{
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mc-hero-list li{
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mc-hero-list li::before{
+  content: "•";
+  font-size: 18px;
+  margin-right: 4px;
+  color: #a5f3fc;
+}
+
+.mc-hero-footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.mc-hero-logo{
+  font-weight: 600;
+}
+
+/* --- Simple auth card (homepage + login page) --- */
+.mc-auth-card{
+  background: #f9fafb;
+  border-radius: 40px;
+  padding: 32px 32px 30px;
+  color: var(--mc-text-main);
+  box-shadow: var(--mc-shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.mc-auth-card-centered{
+  max-width: 420px;
+  margin: 40px auto;
+}
+
+.mc-auth-card-wide{
+  max-width: 640px;
+  margin: 40px auto;
+}
+
+.mc-auth-header{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Inputs μέσα στο light auth card (override του dark form styling) */
+.mc-auth-card .mc-form-group label{
+  color: var(--mc-text-main);
+  font-weight: 500;
+}
+
+.mc-auth-card .mc-form-group input{
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 14px;
+  font-size: 14px;
+  background: #ffffff;
+  color: var(--mc-text-main);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.mc-auth-card .mc-form-group input:focus{
+  border-color: var(--mc-blue-500);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  background: #ffffff;
+}
+
+/* Footer row κάτω από inputs (remember me / forgot) */
+.mc-form-footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.mc-auth-card .mc-form-footer,
+.mc-auth-main .mc-form-footer{
+  color: var(--mc-text-muted);
+}
+
+.mc-checkbox{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mc-checkbox input{
+  width: 14px;
+  height: 14px;
+}
+
+.mc-link-muted{
+  text-decoration: none;
+  color: rgba(255,255,255,.80);
+}
+.mc-link-muted:hover{ text-decoration: underline; }
+
+.mc-auth-card .mc-link-muted,
+.mc-auth-main .mc-link-muted{
+  color: var(--mc-text-muted);
+}
+
+/* Primary action button used in login/register */
+.mc-button-primary{
+  border: none;
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(to right, var(--mc-blue-500), var(--mc-blue-700));
+  color: #ffffff;
+  box-shadow: 0 16px 35px rgba(37, 99, 235, 0.55);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.mc-button-primary:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.mc-button-full{ width: 100%; }
+
+.mc-form-terms{
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--mc-text-muted);
+}
+
+.mc-form-actions{ margin-top: 6px; }
+
+/* --- Responsive for Hero --- */
+@media (max-width: 960px){
+  .mc-hero{
+    grid-template-columns: 1fr;
+  }
+  .mc-hero-left{
+    padding: 26px 22px 24px;
+    border-radius: 30px;
+  }
+  .mc-auth-card{
+    margin-top: 8px;
+  }
+}
+
+/* =========================================================
+   FIX: Select dropdown (white bg + dark text)
+   Works well on Chrome/Edge/Windows όπου αλλιώς βγαίνει “γκρι”
+   ========================================================= */
+select.mc-input,
+select.mc-control{
+  color-scheme: light; /* αναγκάζει το native dropdown να γίνει “light” */
+}
+
+select.mc-input option,
+select.mc-control option,
+select.mc-input optgroup,
+select.mc-control optgroup{
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/*  πιο καθαρό highlight στο selected item */
+select.mc-input option:checked,
+select.mc-control option:checked{
+  background: var(--mc-blue-500) !important;
+  color: #ffffff !important;
+}
+
+/* ================================
+   Admin table: center + wrap (Status/Service)
+   ================================ */
+
+/* Center the Status + Service columns (3rd and 4th) */
+.mc-admin-requests-table th:nth-child(3),
+.mc-admin-requests-table td:nth-child(3),
+.mc-admin-requests-table th:nth-child(4),
+.mc-admin-requests-table td:nth-child(4){
+  text-align: center !important;
+}
+
+/* Allow status badge to wrap and stay inside its cell */
+.mc-admin-requests-table .mc-badge{
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 100%;
+  white-space: normal !important;
+  line-height: 1.2;
+}
+
+/* =========================================================
+   Admin Requests – fine alignment + status badge fix
+   (βάλε το ΣΤΟ ΤΕΛΟΣ του αρχείου)
+   ========================================================= */
+
+/* 1) Πάρε λίγο χώρο από SLA/Ενέργειες ώστε να "ανασάνει" η μέση */
+.mc-admin-requests-table th:nth-child(7),
+.mc-admin-requests-table td:nth-child(7){ width: 150px !important; }  /* was 160 */
+
+.mc-admin-requests-table th:nth-child(8),
+.mc-admin-requests-table td:nth-child(8){ width: 140px !important; }  /* was 150 */
+
+/* (προαιρετικό αλλά βοηθά) δώσε λίγο σταθερό χώρο στην Κατάσταση */
+.mc-admin-requests-table th:nth-child(3),
+.mc-admin-requests-table td:nth-child(3){ width: 190px !important; }
+
+/* 2) "Τύπος" λίγο πιο δεξιά για σωστή στοίχιση */
+.mc-admin-requests-table th:nth-child(2),
+.mc-admin-requests-table td:nth-child(2){
+  padding-left: 26px !important; /* ήταν 18 */
+}
+
+/* 3) Κατάσταση: η κουκίδα ΠΑΝΤΑ δίπλα (όχι από πάνω) + χωρίς σπάσιμο μέσα στη λέξη */
+.mc-admin-requests-table td:nth-child(3) .mc-badge{
+  /* κάνουμε layout 2 στηλών: [κουκίδα][κείμενο] */
+  display: inline-grid !important;
+  grid-auto-flow: column;
+  grid-template-columns: auto 1fr;
+  gap: 8px !important;
+
+  align-items: center;
+  justify-content: center;
+
+  max-width: 100%;
+  text-align: center;
+
+  /* ΣΗΜΑΝΤΙΚΟ: μην σπάει μέσα στη λέξη (ώστε "Ολοκληρώθηκε" να μη γίνεται ...ε) */
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+}
+
+/* κρατάμε την κουκίδα σωστά κεντραρισμένη */
+.mc-admin-requests-table td:nth-child(3) .mc-badge::before{
+  align-self: center;
+  justify-self: center;
+}
+/* ================================
+   Admin Requests – final alignment fixes
+   (paste at the VERY END)
+   ================================ */
+
+/* 1) ΜΗΝ σπας λέξεις letter-by-letter στο admin table */
+.mc-admin-requests-table tbody td{
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+/* Μόνο τα ονόματα επιτρέπεται να “σπάνε” αν χρειαστεί */
+.mc-admin-requests-table .mc-name-cell{
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+/* 2) ΤΥΠΟΣ (στήλη 2): πιο “καθαρό” wrap + όχι pill-μπάλα */
+.mc-admin-requests-table td:nth-child(2) .mc-pill{
+  display: inline-flex !important;
+  justify-content: center;
+  text-align: center;
+
+  white-space: normal !important;
+  overflow-wrap: normal !important;   /* σπάει σε κενά */
+  word-break: normal !important;
+
+  padding: 8px 12px;
+  border-radius: 18px;               /* αντί για 999px -> δεν γίνεται κύκλος */
+  line-height: 1.15;
+  max-width: 100%;
+}
+
+/* (προαιρετικό) δώσε λίγο παραπάνω “χώρο” σε Τύπο/Κατάσταση */
+.mc-admin-requests-table th:nth-child(2),
+.mc-admin-requests-table td:nth-child(2){ width: 170px !important; }
+
+.mc-admin-requests-table th:nth-child(3),
+.mc-admin-requests-table td:nth-child(3){ width: 180px !important; }
+
+/* 3) ΚΑΤΑΣΤΑΣΗ: η κουκίδα δίπλα, όχι από πάνω */
+.mc-admin-requests-table td:nth-child(3) .mc-badge{
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 4) SLA πιο “κοντά” στις ενέργειες (δεξιά στο κελί) */
+.mc-admin-requests-table th:nth-child(7),
+.mc-admin-requests-table td:nth-child(7){
+  text-align: right !important;
+}
+.mc-admin-requests-table td:nth-child(7) .mc-sla{
+  align-items: flex-end !important;
+}
+
+/* 5) Αν θες τον "Τύπος" (header + cell) λίγο πιο δεξιά:
+      άλλαξε το 24px όπως σε βολεύει */
+.mc-admin-requests-table th:nth-child(2),
+.mc-admin-requests-table td:nth-child(2){
+  padding-left: 24px !important;
+}
+
+/* ΟΝΟΜΑΤΑ (Πολίτης/Υπάλληλος): wrap ΜΟΝΟ ανά λέξη */
+.mc-admin-requests-table td:nth-child(5),
+.mc-admin-requests-table td:nth-child(6),
+.mc-admin-requests-table .mc-name-cell{
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
 }
