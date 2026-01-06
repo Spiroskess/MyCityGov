@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
     Optional<Person> findByEmailAddressIgnoreCase(String emailAddress);
+    Optional<Person> findByAfm(String afm);
+    Optional<Person> findByAmka(String amka);
 
     boolean existsByEmailAddressIgnoreCase(String emailAddress);
     boolean existsByAfm(String afm);

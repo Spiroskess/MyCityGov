@@ -80,10 +80,23 @@
                 Είσοδος στο MyCityGov
             </button>
 
-            <p class="mc-form-terms">
-                Με την είσοδο αποδέχεσαι τους όρους χρήσης της πλατφόρμας.
-            </p>
         </form>
+
+        <!-- ΝΕΑ επιλογή: σύνδεση με token -->
+        <div style="margin: 14px 0; text-align:center;">
+            <span style="opacity:.7;">ή</span>
+        </div>
+
+        <a th:href="@{/gov-token-login}"
+           class="mc-button-primary mc-button-full"
+           style="text-decoration:none; display:block; text-align:center;">
+            Σύνδεση με Token (Mock Gov Login)
+        </a>
+
+        <p class="mc-form-terms">
+            Με την είσοδο αποδέχεσαι τους όρους χρήσης της πλατφόρμας.
+        </p>
+
     </div>
 
 </section>

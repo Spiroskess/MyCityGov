@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Gov Login • Token</title>
+</head>
+
+<body>
+<section class="mc-auth-page">
+    <div class="mc-auth-card mc-auth-card-centered">
+
+        <div class="mc-auth-header">
+            <span class="mc-auth-label">MOCK GOV</span>
+            <h2>Σύνδεση με Token</h2>
+            <p class="mc-auth-subtitle">
+                Πληκτρολόγησε το token που σου “έδωσε” το mock gov login.
+            </p>
+        </div>
+
+        <p th:if="${param.error}" class="mc-alert mc-alert-error">
+            Λάθος ή μη έγκυρο token.
+        </p>
+
+        <form th:action="@{/gov-token-login}" method="post" class="mc-form">
+            <div class="mc-form-group">
+                <label for="govToken">Token</label>
+                <input id="govToken" name="govToken" required placeholder="TOKEN-000"/>
+            </div>
+
+            <button type="submit" class="mc-button-primary mc-button-full">
+                Συνέχεια
+            </button>
+
+
+        </form>
+
+        <div style="margin-top: 10px; text-align:center;">
+            <a th:href="@{/}" class="mc-link-muted">Πίσω στην αρχική</a>
+        </div>
+
+    </div>
+</section>
+</body>
+</html>

@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+
 
 @Configuration
 @EnableMethodSecurity
@@ -21,23 +24,37 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-        AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
     @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+
+    @Bean
     @Order(1)
-    public SecurityFilterChain appSecurityFilterChain(HttpSecurity http)
-        throws Exception {
+    public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) throws Exception {
 
         http
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
-                // Public pages/assets
-                .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/h2-console/**")
-                .permitAll()
+                // Public pages/assets + mock gov endpoints
+                .requestMatchers(
+                    "/", "/login", "/register",
+                    "/gov-token-login/**",
+                    "/gov-login/**",
+                    "/css/**", "/js/**", "/h2-console/**",
+
+                    // external auth mock service
+                    "/external-auth/**",
+
+                    // UI login with token (your new UI flow)
+                    "/gov-token-login/**"
+                ).permitAll()
 
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/employee/**").hasRole("EMPLOYEE")
@@ -50,17 +67,19 @@ public class SecurityConfig {
                 .frameOptions(frame -> frame.sameOrigin())
             )
 
+            .securityContext(sc -> sc.requireExplicitSave(false))
+
             .formLogin(form -> form
                 .loginPage("/")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", false)
+                .defaultSuccessUrl("/", true)
                 .failureUrl("/?error=1")
                 .permitAll()
             )
 
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/?logout=1") // πίσω στην αρχική μετά logout
+                .logoutSuccessUrl("/?logout=1")
                 .permitAll()
             );
 
