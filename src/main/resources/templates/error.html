@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Σφάλμα</title>
+</head>
+<body>
+<h1>Κάτι πήγε στραβά!</h1>
+
+<p th:text="'Κωδικός σφάλματος: ' + ${status}"></p>
+<p th:text="${error}"></p>
+<p th:text="${message}"></p>
+
+<a th:href="@{/}">Επιστροφή στην αρχική</a>
+</body>
+</html>

@@ -25,4 +25,10 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     Optional<Request> findByIdAndAssignedEmployee(Long id, Person employee);
     Optional<Request> findByIdAndCitizen(Long id, Person citizen);
+
+    List<Request> findAllByOrderByCreatedAtDesc();
+
+    List<Request> findAllByAssignedEmployeeIsNullOrderByCreatedAtDesc();
+
+    List<Request> findAllByAssignedEmployeeIsNotNullOrderByCreatedAtDesc();
 }
