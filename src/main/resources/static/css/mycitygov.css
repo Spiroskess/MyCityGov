@@ -1777,3 +1777,61 @@ select.mc-control option:checked{
   .mc-profile-stats{ grid-template-columns: 1fr; }
 }
 
+
+/* =========================================================
+   Register validation UX (AFM/AMKA hints + password rules)
+   ========================================================= */
+
+/* Auth pages use light backgrounds, so override the default dark error red */
+.mc-auth-main .mc-field-error{
+  color: #b91c1c;
+}
+
+.mc-field-hint{
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: rgba(15, 23, 42, 0.70);
+}
+.mc-field-hint.mc-hint-empty{ display:none; }
+.mc-field-hint.mc-hint-ok{ color: #166534; font-weight: 700; }
+.mc-field-hint.mc-hint-error{ color: #b91c1c; font-weight: 800; }
+
+.mc-pass-rules{
+  margin: 10px 0 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.mc-pass-rule{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: rgba(15, 23, 42, 0.70);
+}
+
+.mc-pass-rule .mc-rule-dot{
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #cbd5e1; /* grey */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.mc-pass-rule .mc-rule-dot::before{
+  content: "✓";
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(15, 23, 42, 0.45);
+}
+
+.mc-pass-rule.is-ok{ color: rgba(15, 23, 42, 0.92); font-weight: 700; }
+.mc-pass-rule.is-ok .mc-rule-dot{ background: #22c55e; }
+.mc-pass-rule.is-ok .mc-rule-dot::before{ color: #ffffff; }
+
