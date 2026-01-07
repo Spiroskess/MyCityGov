@@ -1,6 +1,7 @@
 package gr.hua.dit.mycitygov.govauth;
 
-import gr.hua.dit.mycitygov.mockgov.dto.CitizenIdentityDto;
+import gr.hua.dit.mycitygov.govauth.dto.CitizenIdentityDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -10,25 +11,24 @@ import org.springframework.web.client.RestTemplate;
 public class GovAuthClient {
 
     private final RestTemplate restTemplate;
+    private final String validateUrl;
 
-    public GovAuthClient(RestTemplate restTemplate) {
+    public GovAuthClient(RestTemplate restTemplate,
+                         @Value("${mycitygov.govauth.validate-url}") String validateUrl) {
         this.restTemplate = restTemplate;
+        this.validateUrl = validateUrl;
     }
 
     public CitizenIdentityDto validateToken(String userToken) {
-        // Η external υπηρεσία τρέχει στο 8080
-        String url = "http://localhost:8080/external-auth/api/v1/validate";
 
-        // Header: Authorization: Bearer <token>
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(userToken.trim());
 
-        // Δεν στέλνουμε body, μόνο headers
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
         try {
             ResponseEntity<CitizenIdentityDto> response = restTemplate.exchange(
-                url,
+                validateUrl,
                 HttpMethod.POST,
                 request,
                 CitizenIdentityDto.class
@@ -37,7 +37,6 @@ public class GovAuthClient {
             return response.getBody();
 
         } catch (HttpClientErrorException.Unauthorized ex) {
-            // External service είπε "401"
             throw new GovAuthException("Μη έγκυρο token.");
         }
     }

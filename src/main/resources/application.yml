@@ -20,6 +20,7 @@ server:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.springframework.security: DEBUG
 
 routee:
   app-id: 5bba56ece4b0a43fbf239aae
@@ -27,6 +28,8 @@ routee:
   sender: HUANOC
 
 mycitygov:
+  govauth:
+    validate-url: "http://localhost:8091/external-auth/api/v1/validate"
   noc:
     base-url: "http://localhost:8081"
     sms:
@@ -38,3 +41,4 @@ mycitygov:
       secret-key: "minioadmin"
       bucket: "mycitygov"
       region: "us-east-1"
+

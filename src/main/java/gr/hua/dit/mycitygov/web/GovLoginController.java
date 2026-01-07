@@ -2,7 +2,7 @@ package gr.hua.dit.mycitygov.web;
 
 import gr.hua.dit.mycitygov.govauth.GovAuthClient;
 import gr.hua.dit.mycitygov.govauth.GovAuthException;
-import gr.hua.dit.mycitygov.mockgov.dto.CitizenIdentityDto;
+import gr.hua.dit.mycitygov.govauth.dto.CitizenIdentityDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

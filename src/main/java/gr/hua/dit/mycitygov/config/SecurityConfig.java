@@ -47,14 +47,9 @@ public class SecurityConfig {
                     "/", "/login", "/register",
                     "/gov-token-login/**",
                     "/gov-login/**",
-                    "/css/**", "/js/**", "/h2-console/**",
-
-                    // external auth mock service
-                    "/external-auth/**",
-
-                    // UI login with token (your new UI flow)
-                    "/gov-token-login/**"
+                    "/css/**", "/js/**", "/h2-console/**"
                 ).permitAll()
+
 
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/employee/**").hasRole("EMPLOYEE")
@@ -67,12 +62,15 @@ public class SecurityConfig {
                 .frameOptions(frame -> frame.sameOrigin())
             )
 
-            .securityContext(sc -> sc.requireExplicitSave(false))
+            .securityContext(sc -> sc
+                .securityContextRepository(securityContextRepository())
+                .requireExplicitSave(true)
+            )
 
             .formLogin(form -> form
                 .loginPage("/")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/citizen/requests", true)
                 .failureUrl("/?error=1")
                 .permitAll()
             )

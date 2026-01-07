@@ -4,7 +4,7 @@ import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.govauth.GovAuthClient;
 import gr.hua.dit.mycitygov.govauth.GovAuthException;
 import gr.hua.dit.mycitygov.govauth.GovLoginService;
-import gr.hua.dit.mycitygov.mockgov.dto.CitizenIdentityDto;
+import gr.hua.dit.mycitygov.govauth.dto.CitizenIdentityDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -12,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,16 +28,18 @@ public class GovTokenUiController {
     private final GovLoginService govLoginService;
     private final AuthenticationManager authenticationManager;
 
-    private final SecurityContextRepository securityContextRepository =
-        new HttpSessionSecurityContextRepository();
+    private final SecurityContextRepository securityContextRepository;
 
     public GovTokenUiController(GovAuthClient govAuthClient,
                                 GovLoginService govLoginService,
-                                AuthenticationManager authenticationManager) {
+                                AuthenticationManager authenticationManager,
+                                SecurityContextRepository securityContextRepository) {
         this.govAuthClient = govAuthClient;
         this.govLoginService = govLoginService;
         this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
     }
+
 
     // 1) Σελίδα εισαγωγής token
     @GetMapping("/gov-token-login")
@@ -134,6 +135,8 @@ public class GovTokenUiController {
 
         var authRequest = new UsernamePasswordAuthenticationToken(username, rawPassword);
         var authentication = authenticationManager.authenticate(authRequest);
+        request.changeSessionId();
+
 
         // 3) Φτιάχνουμε SecurityContext και ΤΟ ΣΩΖΟΥΜΕ ΣΤΟ SESSION
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -143,12 +146,12 @@ public class GovTokenUiController {
         // αυτό είναι που “κλειδώνει” το login και δεν σε πετάει έξω στο redirect
         securityContextRepository.saveContext(context, request, response);
 
-        // cleanup του gov flow (προαιρετικό)
+        // cleanup του gov flow
         session.removeAttribute(SESSION_GOV_ID);
         session.removeAttribute(SESSION_GOV_TOKEN);
         session.removeAttribute(SESSION_GOV_CONFIRMED);
 
         // 4) Redirect στη μέσα σελίδα
-        return "redirect:/citizen";
+        return "redirect:/citizen/requests";
     }
 }

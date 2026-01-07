@@ -9,3 +9,11 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
+
+  mock-gov:
+    image: mycitygov-mock-gov:1.0
+    container_name: mycitygov-mock-gov
+    ports:
+      - "8091:8090"
+    environment:
+      SERVER_PORT: 8090

@@ -1,4 +1,4 @@
-package gr.hua.dit.mycitygov.mockgov.dto;
+package gr.hua.dit.mycitygov.govauth.dto;
 
 public record CitizenIdentityDto(
     String afm,

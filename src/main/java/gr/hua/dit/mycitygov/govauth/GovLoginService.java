@@ -6,7 +6,7 @@ import gr.hua.dit.mycitygov.core.repository.PersonRepository;
 import gr.hua.dit.mycitygov.core.service.PersonService;
 import gr.hua.dit.mycitygov.core.service.model.CreatePersonRequest;
 import gr.hua.dit.mycitygov.core.service.model.CreatePersonResult;
-import gr.hua.dit.mycitygov.mockgov.dto.CitizenIdentityDto;
+import gr.hua.dit.mycitygov.govauth.dto.CitizenIdentityDto;
 import org.springframework.stereotype.Service;
 
 @Service
