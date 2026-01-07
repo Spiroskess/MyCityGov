@@ -12,6 +12,7 @@ import gr.hua.dit.mycitygov.core.service.model.CreatePersonRequest;
 import gr.hua.dit.mycitygov.core.service.model.CreatePersonResult;
 import gr.hua.dit.mycitygov.core.service.model.PersonView;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -59,13 +62,18 @@ public class PersonServiceImpl implements PersonService {
             throw new NullPointerException("request");
         }
 
-        // Ρόλος: αν είναι null (μόνο από τη φόρμα εγγραφής), τον κάνουμε default CITIZEN.
-        // Για τα seed δεδομένα (InitializationService) έρχεται σωστός ρόλος (ADMIN / EMPLOYEE κτλ).
+        // Defensive validation (ισχύει και εκτός MVC @Valid)
+        final Set<ConstraintViolation<CreatePersonRequest>> violations = validator.validate(request);
+        if (!violations.isEmpty()) {
+            return CreatePersonResult.fail(violations.iterator().next().getMessage());
+        }
+
+        // Default ρόλος αν έρθει null
         PersonRole role = request.role() != null
             ? request.role()
             : PersonRole.CITIZEN;
 
-        // Έλεγχοι μοναδικότητας
+        // Uniqueness checks
         if (personRepository.existsByEmailAddressIgnoreCase(request.emailAddress())) {
             return CreatePersonResult.fail("Υπάρχει ήδη χρήστης με αυτό το email.");
         }
@@ -76,29 +84,26 @@ public class PersonServiceImpl implements PersonService {
             return CreatePersonResult.fail("Υπάρχει ήδη χρήστης με αυτό το ΑΜΚΑ.");
         }
 
-        // 1) Validate kai normalize phone me NOC
+        // Validate & normalize phone via NOC
         PhoneNumberValidationResult validation = phoneNumberPort.validate(request.mobilePhoneNumber());
         if (validation == null || !validation.isValidMobile()) {
             return CreatePersonResult.fail("Μη έγκυρο κινητό (πρέπει να είναι mobile).");
         }
         final String e164 = validation.e164();
 
-        // Δημιουργία entity
         Person person = new Person();
         person.setRole(role);
         person.setEmailAddress(request.emailAddress());
         person.setFirstName(request.firstName());
         person.setLastName(request.lastName());
-        person.setMobilePhoneNumber(e164); // αποθήκευση E164
+        person.setMobilePhoneNumber(e164);
         person.setAfm(request.afm());
         person.setAmka(request.amka());
         person.setPasswordHash(passwordEncoder.encode(request.rawPassword()));
 
-        // Αποθήκευση
         person = personRepository.save(person);
         PersonView view = personMapper.convertPersonToPersonView(person);
 
-        // 2) SMS success
         if (notify) {
             String msg = "MyCityGov: Καλώς ήρθες " + person.getFirstName()
                 + "! Η εγγραφή σου ολοκληρώθηκε επιτυχώς.";

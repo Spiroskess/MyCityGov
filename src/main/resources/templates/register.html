@@ -102,7 +102,10 @@
                     <label>ΑΦΜ</label>
                     <input class="mc-auth-input"
                            type="text"
-                           th:field="*{afm}"/>
+                           th:field="*{afm}"
+                           inputmode="numeric"
+                           autocomplete="off"/>
+                    <div id="afmHint" class="mc-field-hint" aria-live="polite"></div>
                     <div th:if="${#fields.hasErrors('afm')}"
                          th:errors="*{afm}"
                          class="mc-field-error"></div>
@@ -112,7 +115,10 @@
                     <label>ΑΜΚΑ</label>
                     <input class="mc-auth-input"
                            type="text"
-                           th:field="*{amka}"/>
+                           th:field="*{amka}"
+                           inputmode="numeric"
+                           autocomplete="off"/>
+                    <div id="amkaHint" class="mc-field-hint" aria-live="polite"></div>
                     <div th:if="${#fields.hasErrors('amka')}"
                          th:errors="*{amka}"
                          class="mc-field-error"></div>
@@ -124,6 +130,22 @@
                            type="password"
                            th:field="*{rawPassword}"
                            autocomplete="new-password"/>
+
+                    <ul class="mc-pass-rules" id="passwordRules" aria-label="Κριτήρια κωδικού">
+                        <li class="mc-pass-rule" data-rule="len">
+                            <span class="mc-rule-dot" aria-hidden="true"></span>
+                            <span>Τουλάχιστον 9 χαρακτήρες</span>
+                        </li>
+                        <li class="mc-pass-rule" data-rule="letter">
+                            <span class="mc-rule-dot" aria-hidden="true"></span>
+                            <span>Περιέχει τουλάχιστον 1 γράμμα</span>
+                        </li>
+                        <li class="mc-pass-rule" data-rule="symbol">
+                            <span class="mc-rule-dot" aria-hidden="true"></span>
+                            <span>Περιέχει τουλάχιστον 1 σύμβολο (π.χ. !, @, #)</span>
+                        </li>
+                    </ul>
+
                     <div th:if="${#fields.hasErrors('rawPassword')}"
                          th:errors="*{rawPassword}"
                          class="mc-field-error"></div>
@@ -138,6 +160,8 @@
                     </div>
                 </div>
             </form>
+
+            <script defer th:src="@{/js/register-validation.js}"></script>
         </div>
 
     </div>
