@@ -1,3 +1,5 @@
+package gr.hua.dit.mycitygov.web.api.advice;
+
 public class ApiError {
     private int status;
     private String message;
