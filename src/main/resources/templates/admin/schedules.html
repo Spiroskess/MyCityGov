@@ -11,7 +11,7 @@
         <div>
             <h2 class="mc-page-title">Ωράρια υπηρεσιών</h2>
             <div class="mc-subtitle">
-                Ορίζεις διαστήματα εξυπηρέτησης για ραντεβού ανά υπηρεσία &amp; ημέρα
+                Ορίζετε διαστήματα εξυπηρέτησης για ραντεβού ανά υπηρεσία &amp; ημέρα
                 <span class="mc-dot">•</span>
                 <span class="mc-muted">Σύνολο:</span>
                 <strong th:text="${#lists.size(schedules)}">0</strong>
@@ -67,7 +67,7 @@
                                     th:text="${d.getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('el-GR'))}">
                             </option>
                         </select>
-                        <div class="mc-help">Μπορείς να βάλεις 2+ διαστήματα την ίδια ημέρα (π.χ. πρωί/απόγευμα).</div>
+                        <div class="mc-help">Μπορείτε να βάλετε 2+ διαστήματα την ίδια ημέρα (π.χ. πρωί/απόγευμα).</div>
                     </div>
 
                     <div class="mc-field">
