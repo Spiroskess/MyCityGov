@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Προφίλ Πολίτη</title>
+</head>
+
+<body>
+<section>
+
+    <div class="mc-profile-hero">
+        <div class="mc-profile-hero-top">
+            <div class="mc-profile-hero-left">
+                <div class="mc-profile-avatar" aria-hidden="true">
+                    <span th:text="${#strings.substring(person.firstName,0,1) + #strings.substring(person.lastName,0,1)}">ΜΠ</span>
+                </div>
+
+                <div class="mc-profile-ident">
+                    <h2 class="mc-profile-name"
+                        th:text="${person.firstName + ' ' + person.lastName}">Ονοματεπώνυμο</h2>
+
+                    <div class="mc-profile-meta">
+                        <span class="mc-badge" th:classappend="' ' + ${person.role.badgeClass()}"
+                              th:text="${person.role.label()}">Πολίτης</span>
+                        <span class="mc-badge mc-badge-neutral" th:text="'ID: ' + ${person.id}">ID: 1</span>
+                    </div>
+
+                    <div class="mc-profile-sub" th:text="'Εγγραφή: ' + ${createdAtText}">
+                        Εγγραφή: 01/01/2026
+                    </div>
+                </div>
+            </div>
+
+            <div class="mc-profile-hero-right">
+                <div class="mc-profile-actions">
+                    <a class="mc-btn mc-btn-primary" th:href="@{/citizen/request-new}">Νέο αίτημα</a>
+                    <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/requests}">Τα αιτήματά μου</a>
+                    <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments}">Ραντεβού</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mc-profile-stats">
+            <div class="mc-stat-card">
+                <div class="mc-stat-label">Ενεργά αιτήματα</div>
+                <div class="mc-stat-value" th:text="${activeRequestsCount}">0</div>
+                <div class="mc-stat-sub">σε εξέλιξη / αναμονή</div>
+            </div>
+
+            <div class="mc-stat-card">
+                <div class="mc-stat-label">Ολοκληρωμένα</div>
+                <div class="mc-stat-value" th:text="${completedRequestsCount}">0</div>
+                <div class="mc-stat-sub">αιτήματα που διεκπεραιώθηκαν</div>
+            </div>
+
+            <div class="mc-stat-card">
+                <div class="mc-stat-label">Απορρίφθηκαν</div>
+                <div class="mc-stat-value" th:text="${rejectedRequestsCount}">0</div>
+                <div class="mc-stat-sub">με τεκμηρίωση</div>
+            </div>
+
+            <div class="mc-stat-card">
+                <div class="mc-stat-label">Ραντεβού</div>
+                <div class="mc-stat-value" th:text="${upcomingAppointmentsCount}">0</div>
+                <div class="mc-stat-sub">εκκρεμή / επιβεβαιωμένα</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mc-profile-grid">
+        <div class="mc-card mc-profile-card">
+            <div class="mc-profile-card-head">
+                <div class="mc-profile-card-title">Στοιχεία λογαριασμού</div>
+            </div>
+            <div class="mc-profile-kv">
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">Email</div>
+                    <div class="mc-kv-val" th:text="${person.emailAddress}">mail@example.com</div>
+                </div>
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">Ρόλος</div>
+                    <div class="mc-kv-val" th:text="${person.role.label()}">Πολίτης</div>
+                </div>
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">Ημ/νία εγγραφής</div>
+                    <div class="mc-kv-val" th:text="${createdAtText}">01/01/2026</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mc-card mc-profile-card">
+            <div class="mc-profile-card-head">
+                <div class="mc-profile-card-title">Στοιχεία επικοινωνίας</div>
+            </div>
+            <div class="mc-profile-kv">
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">Κινητό</div>
+                    <div class="mc-kv-val" th:text="${person.mobilePhoneNumber}">69xxxxxxxx</div>
+                </div>
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">Όνομα</div>
+                    <div class="mc-kv-val" th:text="${person.firstName}">Όνομα</div>
+                </div>
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">Επώνυμο</div>
+                    <div class="mc-kv-val" th:text="${person.lastName}">Επώνυμο</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mc-card mc-profile-card">
+            <div class="mc-profile-card-head">
+                <div class="mc-profile-card-title">Ταυτοποίηση</div>
+            </div>
+            <div class="mc-profile-kv">
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">ΑΦΜ</div>
+                    <div class="mc-kv-val" th:text="${maskedAfm}">••••••••123</div>
+                </div>
+                <div class="mc-kv-row">
+                    <div class="mc-kv-key">ΑΜΚΑ</div>
+                    <div class="mc-kv-val" th:text="${maskedAmka}">••••••••123</div>
+                </div>
+            </div>
+            <div class="mc-profile-hint">
+                Για λόγους ασφάλειας, τα στοιχεία ταυτοποίησης εμφανίζονται με απόκρυψη.
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>
