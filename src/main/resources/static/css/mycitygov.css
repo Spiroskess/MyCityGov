@@ -1835,3 +1835,215 @@ select.mc-control option:checked{
 .mc-pass-rule.is-ok .mc-rule-dot{ background: #22c55e; }
 .mc-pass-rule.is-ok .mc-rule-dot::before{ color: #ffffff; }
 
+
+/* =========================================================
+   12) Dashboards (Modern Glass)
+   ========================================================= */
+
+.mc-dash-hero{
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.20);
+}
+
+.mc-dash-hello{
+  font-size: 22px;
+  font-weight: 950;
+  letter-spacing: .2px;
+}
+
+.mc-dash-sub{
+  margin-top: 6px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: rgba(226,232,240,.90);
+}
+
+.mc-dash-hero-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mc-tile-grid{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 14px 0 18px;
+  perspective: 1100px;
+}
+
+.mc-tile{
+  position: relative;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #fff;
+  background: rgba(0,0,0,.14);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 14px 35px rgba(0,0,0,.16);
+  transform: translateY(0) translateZ(0);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+  overflow:hidden;
+}
+
+.mc-tile::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  background: radial-gradient(circle at 25% 20%, rgba(255,255,255,.15), transparent 58%);
+  pointer-events:none;
+}
+
+.mc-tile--primary::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: radial-gradient(circle at 20% 15%, rgba(38,132,255,.45), transparent 55%);
+  pointer-events:none;
+  mix-blend-mode: screen;
+}
+
+.mc-tile:hover{
+  transform: translateY(-3px) rotateX(1.6deg) rotateY(-1.6deg);
+  box-shadow: 0 22px 60px rgba(0,0,0,.24);
+  border-color: rgba(255,255,255,.24);
+  background: rgba(0,0,0,.18);
+}
+
+.mc-tile-icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 22px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.16);
+}
+
+.mc-tile-title{ font-weight: 950; font-size: 16px; letter-spacing: .15px; }
+.mc-tile-text{ opacity:.88; font-size: 13px; line-height: 1.38; }
+.mc-tile-cta{ margin-top:auto; font-weight: 950; opacity:.92; }
+
+.mc-kpi-grid{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 10px 0 16px;
+}
+
+.mc-kpi{
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgba(0,0,0,.12);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 12px 28px rgba(0,0,0,.12);
+}
+
+.mc-kpi-value{
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: .2px;
+}
+
+.mc-kpi-label{ opacity:.90; font-weight: 800; margin-top: 2px; }
+
+.mc-dash-columns{
+  display:grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.mc-dash-stack{
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mc-dash-card{ padding: 14px; }
+
+.mc-dash-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.mc-dash-card-title{ font-size: 17px; font-weight: 950; }
+.mc-dash-card-subtitle{ opacity:.88; font-size: 13px; margin-top: 4px; line-height: 1.35; }
+
+.mc-dash-list{ display:flex; flex-direction:column; gap: 10px; }
+
+.mc-dash-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 12px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  text-decoration:none;
+  color:#fff;
+  transition: transform .12s ease, background .12s ease;
+}
+
+.mc-dash-row:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); }
+
+.mc-dash-row-main{ display:flex; flex-direction:column; gap: 6px; flex:1; min-width: 0; }
+
+.mc-dash-row-title{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-weight: 900;
+}
+
+.mc-dash-row-meta{ display:flex; align-items:center; gap: 10px; flex-wrap:wrap; }
+
+.mc-dash-date{ opacity:.82; font-size: 12.5px; }
+.mc-dash-protocol{ font-weight: 950; letter-spacing: .2px; }
+.mc-dash-row-arrow{ font-size: 18px; opacity:.85; }
+
+.mc-dash-tip{
+  padding: 12px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.10);
+}
+
+.mc-dash-tip-title{ font-weight: 950; margin-bottom: 4px; }
+.mc-dash-tip-text{ opacity:.90; font-size: 13px; line-height: 1.4; }
+
+@media (max-width: 1040px){
+  .mc-dash-hero{ align-items:flex-start; flex-direction: column; }
+  .mc-tile-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mc-kpi-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mc-dash-columns{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px){
+  .mc-tile-grid{ grid-template-columns: 1fr; }
+  .mc-kpi-grid{ grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .mc-tile, .mc-dash-row{ transition: none; }
+  .mc-tile:hover{ transform:none; }
+  .mc-dash-row:hover{ transform:none; }
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Πίνακας Διαχειριστή</title>
+</head>
+
+<body>
+<section>
+    <div class="mc-dash-hero">
+        <div>
+            <div class="mc-dash-hello" th:text="${greeting} + ', ' + ${person.firstName} + '!'"></div>
+            <div class="mc-dash-sub">Εποπτεία αιτημάτων, ωραρίων και ραντεβού σε real-time.</div>
+        </div>
+
+        <div class="mc-dash-hero-actions">
+            <a class="mc-btn mc-btn-primary" th:href="@{/admin/requests}">Όλα τα αιτήματα</a>
+            <a class="mc-btn mc-btn-ghost" th:href="@{/admin/schedules}">Ωράρια υπηρεσιών</a>
+        </div>
+    </div>
+
+    <!-- 3D Tiles -->
+    <div class="mc-tile-grid">
+        <a class="mc-tile mc-tile--primary" th:href="@{/admin/requests}">
+            <div class="mc-tile-icon">📌</div>
+            <div class="mc-tile-title">Αιτήματα</div>
+            <div class="mc-tile-text">Ανάθεση, SLA, παρακολούθηση και έλεγχος ροής.</div>
+            <div class="mc-tile-cta">Άνοιγμα →</div>
+        </a>
+
+        <a class="mc-tile" th:href="@{/admin/schedules}">
+            <div class="mc-tile-icon">🕘</div>
+            <div class="mc-tile-title">Ωράρια υπηρεσιών</div>
+            <div class="mc-tile-text">Διαχείριση διαθεσιμότητας για ραντεβού.</div>
+            <div class="mc-tile-cta">Μετάβαση →</div>
+        </a>
+
+        <a class="mc-tile" th:href="@{/swagger-ui/index.html}" target="_blank" rel="noopener">
+            <div class="mc-tile-icon">📚</div>
+            <div class="mc-tile-title">Swagger API</div>
+            <div class="mc-tile-text">OpenAPI docs, δοκιμές REST endpoints με JWT.</div>
+            <div class="mc-tile-cta">Άνοιγμα →</div>
+        </a>
+
+        <a class="mc-tile" th:href="@{/profile}">
+            <div class="mc-tile-icon">👤</div>
+            <div class="mc-tile-title">Προφίλ</div>
+            <div class="mc-tile-text">Στοιχεία διαχειριστή και ρυθμίσεις.</div>
+            <div class="mc-tile-cta">Άνοιγμα →</div>
+        </a>
+    </div>
+
+    <!-- KPIs -->
+    <div class="mc-kpi-grid">
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${allRequestsCount}">0</div>
+            <div class="mc-kpi-label">Σύνολο αιτημάτων</div>
+        </div>
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${unassignedRequestsCount}">0</div>
+            <div class="mc-kpi-label">Χωρίς ανάθεση</div>
+        </div>
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${overdueRequestsCount}">0</div>
+            <div class="mc-kpi-label">Εκπρόθεσμα (SLA)</div>
+        </div>
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${activeAppointmentsCount}">0</div>
+            <div class="mc-kpi-label">Ενεργά ραντεβού</div>
+        </div>
+    </div>
+
+    <div class="mc-dash-columns">
+        <!-- Recent Requests -->
+        <div class="mc-card mc-dash-card">
+            <div class="mc-dash-card-head">
+                <div>
+                    <div class="mc-dash-card-title">Πρόσφατα αιτήματα</div>
+                    <div class="mc-dash-card-subtitle">Τα τελευταία 8 αιτήματα σε όλο τον δήμο.</div>
+                </div>
+                <a class="mc-btn mc-btn-small mc-btn-outline" th:href="@{/admin/requests}">Όλα</a>
+            </div>
+
+            <div class="mc-dash-list" th:if="${!#lists.isEmpty(recentRequests)}">
+                <a class="mc-dash-row" th:each="r : ${recentRequests}"
+                   th:href="@{'/admin/requests/' + ${r.id} + '/assign'}">
+                    <div class="mc-dash-row-main">
+                        <div class="mc-dash-row-title">
+                            <span class="mc-dash-protocol" th:text="${r.protocolNumber}">PR-0001</span>
+                            <span class="mc-badge" th:classappend="' ' + ${r.status.badgeClass()}" th:text="${r.status.label()}">Κατάσταση</span>
+                            <span class="mc-badge mc-badge-danger" th:if="${r.overdue}">Εκπρόθεσμο</span>
+                        </div>
+                        <div class="mc-dash-row-meta">
+                            <span class="mc-muted" th:text="${r.assignedService != null ? r.assignedService.label() : '—'}">—</span>
+                            <span class="mc-muted" th:text="${r.assignedEmployeeFullName != null ? r.assignedEmployeeFullName : 'Χωρίς υπάλληλο'}">—</span>
+                            <span class="mc-dash-date" th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</span>
+                        </div>
+                    </div>
+                    <div class="mc-dash-row-arrow">→</div>
+                </a>
+            </div>
+
+            <div class="mc-empty" th:if="${#lists.isEmpty(recentRequests)}">
+                Δεν υπάρχουν αιτήματα.
+            </div>
+        </div>
+
+        <!-- Upcoming Appointments + Tip -->
+        <div class="mc-dash-stack">
+            <div class="mc-card mc-dash-card">
+                <div class="mc-dash-card-head">
+                    <div>
+                        <div class="mc-dash-card-title">Επερχόμενα ραντεβού</div>
+                        <div class="mc-dash-card-subtitle">Τα επόμενα 6 ενεργά ραντεβού (σε αναμονή/επιβεβαιωμένα).</div>
+                    </div>
+                </div>
+
+                <div class="mc-dash-list" th:if="${!#lists.isEmpty(upcomingAppointments)}">
+                    <div class="mc-dash-row" th:each="a : ${upcomingAppointments}">
+                        <div class="mc-dash-row-main">
+                            <div class="mc-dash-row-title">
+                                <span class="mc-badge" th:classappend="' ' + ${a.status.badgeClass()}" th:text="${a.status.label()}">Κατάσταση</span>
+                                <span class="mc-muted" th:text="${a.service != null ? a.service.label() : '-'}">Υπηρεσία</span>
+                            </div>
+                            <div class="mc-dash-row-meta">
+                                <span class="mc-dash-date" th:text="${a.appointmentDateTime != null ? #temporals.format(a.appointmentDateTime, 'dd/MM/yyyy HH:mm') : '-'}">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-empty" th:if="${#lists.isEmpty(upcomingAppointments)}">
+                    Δεν υπάρχουν ενεργά ραντεβού.
+                </div>
+            </div>
+
+            <div class="mc-dash-tip">
+                <div class="mc-dash-tip-title">Tip διαχείρισης</div>
+                <div class="mc-dash-tip-text">
+                    Τα <strong>χωρίς ανάθεση</strong> αιτήματα είναι συνήθως bottleneck. Δώσε προτεραιότητα στην ανάθεση για να μειώνεις τα SLA overruns.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>
