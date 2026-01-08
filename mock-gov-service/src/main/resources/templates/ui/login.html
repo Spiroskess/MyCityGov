@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="el" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>MockGov – Έκδοση token</title>
+    <link rel="stylesheet" th:href="@{/css/mockgov-ui.css}">
+</head>
+<body>
+<div class="card">
+    <h1>MockGov – Σύνδεση πολίτη</h1>
+    <p class="sub">Συμπλήρωσε τα στοιχεία σου και πάρε ένα <strong>userToken</strong>.</p>
+
+    <div class="warn" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/external-auth/ui/issue(returnTo=${returnTo})}" method="post" th:object="${form}">
+        <label>ΑΦΜ</label>
+        <input type="text" th:field="*{afm}" inputmode="numeric" maxlength="9" required>
+        <div class="err" th:if="${#fields.hasErrors('afm')}" th:errors="*{afm}"></div>
+
+        <label>ΑΜΚΑ</label>
+        <input type="text" th:field="*{amka}" inputmode="numeric" maxlength="11" required>
+        <div class="err" th:if="${#fields.hasErrors('amka')}" th:errors="*{amka}"></div>
+
+        <label>Επώνυμο</label>
+        <input type="text" th:field="*{lastName}" required>
+        <div class="err" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+
+        <button type="submit">Έκδοση token</button>
+    </form>
+
+    <p class="note" th:if="${returnTo}">
+        Μετά την έκδοση, θα μπορείς να επιστρέψεις στο MyCityGov.
+    </p>
+</div>
+</body>
+</html>
+

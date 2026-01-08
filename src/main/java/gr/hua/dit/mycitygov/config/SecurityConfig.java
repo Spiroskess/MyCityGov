@@ -10,9 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-
+import org.springframework.security.web.context.SecurityContextRepository;
 
 @Configuration
 @EnableMethodSecurity
@@ -33,7 +32,6 @@ public class SecurityConfig {
         return new HttpSessionSecurityContextRepository();
     }
 
-
     @Bean
     @Order(1)
     public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -42,14 +40,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
-                // Public pages/assets + mock gov endpoints
+                // Public pages/assets + gov login UI page
                 .requestMatchers(
                     "/", "/login", "/register",
-                    "/gov-token-login/**",
-                    "/gov-login/**",
-                    "/css/**", "/js/**", "/h2-console/**"
+                    "/gov-token-login",     // legacy link από homepage -> redirect:/gov/login
+                    "/gov/**",              // gov login (π.χ. /gov/login)
+                    "/css/**", "/js/**",
+                    "/h2-console/**"
                 ).permitAll()
-
 
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/employee/**").hasRole("EMPLOYEE")
@@ -57,7 +55,6 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // H2 console frames
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
             )
@@ -70,7 +67,8 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/citizen/requests", true)
+                // Καλύτερα "/" για να σε κάνει redirect ο controller σου ανά ρόλο (admin/employee/citizen)
+                .defaultSuccessUrl("/", true)
                 .failureUrl("/?error=1")
                 .permitAll()
             )

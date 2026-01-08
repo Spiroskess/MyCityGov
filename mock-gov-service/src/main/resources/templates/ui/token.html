@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="el" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>MockGov – userToken</title>
+    <link rel="stylesheet" th:href="@{/css/mockgov-ui.css}">
+</head>
+<body>
+<div class="card">
+    <h1>Το token σου</h1>
+    <p class="sub">Σε μεταφέρουμε αυτόματα στο MyCityGov για σύνδεση…</p>
+
+    <textarea id="tok" class="tok" readonly th:text="${userToken}"></textarea>
+
+    <div class="row">
+        <button type="button"
+                onclick="navigator.clipboard.writeText(document.getElementById('tok').value)">Αντιγραφή</button>
+
+        <a class="link" th:if="${continueUrl}" th:href="${continueUrl}">
+            Συνέχεια στο MyCityGov
+        </a>
+    </div>
+
+    <p class="note">
+        <strong>Σημείωση:</strong> Αν δεν γίνει αυτόματα μεταφορά, πάτα “Συνέχεια στο MyCityGov”.
+    </p>
+</div>
+
+<script th:if="${continueUrl}" th:inline="javascript">
+    /*<![CDATA[*/
+    setTimeout(function () {
+      window.location.href = /*[[${continueUrl}]]*/ '';
+    }, 700);
+    /*]]>*/
+</script>
+
+</body>
+</html>

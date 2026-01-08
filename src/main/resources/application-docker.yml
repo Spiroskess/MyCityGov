@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    # Persist μέσα στο volume /data που κάνεις mount στο docker-compose
+    url: jdbc:h2:file:/data/mycitygov2db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8080
+
+mycitygov:
+  mockgov:
+    # server-to-server (container -> container)
+    api-base-url: "http://mock-gov:8090"
+
+    # link που θα πατήσει ο χρήστης στον browser
+    public-base-url: "http://localhost:8091"
+
+    client-token: "mycitygov-client-token"
+
+  # Δεν έχεις NOC service στο compose -> το κλείνουμε για να μη σκάει σε sms
+  noc:
+    base-url: "http://noc:8081"
+    sms:
+      active: false
+
+  storage:
+    s3:
+      endpoint: "http://minio:9000"
+      access-key: "minioadmin"
+      secret-key: "minioadmin"
+      bucket: "mycitygov"
+      region: "us-east-1"

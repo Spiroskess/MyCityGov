@@ -1,4 +1,4 @@
-package gr.hua.dit.mycitygov.govauth.dto;
+package gr.hua.dit.mycitygov.core.port.impl.dto;
 
 public record CitizenIdentityDto(
     String afm,

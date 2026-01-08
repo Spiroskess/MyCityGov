@@ -28,8 +28,11 @@ routee:
   sender: HUANOC
 
 mycitygov:
-  govauth:
-    validate-url: "http://localhost:8091/external-auth/api/v1/validate"
+  mockgov:
+      api-base-url: "http://localhost:8091"
+      public-base-url: "http://localhost:8091"
+      client-token: "mycitygov-client-token"
+
   noc:
     base-url: "http://localhost:8081"
     sms:

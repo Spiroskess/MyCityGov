@@ -1,0 +1,53 @@
+.gov-card{
+  background: var(--mc-white);
+  border-radius: var(--mc-radius-lg);
+  box-shadow: var(--mc-shadow-soft);
+  padding: 18px;
+  max-width: 720px;
+}
+
+.gov-card--warn{
+  border: 1px solid rgba(176,0,32,.35);
+}
+
+.gov-label{
+  display:block;
+  font-weight: 700;
+  margin: 10px 0 6px;
+}
+
+.gov-input{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.18);
+}
+
+.gov-actions{
+  margin-top: 14px;
+  display:flex;
+  gap: 10px;
+  align-items:center;
+}
+
+.gov-error{
+  margin-top: 12px;
+  color:#b00020;
+  font-weight: 700;
+}
+
+.gov-warn{
+  margin-bottom: 12px;
+  color:#b00020;
+  font-weight: 700;
+}
+
+.gov-note{
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--mc-text-muted);
+}
+
+.gov-note code{
+  word-break: break-all;
+}
