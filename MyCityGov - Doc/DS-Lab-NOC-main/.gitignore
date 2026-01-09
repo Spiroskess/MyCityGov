@@ -1,5 +1,3 @@
-LOCAL_DATA/
-
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
