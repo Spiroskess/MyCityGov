@@ -4,6 +4,7 @@ import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.core.model.PersonRole;
 import gr.hua.dit.mycitygov.core.repository.PersonRepository;
 import gr.hua.dit.mycitygov.core.service.model.CreatePersonRequest;
+import gr.hua.dit.mycitygov.core.service.model.CreatePersonResult;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class InitializationService {
                     "+306900000000",
                     "999999999",
                     "99999999999",
-                    "Admin1"
+                    "Admin1!234"     //  >=9 chars + σύμβολο
                 ),
                 null
             ),
@@ -66,7 +67,7 @@ public class InitializationService {
                     "+306900000001",
                     "111111111",
                     "11111111111",
-                    "Emp1"
+                    "Emp1!23456"     // >=9 chars + σύμβολο
                 ),
                 MunicipalService.KEP
             ),
@@ -81,7 +82,7 @@ public class InitializationService {
                     "+306900000002",
                     "222222222",
                     "22222222222",
-                    "Emp2"
+                    "Emp2!23456"     // >=9 chars + σύμβολο
                 ),
                 MunicipalService.TECHNICAL_SERVICE
             )
@@ -89,10 +90,10 @@ public class InitializationService {
 
         for (SeedUser seed : users) {
 
-
+            // Μόνο citizens θα ειδοποιούνται με SMS
             final boolean sendSms = seed.request().role() == PersonRole.CITIZEN;
 
-
+            // Αν υπάρχει ήδη, απλά κάνε assign υπηρεσία (αν χρειάζεται) και συνέχισε
             if (personRepository.findByEmailAddressIgnoreCase(seed.request().emailAddress()).isPresent()) {
                 LOGGER.info("Seed user already exists: {}", seed.request().emailAddress());
 
@@ -102,8 +103,18 @@ public class InitializationService {
                 continue;
             }
 
-            personService.createPerson(seed.request(), sendSms);
+            // Δημιουργία + έλεγχος αποτελέσματος (να μη σκάει αν αποτύχει validation/uniqueness)
+            final CreatePersonResult result = personService.createPerson(seed.request(), sendSms);
 
+            if (!result.created()) {
+                LOGGER.warn("Seed user creation failed for {}: {}",
+                    seed.request().emailAddress(),
+                    result.reason()
+                );
+                continue;
+            }
+
+            //  Κάνε assign ΜΟΝΟ αν ο user δημιουργήθηκε ή υπάρχει ήδη
             if (seed.municipalService() != null) {
                 assignMunicipalService(seed.request().emailAddress(), seed.municipalService());
             }
