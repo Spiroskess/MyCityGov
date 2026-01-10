@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Τα αιτήματά μου</title>
+</head>
+
+<body>
+<section>
+    <div class="mc-page-head">
+        <h2 class="mc-page-title">Τα αιτήματά μου</h2>
+
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-primary" th:href="@{/citizen/request-new}">Νέο αίτημα</a>
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/requests/completed}">Ολοκληρωμένα αιτήματα</a>
+        </div>
+    </div>
+
+    <div class="mc-card">
+        <table class="mc-table">
+            <thead>
+            <tr>
+                <th>Πρωτόκολλο</th>
+                <th>Τύπος</th>
+                <th>Κατάσταση</th>
+                <th>Υπάλληλος</th>
+                <th>Ημ/νία</th>
+                <th class="mc-col-actions">Λεπτομέρειες</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="r : ${requests}">
+                <td>
+                    <a class="mc-link"
+                       th:href="@{'/citizen/requests/' + ${r.id}}"
+                       th:text="${r.protocolNumber}">PR-0001</a>
+                </td>
+
+                <td>
+                    <span th:switch="${r.type.name()}">
+                        <span th:case="'CERTIFICATE_RESIDENCE'">Βεβαίωση μόνιμης κατοικίας</span>
+                        <span th:case="'SIDEWALK_LICENSE'">Άδεια κατάληψης πεζοδρομίου</span>
+                        <span th:case="'LIGHTING_ISSUE'">Αναφορά προβλήματος φωτισμού</span>
+                        <span th:case="'ROAD_HOLE'">Αναφορά λακκούβας</span>
+                        <span th:case="'CLEANING_ISSUE'">Αναφορά καθαριότητας</span>
+                        <span th:case="'OTHER'">Άλλο</span>
+                        <span th:case="*"
+                              th:text="${#strings.replace(r.type.name(), '_', ' ')}">TYPE</span>
+                    </span>
+                </td>
+
+                <td>
+                    <span class="mc-badge"
+                          th:classappend="${
+                            r.status.name() == 'SUBMITTED' ? ' mc-badge-info' :
+                            (r.status.name() == 'RECEIVED' ? ' mc-badge-neutral' :
+                            (r.status.name() == 'IN_PROGRESS' ? ' mc-badge-warn' :
+                            (r.status.name() == 'WAITING_ADDITIONAL_INFO' ? ' mc-badge-sky' :
+                            (r.status.name() == 'COMPLETED' ? ' mc-badge-success' :
+                            (r.status.name() == 'REJECTED' ? ' mc-badge-danger' : '')))))
+                          }">
+                        <span th:switch="${r.status.name()}">
+                            <span th:case="'SUBMITTED'">Υποβλήθηκε</span>
+                            <span th:case="'RECEIVED'">Σε παραλαβή</span>
+                            <span th:case="'IN_PROGRESS'">Σε επεξεργασία</span>
+                            <span th:case="'WAITING_ADDITIONAL_INFO'">Αναμονή στοιχείων</span>
+                            <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
+                            <span th:case="'REJECTED'">Απορρίφθηκε</span>
+                            <span th:case="*"
+                                  th:text="${#strings.replace(r.status.name(), '_', ' ')}">STATUS</span>
+                        </span>
+                    </span>
+                </td>
+
+                <td class="mc-muted" th:text="${r.assignedEmployeeFullName}">-</td>
+
+                <td class="mc-muted"
+                    th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+
+                <td class="mc-col-actions">
+                    <a class="mc-btn mc-btn-small mc-btn-outline"
+                       th:href="@{'/citizen/requests/' + ${r.id}}">Προβολή</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="mc-empty" th:if="${#lists.isEmpty(requests)}">
+            Δεν υπάρχουν ενεργά αιτήματα.
+            <a class="mc-link" th:href="@{/citizen/requests/completed}">Δείτε τα ολοκληρωμένα</a>.
+        </div>
+    </div>
+</section>
+</body>
+</html>

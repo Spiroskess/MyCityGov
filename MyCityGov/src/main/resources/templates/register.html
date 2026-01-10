@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Εγγραφή</title>
+</head>
+
+<section class="mc-auth-page">
+    <div class="mc-auth-shell">
+
+        <!-- Left brand panel -->
+        <aside class="mc-auth-side" aria-hidden="true">
+            <div class="mc-auth-side-top">
+                <div class="mc-auth-mark">MC</div>
+                <div class="mc-auth-side-brand">
+                    <div class="mc-auth-side-title">MyCityGov</div>
+                    <div class="mc-auth-side-subtitle">Ηλεκτρονικές Υπηρεσίες Δήμου</div>
+                </div>
+            </div>
+
+            <div class="mc-auth-side-body">
+                <h3 class="mc-auth-side-headline">Δημιούργησε λογαριασμό.</h3>
+                <p class="mc-auth-side-text">
+                    Η εγγραφή σου επιτρέπει να υποβάλεις αιτήματα, να ανεβάζεις αρχεία και να κλείνεις ραντεβού.
+                </p>
+
+                <ul class="mc-auth-side-list">
+                    <li>Προσωπικό προφίλ &amp; στοιχεία πολίτη</li>
+                    <li>Ιστορικό αιτημάτων &amp; παρακολούθηση</li>
+                    <li>Κράτηση ραντεβού ανά υπηρεσία</li>
+                </ul>
+            </div>
+
+            <div class="mc-auth-side-footer">© MyCityGov</div>
+        </aside>
+
+        <!-- Right form panel -->
+        <div class="mc-auth-main">
+            <div class="mc-auth-header">
+                <span class="mc-auth-label">ΕΝΑΡΞΗ</span>
+                <h2 class="mc-auth-title">Εγγραφή</h2>
+                <p class="mc-auth-subtitle">
+                    Έχεις ήδη λογαριασμό;
+                    <a th:href="@{/}">Σύνδεση</a>
+                </p>
+            </div>
+
+            <div th:if="${errorMessage}" th:text="${errorMessage}" class="mc-alert mc-alert-error"></div>
+
+            <form th:action="@{/register}"
+                  th:object="${createPersonRequest}"
+                  method="post"
+                  class="mc-form mc-form-grid mc-auth-form mc-register-form">
+
+                <div class="mc-form-group mc-form-group-full">
+                    <label>Email</label>
+                    <input class="mc-auth-input"
+                           type="email"
+                           th:field="*{emailAddress}"
+                           placeholder="name@example.com"
+                           autocomplete="email"/>
+                    <div th:if="${#fields.hasErrors('emailAddress')}"
+                         th:errors="*{emailAddress}"
+                         class="mc-field-error"></div>
+                </div>
+
+                <div class="mc-form-group">
+                    <label>Όνομα</label>
+                    <input class="mc-auth-input"
+                           type="text"
+                           th:field="*{firstName}"
+                           autocomplete="given-name"/>
+                    <div th:if="${#fields.hasErrors('firstName')}"
+                         th:errors="*{firstName}"
+                         class="mc-field-error"></div>
+                </div>
+
+                <div class="mc-form-group">
+                    <label>Επώνυμο</label>
+                    <input class="mc-auth-input"
+                           type="text"
+                           th:field="*{lastName}"
+                           autocomplete="family-name"/>
+                    <div th:if="${#fields.hasErrors('lastName')}"
+                         th:errors="*{lastName}"
+                         class="mc-field-error"></div>
+                </div>
+
+                <div class="mc-form-group">
+                    <label>Κινητό</label>
+                    <input class="mc-auth-input"
+                           type="text"
+                           th:field="*{mobilePhoneNumber}"
+                           autocomplete="tel"/>
+                    <div th:if="${#fields.hasErrors('mobilePhoneNumber')}"
+                         th:errors="*{mobilePhoneNumber}"
+                         class="mc-field-error"></div>
+                </div>
+
+                <div class="mc-form-group">
+                    <label>ΑΦΜ</label>
+                    <input class="mc-auth-input"
+                           type="text"
+                           th:field="*{afm}"
+                           inputmode="numeric"
+                           autocomplete="off"/>
+                    <div id="afmHint" class="mc-field-hint" aria-live="polite"></div>
+                    <div th:if="${#fields.hasErrors('afm')}"
+                         th:errors="*{afm}"
+                         class="mc-field-error"></div>
+                </div>
+
+                <div class="mc-form-group mc-form-group-full">
+                    <label>ΑΜΚΑ</label>
+                    <input class="mc-auth-input"
+                           type="text"
+                           th:field="*{amka}"
+                           inputmode="numeric"
+                           autocomplete="off"/>
+                    <div id="amkaHint" class="mc-field-hint" aria-live="polite"></div>
+                    <div th:if="${#fields.hasErrors('amka')}"
+                         th:errors="*{amka}"
+                         class="mc-field-error"></div>
+                </div>
+
+                <div class="mc-form-group mc-form-group-full">
+                    <label>Κωδικός</label>
+                    <input class="mc-auth-input"
+                           type="password"
+                           th:field="*{rawPassword}"
+                           autocomplete="new-password"/>
+
+                    <ul class="mc-pass-rules" id="passwordRules" aria-label="Κριτήρια κωδικού">
+                        <li class="mc-pass-rule" data-rule="len">
+                            <span class="mc-rule-dot" aria-hidden="true"></span>
+                            <span>Τουλάχιστον 9 χαρακτήρες</span>
+                        </li>
+                        <li class="mc-pass-rule" data-rule="letter">
+                            <span class="mc-rule-dot" aria-hidden="true"></span>
+                            <span>Περιέχει τουλάχιστον 1 γράμμα</span>
+                        </li>
+                        <li class="mc-pass-rule" data-rule="symbol">
+                            <span class="mc-rule-dot" aria-hidden="true"></span>
+                            <span>Περιέχει τουλάχιστον 1 σύμβολο (π.χ. !, @, #)</span>
+                        </li>
+                    </ul>
+
+                    <div th:if="${#fields.hasErrors('rawPassword')}"
+                         th:errors="*{rawPassword}"
+                         class="mc-field-error"></div>
+                </div>
+
+                <div class="mc-form-actions mc-form-group-full">
+                    <button type="submit" class="mc-button-primary mc-button-full mc-auth-submit">
+                        Εγγραφή
+                    </button>
+                    <div class="mc-auth-footnote">
+                        Με την εγγραφή αποδέχεσαι τους όρους χρήσης και την πολιτική απορρήτου.
+                    </div>
+                </div>
+            </form>
+
+            <script defer th:src="@{/js/register-validation.js}"></script>
+        </div>
+
+    </div>
+</section>
+
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Ραντεβού</title>
+</head>
+
+<body>
+<section>
+    <div class="mc-page-head">
+        <h2 class="mc-page-title">Τα ραντεβού μου</h2>
+
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-primary" th:href="@{/citizen/booking}">Νέο ραντεβού</a>
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments/completed}">Ολοκληρωμένα ραντεβού</a>
+        </div>
+    </div>
+
+    <div class="mc-card">
+        <table class="mc-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Υπηρεσία</th>
+                <th>Ημερομηνία/Ώρα</th>
+                <th>Κατάσταση</th>
+                <th class="mc-col-actions">Ενέργειες</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="a : ${appointments}">
+                <td th:text="${a.id}">1</td>
+
+                <td th:text="${a.service}">KEP</td>
+
+                <td class="mc-muted"
+                    th:text="${a.appointmentDateTime != null ? #temporals.format(a.appointmentDateTime,'dd/MM/yyyy HH:mm') : '-'}">
+                    01/01/2025 10:00
+                </td>
+
+                <td>
+                    <span class="mc-badge"
+                          th:classappend="${
+                            a.status.name() == 'REQUESTED' ? ' mc-badge-warn' :
+                            (a.status.name() == 'CONFIRMED' ? ' mc-badge-success' : ' mc-badge-neutral')
+                          }">
+                        <span th:switch="${a.status.name()}">
+                            <span th:case="'REQUESTED'">Σε αναμονή</span>
+                            <span th:case="'CONFIRMED'">Επιβεβαιωμένο</span>
+                            <span th:case="*"
+                                  th:text="${#strings.replace(a.status.name(), '_', ' ')}">STATUS</span>
+                        </span>
+                    </span>
+                </td>
+
+                <td class="mc-col-actions">
+                    <form th:action="@{'/citizen/appointments/' + ${a.id} + '/cancel'}"
+                          method="post"
+                          onsubmit="return confirm('Να ακυρωθεί το ραντεβού;');"
+                          style="display:inline;">
+                        <button type="submit" class="mc-btn mc-btn-small mc-btn-outline">Ακύρωση</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="mc-empty" th:if="${#lists.isEmpty(appointments)}">
+            Δεν υπάρχουν ενεργά ραντεβού.
+            <a class="mc-link" th:href="@{/citizen/appointments/completed}">Δες τα ολοκληρωμένα</a>.
+        </div>
+    </div>
+</section>
+</body>
+</html>

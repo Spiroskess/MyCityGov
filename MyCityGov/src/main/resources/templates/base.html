@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:fragment="layout(title, section)"
+    lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:replace="${title}">MyCityGov</title>
+    <link rel="stylesheet" th:href="@{/css/mycitygov.css}"/>
+</head>
+
+<body class="mc-body">
+
+<header class="mc-header">
+    <div class="mc-header-inner">
+
+        <!-- Logo -->
+        <div class="mc-logo-area">
+            <div class="mc-logo-circle">MC</div>
+            <div class="mc-logo-text">
+                <div class="mc-logo-title">MyCityGov</div>
+                <div class="mc-logo-subtitle">Ηλεκτρονικές Υπηρεσίες Δήμου</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="mc-nav">
+            <a th:href="@{/}" class="mc-nav-link">Αρχική</a>
+
+            <!-- CITIZEN -->
+            <span sec:authorize="hasRole('CITIZEN')">
+                <a th:href="@{/citizen/requests}" class="mc-nav-link">Τα αιτήματά μου</a>
+                <a th:href="@{/citizen/request-new}" class="mc-nav-link">Νέο αίτημα</a>
+                <a th:href="@{/citizen/appointments}" class="mc-nav-link">Ραντεβού</a>
+            </span>
+
+            <!-- EMPLOYEE -->
+            <span sec:authorize="hasRole('EMPLOYEE')">
+                <a th:href="@{/employee/requests}" class="mc-nav-link">Αιτήματα υπηρεσίας</a>
+                <a th:href="@{/employee/appointments}" class="mc-nav-link">Διαχείριση ραντεβού</a>
+            </span>
+
+            <!-- ADMIN -->
+            <span sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/requests}" class="mc-nav-link">Όλα τα αιτήματα</a>
+                <a th:href="@{/admin/schedules}" class="mc-nav-link">Ωράρια υπηρεσιών</a>
+            </span>
+        </nav>
+
+        <!-- Auth -->
+        <div class="mc-header-auth">
+            <span sec:authorize="isAuthenticated()">
+                <a th:href="@{/profile}" class="mc-nav-link">Προφίλ</a>
+                <a th:href="@{/logout}" class="mc-nav-link mc-nav-logout">Αποσύνδεση</a>
+            </span>
+
+            <span sec:authorize="!isAuthenticated()">
+                <a th:href="@{/}" class="mc-nav-link">Είσοδος</a>
+                <a th:href="@{/register}" class="mc-nav-button">Εγγραφή</a>
+            </span>
+        </div>
+
+    </div>
+</header>
+
+<main class="mc-main">
+    <section th:replace="${section}"></section>
+</main>
+
+<footer class="mc-footer">
+    <div class="mc-footer-inner">
+        <span>MC MyCityGov • Δήμος</span>
+    </div>
+</footer>
+
+<!-- Auto-dismiss success alerts -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto-dismiss ΜΟΝΟ τα success alerts
+      const alerts = document.querySelectorAll('.mc-alert-success');
+
+      alerts.forEach((el) => {
+        const delay = Number(el.getAttribute('data-dismiss-ms')) || 3200;
+
+        window.setTimeout(() => {
+          el.classList.add('mc-alert-hide');
+
+          // remove μετά το transition
+          const removeLater = () => el.remove();
+          el.addEventListener('transitionend', removeLater, { once: true });
+
+          // fallback αν δεν “πιάσει” transitionend
+          window.setTimeout(() => {
+            if (document.body.contains(el)) el.remove();
+          }, 800);
+        }, delay);
+      });
+    });
+</script>\
+<script>
+    function hideAlert(el) {
+      if (!el || el.classList.contains("mc-alert-hide")) return;
+      el.classList.add("mc-alert-hide");
+      setTimeout(() => el.remove(), 300);
+    }
+
+    function hideAllAlerts() {
+      document.querySelectorAll(".mc-alert").forEach(hideAlert);
+    }
+
+    // 1) Αν πατήσεις πάνω στο alert φεύγει
+    document.addEventListener("click", function (e) {
+      const a = e.target.closest(".mc-alert");
+      if (a) hideAlert(a);
+    });
+
+    // 2) Αν πατήσεις σε πεδίο φεύγουν τα alerts
+    document.addEventListener("pointerdown", function (e) {
+      if (e.target.closest("input, textarea, select, [contenteditable='true']")) {
+        hideAllAlerts();
+      }
+    });
+
+    // 3) Backup: όταν πάρει focus (keyboard tab κλπ) φεύγουν τα alerts
+    document.addEventListener("focusin", function (e) {
+      if (e.target.closest("input, textarea, select, [contenteditable='true']")) {
+        hideAllAlerts();
+      }
+    });
+</script>
+
+
+</body>
+</html>

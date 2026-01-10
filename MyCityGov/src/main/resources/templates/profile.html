@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Προφίλ</title>
+</head>
+
+<body>
+<section>
+    <h2>Το προφίλ μου</h2>
+
+    <div th:if="${me != null}">
+        <p>Email: <span th:text="${me.emailAddress}">email</span></p>
+        <p>Ρόλος: <span th:text="${me.role}">CITIZEN</span></p>
+    </div>
+
+    <div th:if="${me == null}">
+        <p>Δεν είστε συνδεδεμένος/η.</p>
+    </div>
+</section>
+</body>
+</html>

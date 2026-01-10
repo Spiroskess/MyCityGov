@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Πίνακας Υπαλλήλου</title>
+</head>
+
+<body>
+<section>
+    <div class="mc-dash-hero">
+        <div>
+            <div class="mc-dash-hello" th:text="${greeting} + ', ' + ${person.firstName} + '!'">Καλώς ήρθες!</div>
+            <div class="mc-dash-sub">
+                Υπηρεσία:
+                <strong th:text="${service != null ? service.label() : '—'}">—</strong>
+                • Εστίαση σε ουρά, εκκρεμότητες και ραντεβού.
+            </div>
+        </div>
+
+        <div class="mc-dash-hero-actions">
+            <a class="mc-btn mc-btn-primary" th:href="@{/employee/requests-mine}">Τα αιτήματά μου</a>
+            <a class="mc-btn mc-btn-ghost" th:href="@{/employee/requests-service}">Ουρά υπηρεσίας</a>
+        </div>
+    </div>
+
+    <!-- 3D Tiles -->
+    <div class="mc-tile-grid">
+        <a class="mc-tile mc-tile--primary" th:href="@{/employee/requests-service}">
+            <div class="mc-tile-icon">📥</div>
+            <div class="mc-tile-title">Ουρά υπηρεσίας</div>
+            <div class="mc-tile-text">Νέα αιτήματα προς ανάθεση/ανάληψη.</div>
+            <div class="mc-tile-cta">Άνοιγμα →</div>
+        </a>
+
+        <a class="mc-tile" th:href="@{/employee/requests-mine}">
+            <div class="mc-tile-icon">✅</div>
+            <div class="mc-tile-title">Δικά μου αιτήματα</div>
+            <div class="mc-tile-text">Ενημέρωση κατάστασης, σχόλια, απόφαση.</div>
+            <div class="mc-tile-cta">Προβολή →</div>
+        </a>
+
+        <a class="mc-tile" th:href="@{/employee/appointments}">
+            <div class="mc-tile-icon">📅</div>
+            <div class="mc-tile-title">Ραντεβού</div>
+            <div class="mc-tile-text">Επιβεβαίωση, αλλαγή ώρας, ακύρωση.</div>
+            <div class="mc-tile-cta">Μετάβαση →</div>
+        </a>
+
+        <a class="mc-tile" th:href="@{/profile}">
+            <div class="mc-tile-icon">👤</div>
+            <div class="mc-tile-title">Προφίλ</div>
+            <div class="mc-tile-text">Στοιχεία χρήστη και ρυθμίσεις.</div>
+            <div class="mc-tile-cta">Άνοιγμα →</div>
+        </a>
+    </div>
+
+    <!-- KPIs -->
+    <div class="mc-kpi-grid">
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${serviceQueueCount}">0</div>
+            <div class="mc-kpi-label">Ουρά υπηρεσίας</div>
+        </div>
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${serviceOverdueCount}">0</div>
+            <div class="mc-kpi-label">Εκπρόθεσμα (υπηρεσία)</div>
+        </div>
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${myOpenRequestsCount}">0</div>
+            <div class="mc-kpi-label">Ανοιχτά (δικά μου)</div>
+        </div>
+        <div class="mc-kpi">
+            <div class="mc-kpi-value" th:text="${activeAppointmentsCount}">0</div>
+            <div class="mc-kpi-label">Ενεργά ραντεβού</div>
+        </div>
+    </div>
+
+    <div class="mc-dash-columns">
+        <!-- Left stack: Service Queue + Appointments -->
+        <div class="mc-dash-stack">
+            <div class="mc-card mc-dash-card">
+                <div class="mc-dash-card-head">
+                    <div>
+                        <div class="mc-dash-card-title">Ουρά υπηρεσίας</div>
+                        <div class="mc-dash-card-subtitle">Τα τελευταία 6 αιτήματα που ανήκουν στην υπηρεσία.</div>
+                    </div>
+                    <a class="mc-btn mc-btn-small mc-btn-outline" th:href="@{/employee/requests-service}">Όλα</a>
+                </div>
+
+                <div class="mc-dash-list" th:if="${!#lists.isEmpty(topServiceQueue)}">
+                    <a class="mc-dash-row" th:each="r : ${topServiceQueue}"
+                       th:href="@{'/employee/requests/' + ${r.id}}">
+                        <div class="mc-dash-row-main">
+                            <div class="mc-dash-row-title">
+                                <span class="mc-dash-protocol" th:text="${r.protocolNumber}">PR-0001</span>
+                                <span class="mc-badge" th:classappend="' ' + ${r.status.badgeClass()}" th:text="${r.status.label()}">Κατάσταση</span>
+                                <span class="mc-badge mc-badge-danger" th:if="${r.overdue}">Εκπρόθεσμο</span>
+                            </div>
+                            <div class="mc-dash-row-meta">
+                                <span class="mc-muted" th:text="${r.citizenFullName}">Πολίτης</span>
+                                <span class="mc-dash-date" th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</span>
+                            </div>
+                        </div>
+                        <div class="mc-dash-row-arrow">→</div>
+                    </a>
+                </div>
+
+                <div class="mc-empty" th:if="${#lists.isEmpty(topServiceQueue)}">
+                    Δεν υπάρχουν αιτήματα στην ουρά της υπηρεσίας.
+                </div>
+            </div>
+
+            <div class="mc-card mc-dash-card">
+                <div class="mc-dash-card-head">
+                    <div>
+                        <div class="mc-dash-card-title">Επερχόμενα ραντεβού</div>
+                        <div class="mc-dash-card-subtitle">Τα επόμενα 5 ραντεβού προς διαχείριση.</div>
+                    </div>
+                    <a class="mc-btn mc-btn-small mc-btn-outline" th:href="@{/employee/appointments}">Όλα</a>
+                </div>
+
+                <div class="mc-dash-list" th:if="${!#lists.isEmpty(upcomingAppointments)}">
+                    <div class="mc-dash-row" th:each="a : ${upcomingAppointments}">
+                        <div class="mc-dash-row-main">
+                            <div class="mc-dash-row-title">
+                                <span class="mc-badge" th:classappend="' ' + ${a.status.badgeClass()}" th:text="${a.status.label()}">Κατάσταση</span>
+                                <span class="mc-muted" th:text="${a.service != null ? a.service.label() : '-'}">Υπηρεσία</span>
+                            </div>
+                            <div class="mc-dash-row-meta">
+                                <span class="mc-dash-date" th:text="${a.appointmentDateTime != null ? #temporals.format(a.appointmentDateTime, 'dd/MM/yyyy HH:mm') : '-'}">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-empty" th:if="${#lists.isEmpty(upcomingAppointments)}">
+                    Δεν υπάρχουν επερχόμενα ραντεβού.
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: My recent requests + tip -->
+        <div class="mc-dash-stack">
+            <div class="mc-card mc-dash-card">
+                <div class="mc-dash-card-head">
+                    <div>
+                        <div class="mc-dash-card-title">Πρόσφατα δικά μου αιτήματα</div>
+                        <div class="mc-dash-card-subtitle">Τα τελευταία 6 αιτήματα που έχουν ανατεθεί σε εσένα.</div>
+                    </div>
+                    <a class="mc-btn mc-btn-small mc-btn-outline" th:href="@{/employee/requests-mine}">Όλα</a>
+                </div>
+
+                <div class="mc-dash-list" th:if="${!#lists.isEmpty(recentMyRequests)}">
+                    <a class="mc-dash-row" th:each="r : ${recentMyRequests}"
+                       th:href="@{'/employee/requests/' + ${r.id}}">
+                        <div class="mc-dash-row-main">
+                            <div class="mc-dash-row-title">
+                                <span class="mc-dash-protocol" th:text="${r.protocolNumber}">PR-0001</span>
+                                <span class="mc-badge" th:classappend="' ' + ${r.status.badgeClass()}" th:text="${r.status.label()}">Κατάσταση</span>
+                                <span class="mc-badge mc-badge-danger" th:if="${r.overdue}">Εκπρόθεσμο</span>
+                            </div>
+                            <div class="mc-dash-row-meta">
+                                <span class="mc-muted" th:text="${r.citizenFullName}">Πολίτης</span>
+                                <span class="mc-dash-date" th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</span>
+                            </div>
+                        </div>
+                        <div class="mc-dash-row-arrow">→</div>
+                    </a>
+                </div>
+
+                <div class="mc-empty" th:if="${#lists.isEmpty(recentMyRequests)}">
+                    Δεν έχεις αναλάβει αιτήματα ακόμα.
+                </div>
+            </div>
+
+            <div class="mc-dash-tip">
+                <div class="mc-dash-tip-title">Tip εργασίας</div>
+                <div class="mc-dash-tip-text">
+                    Για <strong>Απόρριψη</strong> ή <strong>Αναμονή στοιχείων</strong>, πρόσθεσε τεκμηριωμένο σχόλιο ώστε να έχεις σωστό audit trail.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

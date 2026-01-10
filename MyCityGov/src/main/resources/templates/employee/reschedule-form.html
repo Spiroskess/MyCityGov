@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Αλλαγή ώρας ραντεβού</title>
+</head>
+
+<section>
+    <div class="mc-page-head">
+        <div>
+            <h2 class="mc-page-title">Αλλαγή ώρας ραντεβού</h2>
+            <div class="mc-subtitle">
+                <a class="mc-link" th:href="@{/employee/appointments}">← Πίσω στα ραντεβού</a>
+                <span class="mc-dot">•</span>
+                <span class="mc-muted">ID:</span>
+                <strong th:text="${appointment.id}">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="mc-card mc-form-card mc-form-narrow">
+
+        <div class="mc-form-card-header">
+            <div class="mc-form-card-title">Στοιχεία ραντεβού</div>
+            <div class="mc-form-card-subtitle">
+                Επίλεξε νέα ημερομηνία και έπειτα ανανέωσε τις διαθέσιμες ώρες (αν χρειάζεται).
+            </div>
+        </div>
+
+        <div class="mc-summary-row">
+            <div class="mc-summary-pill">
+                <span class="mc-muted">Υπηρεσία:</span>
+                <span th:if="${appointment.service == null}">—</span>
+                <span th:if="${appointment.service != null}" th:switch="${appointment.service.name()}">
+                    <span th:case="'KEP'">ΚΕΠ</span>
+                    <span th:case="'TECHNICAL_SERVICE'">Τεχνική Υπηρεσία</span>
+                    <span th:case="'SOCIAL_SERVICE'">Κοινωνική Υπηρεσία</span>
+                    <span th:case="'FINANCIAL_SERVICE'">Οικονομική Υπηρεσία</span>
+                    <span th:case="'ENVIRONMENT_SERVICE'">Περιβάλλον / Καθαριότητα</span>
+                    <span th:case="*" th:text="${#strings.replace(appointment.service.name(), '_', ' ')}">ΥΠΗΡΕΣΙΑ</span>
+                </span>
+            </div>
+
+            <div class="mc-summary-pill">
+                <span class="mc-muted">Τρέχουσα ώρα:</span>
+                <span th:if="${appointment.appointmentDateTime != null}"
+                      th:text="${#temporals.format(appointment.appointmentDateTime,'dd/MM/yyyy HH:mm')}">—</span>
+                <span th:if="${appointment.appointmentDateTime == null}">—</span>
+            </div>
+
+            <div class="mc-summary-pill">
+                <span class="mc-muted">Κατάσταση:</span>
+                <span class="mc-badge mc-badge-tight"
+                      th:classappend="${
+                        appointment.status.name() == 'REQUESTED' ? ' mc-badge-warn' :
+                        (appointment.status.name() == 'CONFIRMED' ? ' mc-badge-success' :
+                        (appointment.status.name() == 'CANCELLED' ? ' mc-badge-danger' :
+                        (appointment.status.name() == 'COMPLETED' ? ' mc-badge-neutral' : '')))
+                      }">
+                    <span th:switch="${appointment.status.name()}">
+                        <span th:case="'REQUESTED'">Ζητήθηκε</span>
+                        <span th:case="'CONFIRMED'">Επιβεβαιώθηκε</span>
+                        <span th:case="'CANCELLED'">Ακυρώθηκε</span>
+                        <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
+                        <span th:case="*" th:text="${appointment.status.name()}">STATUS</span>
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <div class="mc-alert mc-alert-danger" th:if="${error != null}" th:text="${error}">
+            Σφάλμα
+        </div>
+
+        <form class="mc-form"
+              th:action="@{'/employee/appointments/' + ${appointment.id} + '/reschedule'}"
+              method="post">
+
+            <div class="mc-form-grid">
+                <div class="mc-field">
+                    <label class="mc-label" for="date">Νέα ημερομηνία</label>
+                    <input id="date" class="mc-control" type="date" name="date" th:value="${selectedDate}" required/>
+                    <div class="mc-help">
+                        Αν αλλάξεις ημερομηνία, πάτησε «Ανανέωση ωρών» για να φορτώσεις τα διαθέσιμα slots.
+                    </div>
+                </div>
+
+                <div class="mc-field">
+                    <label class="mc-label" for="time">Νέα ώρα</label>
+                    <select id="time" class="mc-control mc-select" name="time" required>
+                        <option value="">— Επίλεξε ώρα —</option>
+                        <option th:each="t : ${availableTimes}"
+                                th:value="${t}"
+                                th:text="${t}"
+                                th:selected="${selectedTime != null and t.equals(selectedTime)}">
+                        </option>
+                    </select>
+
+                    <div class="mc-help" th:if="${#lists.isEmpty(availableTimes)}">
+                        Δεν υπάρχουν διαθέσιμες ώρες για την επιλεγμένη ημερομηνία.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mc-actions-row">
+                <button type="submit" class="mc-btn mc-btn-primary">
+                    Αποθήκευση
+                </button>
+
+                <button type="submit"
+                        class="mc-btn mc-btn-outline"
+                        formmethod="get"
+                        th:formaction="@{'/employee/appointments/' + ${appointment.id} + '/reschedule'}">
+                    Ανανέωση ωρών
+                </button>
+
+                <a th:href="@{/employee/appointments}" class="mc-btn mc-btn-ghost">
+                    Ακύρωση
+                </a>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+</html>

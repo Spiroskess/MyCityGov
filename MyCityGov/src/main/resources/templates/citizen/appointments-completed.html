@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Ολοκληρωμένα ραντεβού</title>
+</head>
+
+<body>
+<section>
+    <div class="mc-page-head">
+        <h2 class="mc-page-title">Ολοκληρωμένα ραντεβού</h2>
+
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-primary" th:href="@{/citizen/appointments}">Ενεργά ραντεβού</a>
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/booking}">Νέο ραντεβού</a>
+        </div>
+    </div>
+
+    <div class="mc-card">
+        <table class="mc-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Υπηρεσία</th>
+                <th>Ημερομηνία/Ώρα</th>
+                <th>Κατάσταση</th>
+                <th class="mc-col-actions">Ενέργειες</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="a : ${appointments}">
+                <td th:text="${a.id}">1</td>
+                <td th:text="${a.service}">KEP</td>
+
+                <td class="mc-muted"
+                    th:text="${a.appointmentDateTime != null ? #temporals.format(a.appointmentDateTime,'dd/MM/yyyy HH:mm') : '-'}">
+                    01/01/2025 10:00
+                </td>
+
+                <td>
+                    <span class="mc-badge"
+                          th:classappend="${
+                            a.status.name() == 'COMPLETED' ? ' mc-badge-success' :
+                            (a.status.name() == 'CANCELLED' ? ' mc-badge-danger' : ' mc-badge-neutral')
+                          }">
+                        <span th:switch="${a.status.name()}">
+                            <span th:case="'COMPLETED'">Ολοκληρώθηκε</span>
+                            <span th:case="'CANCELLED'">Ακυρώθηκε</span>
+                            <span th:case="*"
+                                  th:text="${#strings.replace(a.status.name(), '_', ' ')}">STATUS</span>
+                        </span>
+                    </span>
+                </td>
+
+                <td class="mc-col-actions">
+                    <span class="mc-muted">—</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="mc-empty" th:if="${#lists.isEmpty(appointments)}">
+            Δεν υπάρχουν ολοκληρωμένα ραντεβού.
+            <a class="mc-link" th:href="@{/citizen/appointments}">Επιστροφή στα ενεργά</a>.
+        </div>
+    </div>
+</section>
+</body>
+</html>
