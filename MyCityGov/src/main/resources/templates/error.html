@@ -1,15 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
 <head>
     <title>Σφάλμα</title>
 </head>
-<body>
-<h1>Κάτι πήγε στραβά!</h1>
 
-<p th:text="'Κωδικός σφάλματος: ' + ${status}"></p>
-<p th:text="${error}"></p>
-<p th:text="${message}"></p>
+<section>
+    <div class="mc-card mc-form-card">
+        <div class="mc-card-body">
+            <h2 class="mc-page-title">Κάτι πήγε στραβά!</h2>
 
-<a th:href="@{/}">Επιστροφή στην αρχική</a>
-</body>
+            <div class="mc-alert mc-alert-danger mc-mt-16">
+                <div th:if="${status != null}">
+                    <strong>Κωδικός σφάλματος:</strong>
+                    <span th:text="${status}">500</span>
+                </div>
+                <div th:if="${error != null}">
+                    <strong th:text="${error}">Internal Server Error</strong>
+                </div>
+                <div th:if="${path != null}">
+                    <strong>Διαδρομή:</strong>
+                    <span th:text="${path}">/</span>
+                </div>
+                <div th:if="${message != null}">
+                    <strong>Μήνυμα:</strong>
+                    <span th:text="${message}">—</span>
+                </div>
+            </div>
+
+            <div class="mc-actions-row mc-mt-16">
+                <a class="mc-btn mc-btn-primary" th:href="@{/}">Επιστροφή στην αρχική</a>
+            </div>
+        </div>
+    </div>
+</section>
+
 </html>

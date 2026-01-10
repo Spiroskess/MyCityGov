@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Η σελίδα δεν βρέθηκε</title>
+</head>
+
+<section>
+    <div class="mc-card mc-form-card">
+        <div class="mc-card-body">
+            <h2 class="mc-page-title">Η σελίδα δεν βρέθηκε (404)</h2>
+            <div class="mc-subtitle">Η διαδρομή που ζήτησες δεν υπάρχει ή μετακινήθηκε.</div>
+
+            <div class="mc-alert mc-alert-danger mc-mt-16" th:if="${path != null}">
+                <strong>Διαδρομή:</strong>
+                <span th:text="${path}">/</span>
+            </div>
+
+            <div class="mc-actions-row mc-mt-16">
+                <a class="mc-btn mc-btn-primary" th:href="@{/}">Επιστροφή στην αρχική</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+</html>

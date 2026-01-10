@@ -2,15 +2,28 @@ spring:
   application:
     name: mock-gov-service
 
+  datasource:
+    # Για local: γράφει σε ./data/mockgovdb
+    # Για docker: βάζεις env MOCKGOV_DB_FILE=/data/mockgovdb
+    url: jdbc:h2:file:${MOCKGOV_DB_FILE:./data/mockgovdb};DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
 server:
   port: ${SERVER_PORT:8091}
 
 mockgov:
-  # token που θα στέλνει το MyCityGov ως Authorization: Bearer <clientToken>
   client-token: ${MOCKGOV_CLIENT_TOKEN:mycitygov-client-token}
-
-  # secret για HMAC υπογραφή του userToken
   hmac-secret: ${MOCKGOV_HMAC_SECRET:mycitygov-mockgov-secret}
-
-  # διάρκεια ζωής userToken
   token-ttl-minutes: ${MOCKGOV_TOKEN_TTL_MINUTES:30}

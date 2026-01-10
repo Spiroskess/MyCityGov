@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "gr.hua.dit.mockgov.web.api")
 public class ApiExceptionHandler {
 
     @ExceptionHandler(UnauthorizedClientException.class)

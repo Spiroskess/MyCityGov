@@ -7,14 +7,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Repository
+
 public class InMemoryCitizenDirectory implements CitizenDirectory {
 
     private final Map<String, CitizenIdentityDto> citizensByKey = new ConcurrentHashMap<>();
 
     public InMemoryCitizenDirectory() {
-        // Demo πολίτες (μένουν όπως είναι)
-        put(new CitizenIdentityDto("123456789", "12345678912", "Giannis", "Kesidis"));
+        // Demo πολίτες
+        put(new CitizenIdentityDto("123456789", "12345678912", "Giannis", "Kesidiss"));
         put(new CitizenIdentityDto("987654321", "02028854321", "Γιώργος", "Ιωάννου"));
         put(new CitizenIdentityDto("111222333", "15079567890", "Ελένη", "Κωνσταντίνου"));
     }
@@ -32,20 +32,20 @@ public class InMemoryCitizenDirectory implements CitizenDirectory {
 
         String key = key(a, m);
 
-        // Αν υπάρχει ήδη, απαιτούμε να ταιριάζει το επώνυμο
+        // Πρέπει να υπάρχει ήδη καταχωρημένος πολίτης
         CitizenIdentityDto existing = citizensByKey.get(key);
-        if (existing != null) {
-            if (existing.lastName() != null && existing.lastName().equalsIgnoreCase(ln)) {
-                return Optional.of(existing);
-            }
+        if (existing == null) {
             return Optional.empty();
         }
 
-        //  Demo-friendly: αν δεν υπάρχει, τον “δημιουργούμε” (ώστε να δουλεύει με στοιχεία από MyCityGov DB)
-        CitizenIdentityDto created = new CitizenIdentityDto(a, m, "Demo", ln);
-        citizensByKey.putIfAbsent(key, created);
-        return Optional.of(created);
+        // Και να ταιριάζει και το επώνυμο
+        if (existing.lastName() != null && existing.lastName().equalsIgnoreCase(ln)) {
+            return Optional.of(existing);
+        }
+
+        return Optional.empty();
     }
+
 
     private void put(CitizenIdentityDto c) {
         citizensByKey.put(key(c.afm(), c.amka()), c);

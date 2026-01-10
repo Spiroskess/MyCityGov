@@ -1,12 +1,11 @@
 package gr.hua.dit.mycitygov.web.api.advice;
 
-public class ApiError {
-    private int status;
-    private String message;
+import java.time.Instant;
 
-    public ApiError(int status, String message) {
-        this.status = status;
-        this.message = message;
-    }
-
-}
+public record ApiError(
+    Instant timestamp,
+    int status,
+    String error,
+    String message,
+    String path
+) {}
