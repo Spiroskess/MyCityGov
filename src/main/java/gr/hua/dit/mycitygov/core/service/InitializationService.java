@@ -1,7 +1,11 @@
 package gr.hua.dit.mycitygov.core.service;
 
+import gr.hua.dit.mycitygov.core.model.Person;
 import gr.hua.dit.mycitygov.core.model.PersonRole;
+import gr.hua.dit.mycitygov.core.repository.PersonRepository;
 import gr.hua.dit.mycitygov.core.service.model.CreatePersonRequest;
+import gr.hua.dit.mycitygov.core.service.model.CreatePersonResult;
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,64 +20,122 @@ public class InitializationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(InitializationService.class);
 
     private final PersonService personService;
+    private final PersonRepository personRepository;
 
     /** Για να τρέχει μόνο μία φορά. */
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    public InitializationService(final PersonService personService) {
+    public InitializationService(final PersonService personService,
+                                 final PersonRepository personRepository) {
         if (personService == null) throw new NullPointerException("personService");
+        if (personRepository == null) throw new NullPointerException("personRepository");
         this.personService = personService;
+        this.personRepository = personRepository;
     }
 
-    @PostConstruct //τρέχει μόλις ξεκινήσει η εφαρμογή
+    @PostConstruct
     public void initialize() {
         if (!initialized.compareAndSet(false, true)) {
             return;
         }
 
-        LOGGER.info("Starting MyCityGov database initialization…");
+        LOGGER.info("Starting MyCityGov initialization (seed users)…");
 
-        final List<CreatePersonRequest> users = List.of(
-
-            // Admin
-            new CreatePersonRequest(
-                PersonRole.ADMIN,
-                "admin@mycity.gov",
-                "Artemakis",
-                "Papadopoulos",
-                "+306900000000",
-                "999999999",
-                "99999999999",
-                "Admin1"
+        final List<SeedUser> users = List.of(
+            // ADMIN (χωρίς υπηρεσία)
+            new SeedUser(
+                new CreatePersonRequest(
+                    PersonRole.ADMIN,
+                    "admin@mycity.gov",
+                    "Artemakis",
+                    "Papadopoulos",
+                    "+306900000000",
+                    "999999999",
+                    "99999999999",
+                    "Admin1!234"     //  >=9 chars + σύμβολο
+                ),
+                null
             ),
 
-            // Employee1
-            new CreatePersonRequest(
-                PersonRole.EMPLOYEE,
-                "employee1@mycity.gov",
-                "Soula",
-                "Koromila",
-                "+306900000001",
-                "111111111",
-                "11111111111",
-                "Emp1"
+            // EMPLOYEE -> ΚΕΠ
+            new SeedUser(
+                new CreatePersonRequest(
+                    PersonRole.EMPLOYEE,
+                    "employee1@mycity.gov",
+                    "Soula",
+                    "Koromila",
+                    "+306900000001",
+                    "111111111",
+                    "11111111111",
+                    "Emp1!23456"     // >=9 chars + σύμβολο
+                ),
+                MunicipalService.KEP
             ),
 
-            // Employee2
-            new CreatePersonRequest(
-                PersonRole.EMPLOYEE,
-                "employee2@mycity.gov",
-                "Maria",
-                "Papadopoulou",
-                "+306900000002",
-                "222222222",
-                "22222222222",
-                "Emp2"
+            // EMPLOYEE -> Τεχνική Υπηρεσία
+            new SeedUser(
+                new CreatePersonRequest(
+                    PersonRole.EMPLOYEE,
+                    "employee2@mycity.gov",
+                    "Maria",
+                    "Papadopoulou",
+                    "+306900000002",
+                    "222222222",
+                    "22222222222",
+                    "Emp2!23456"     // >=9 chars + σύμβολο
+                ),
+                MunicipalService.TECHNICAL_SERVICE
             )
         );
 
-        users.forEach(personService::createPerson);
+        for (SeedUser seed : users) {
 
-        LOGGER.info("Database initialization completed successfully.");
+            // Μόνο citizens θα ειδοποιούνται με SMS
+            final boolean sendSms = seed.request().role() == PersonRole.CITIZEN;
+
+            // Αν υπάρχει ήδη, απλά κάνε assign υπηρεσία (αν χρειάζεται) και συνέχισε
+            if (personRepository.findByEmailAddressIgnoreCase(seed.request().emailAddress()).isPresent()) {
+                LOGGER.info("Seed user already exists: {}", seed.request().emailAddress());
+
+                if (seed.municipalService() != null) {
+                    assignMunicipalService(seed.request().emailAddress(), seed.municipalService());
+                }
+                continue;
+            }
+
+            // Δημιουργία + έλεγχος αποτελέσματος (να μη σκάει αν αποτύχει validation/uniqueness)
+            final CreatePersonResult result = personService.createPerson(seed.request(), sendSms);
+
+            if (!result.created()) {
+                LOGGER.warn("Seed user creation failed for {}: {}",
+                    seed.request().emailAddress(),
+                    result.reason()
+                );
+                continue;
+            }
+
+            //  Κάνε assign ΜΟΝΟ αν ο user δημιουργήθηκε ή υπάρχει ήδη
+            if (seed.municipalService() != null) {
+                assignMunicipalService(seed.request().emailAddress(), seed.municipalService());
+            }
+        }
+
+        LOGGER.info("Initialization complete.");
     }
+
+    private void assignMunicipalService(final String emailAddress, final MunicipalService municipalService) {
+        final Person person = personRepository.findByEmailAddressIgnoreCase(emailAddress)
+            .orElseThrow(() -> new IllegalStateException("Seed person not found: " + emailAddress));
+
+        if (person.getMunicipalService() == municipalService) {
+            return;
+        }
+
+        person.setMunicipalService(municipalService);
+        personRepository.save(person);
+
+        LOGGER.info("Assigned {} -> municipalService={}", emailAddress, municipalService);
+    }
+
+    private record SeedUser(CreatePersonRequest request, MunicipalService municipalService) {}
 }

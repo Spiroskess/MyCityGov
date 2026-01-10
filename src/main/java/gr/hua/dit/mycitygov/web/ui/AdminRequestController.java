@@ -1,9 +1,8 @@
 package gr.hua.dit.mycitygov.web.ui;
 
-import gr.hua.dit.mycitygov.core.model.Person;
-import gr.hua.dit.mycitygov.core.model.PersonRole;
-import gr.hua.dit.mycitygov.core.repository.PersonRepository;
 import gr.hua.dit.mycitygov.core.service.RequestService;
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
+import gr.hua.dit.mycitygov.core.service.model.RequestView;
 import gr.hua.dit.mycitygov.web.ui.model.AssignRequestForm;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -11,52 +10,89 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin/requests")
 public class AdminRequestController {
 
     private final RequestService requestService;
-    private final PersonRepository personRepository;
 
-    public AdminRequestController(RequestService requestService,
-                                  PersonRepository personRepository) {
+    public AdminRequestController(RequestService requestService) {
         this.requestService = requestService;
-        this.personRepository = personRepository;
     }
 
     @GetMapping
-    public String listAllRequests(Model model) {
-        model.addAttribute("requests", requestService.getAllRequests());
+    public String listRequests(
+        @RequestParam(name = "view", defaultValue = "all") String view,
+        Model model
+    ) {
+        String safeView = normalizeView(view);
+
+        List<RequestView> all = requestService.getAllRequests();
+        List<RequestView> unassigned = requestService.getUnassignedRequests();
+        List<RequestView> assigned = requestService.getAssignedRequests();
+
+        List<RequestView> shown = switch (safeView) {
+            case "unassigned" -> unassigned;
+            case "assigned" -> assigned;
+            default -> all;
+        };
+
+        model.addAttribute("view", safeView);
+        model.addAttribute("requests", shown);
+
+        model.addAttribute("countAll", all.size());
+        model.addAttribute("countUnassigned", unassigned.size());
+        model.addAttribute("countAssigned", assigned.size());
+
         return "admin/requests";
     }
 
     @GetMapping("/{id}/assign")
-    public String showAssignForm(@PathVariable("id") Long id, Model model) {
+    public String showAssignForm(
+        @PathVariable Long id,
+        @RequestParam(name = "view", defaultValue = "all") String view,
+        Model model
+    ) {
         model.addAttribute("requestId", id);
-        model.addAttribute("employees",
-            personRepository.findAllByRoleOrderByLastName(PersonRole.EMPLOYEE));
-        model.addAttribute("assignRequestForm", new AssignRequestForm());
+        model.addAttribute("services", MunicipalService.values());
+        model.addAttribute("form", new AssignRequestForm());
+
+        // για να γυρίσουμε πίσω στην ίδια προβολή μετά το POST
+        model.addAttribute("view", normalizeView(view));
+
         return "admin/request-assign";
     }
 
     @PostMapping("/{id}/assign")
-    public String handleAssign(
-        @PathVariable("id") Long id,
-        @Valid @ModelAttribute("assignRequestForm") AssignRequestForm form,
+    public String assignToService(
+        @PathVariable Long id,
+        @RequestParam(name = "view", defaultValue = "all") String view,
+        @ModelAttribute("form") @Valid AssignRequestForm form,
         BindingResult bindingResult,
-        Model model) {
+        Model model
+    ) {
+        String safeView = normalizeView(view);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("requestId", id);
-            model.addAttribute("employees",
-                personRepository.findAllByRoleOrderByLastName(PersonRole.EMPLOYEE));
+            model.addAttribute("services", MunicipalService.values());
+            model.addAttribute("view", safeView);
             return "admin/request-assign";
         }
 
-        Person employee = personRepository.findById(form.getEmployeeId())
-            .orElseThrow();
+        requestService.assignRequestToService(id, form.getService());
 
-        requestService.assignRequestToEmployee(id, employee);
-        return "redirect:/admin/requests";
+        // επιστρέφει στην ίδια προβολή (all/unassigned/assigned)
+        return "redirect:/admin/requests?view=" + safeView;
+    }
+
+    private String normalizeView(String view) {
+        if (view == null) return "all";
+        return switch (view) {
+            case "all", "unassigned", "assigned" -> view;
+            default -> "all";
+        };
     }
 }

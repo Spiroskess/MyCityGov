@@ -11,10 +11,13 @@ public record RequestView(
     String protocolNumber,
     RequestType type,
     RequestStatus status,
+    MunicipalService assignedService,
     String subject,
+    String description,
     String citizenFullName,
     String assignedEmployeeFullName,
     Instant createdAt,
     LocalDate slaDueDate,
-    boolean overdue
+    boolean overdue,
+    String statusComment
 ) {}

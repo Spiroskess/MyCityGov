@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Κλείσιμο ραντεβού</title>
+</head>
+
+<body>
+<section>
+    <div class="mc-page-head">
+        <h2 class="mc-page-title">Κλείσιμο ραντεβού</h2>
+
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments}">Τα ραντεβού μου</a>
+        </div>
+    </div>
+
+    <div class="mc-card mc-form-card">
+        <div class="mc-form-card-header">
+            <div class="mc-form-card-title">Επιλέξτε υπηρεσία και ημερομηνία</div>
+            <div class="mc-form-card-subtitle">Διαλέξτε υπηρεσία και ημερομηνία για να δείτε διαθέσιμες ώρες.</div>
+        </div>
+
+        <form class="mc-form"
+              th:action="@{/citizen/booking/times}"
+              method="get">
+
+            <!-- Service tiles -->
+            <div class="mc-field">
+                <div class="mc-label">Υπηρεσία</div>
+
+                <!-- hidden input που στέλνει service στο backend -->
+                <input type="hidden" id="service" name="service" required>
+
+                <div class="mc-service-grid">
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="KEP" required>
+                        <span class="mc-service-title">ΚΕΠ</span>
+                        <span class="mc-service-sub">Εξυπηρέτηση πολιτών</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="TECHNICAL_SERVICE">
+                        <span class="mc-service-title">Τεχνική Υπηρεσία</span>
+                        <span class="mc-service-sub">Άδειες, τεχνικά θέματα</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="SOCIAL_SERVICE">
+                        <span class="mc-service-title">Κοινωνική Υπηρεσία</span>
+                        <span class="mc-service-sub">Κοινωνική μέριμνα</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="FINANCIAL_SERVICE">
+                        <span class="mc-service-title">Οικονομική Υπηρεσία</span>
+                        <span class="mc-service-sub">Τέλη, οφειλές</span>
+                    </label>
+
+                    <label class="mc-service-tile">
+                        <input class="mc-service-radio" type="radio" name="serviceChoice" value="ENVIRONMENT_SERVICE">
+                        <span class="mc-service-title">Περιβάλλον / Καθαριότητα</span>
+                        <span class="mc-service-sub">Καθαριότητα, περιβάλλον</span>
+                    </label>
+                </div>
+
+                <div class="mc-help">Διαλέξτε την υπηρεσία που σας εξυπηρετεί.</div>
+            </div>
+
+            <!-- Date -->
+            <div class="mc-form-grid">
+                <div class="mc-field">
+                    <label class="mc-label" for="date">Ημερομηνία</label>
+                    <input class="mc-control mc-input" id="date" type="date" name="date" required/>
+                    <div class="mc-help">Διαλέξτε ημερομηνία και πατήστε “Εμφάνιση διαθέσιμων ωρών”.</div>
+                </div>
+            </div>
+
+            <div class="mc-actions-row">
+                <button type="submit" class="mc-btn mc-btn-primary">
+                    Εμφάνιση διαθέσιμων ωρών
+                </button>
+
+                <a class="mc-btn mc-btn-ghost" th:href="@{/citizen/appointments}">
+                    Ακύρωση
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            const hidden = document.getElementById('service');
+            document.querySelectorAll('input[name="serviceChoice"]').forEach(r => {
+                r.addEventListener('change', () => hidden.value = r.value);
+            });
+        })();
+    </script>
+</section>
+</body>
+</html>

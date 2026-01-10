@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<title>Νέο ωράριο</title>
+
+<section>
+    <h1 class="mc-title">Ορισμός ωραρίου</h1>
+
+    <form th:action="@{/admin/schedules}" th:object="${schedule}" method="post"
+          style="margin-top:14px; display:grid; gap:12px; max-width:520px;">
+
+        <div>
+            <label style="display:block; font-weight:600;">Υπηρεσία</label>
+            <select th:field="*{service}" required>
+                <option value="">-- Επιλογή --</option>
+                <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
+            </select>
+        </div>
+
+        <div>
+            <label style="display:block; font-weight:600;">Ημέρα</label>
+            <select th:field="*{dayOfWeek}" required>
+                <option value="">-- Επιλογή --</option>
+                <option th:each="d : ${days}" th:value="${d}" th:text="${d}"></option>
+            </select>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+            <div style="flex:1;">
+                <label style="display:block; font-weight:600;">Από</label>
+                <input type="time" th:field="*{startTime}" required/>
+            </div>
+            <div style="flex:1;">
+                <label style="display:block; font-weight:600;">Έως</label>
+                <input type="time" th:field="*{endTime}" required/>
+            </div>
+        </div>
+
+        <div>
+            <label style="display:block; font-weight:600;">Διάρκεια slot (λεπτά)</label>
+            <input type="number" th:field="*{slotMinutes}" min="5" max="120" required/>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button type="submit" class="mc-btn" style="padding:10px 14px;">Αποθήκευση</button>
+            <a th:href="@{/admin/schedules}" class="mc-nav-link" style="text-decoration:underline;">
+                Ακύρωση
+            </a>
+        </div>
+
+        <p th:if="${error != null}" th:text="${error}"
+           style="color:#b00020; font-weight:600;"></p>
+    </form>
+</section>
+
+</html>

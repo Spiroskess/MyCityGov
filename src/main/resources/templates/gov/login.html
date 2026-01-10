@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="el" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Σύνδεση μέσω Gov (Mock)</title>
+</head>
+
+<section>
+    <link rel="stylesheet" th:href="@{/css/gov-login.css}">
+
+    <div class="mc-page-head">
+        <div>
+            <h2 class="mc-page-title">Σύνδεση μέσω Gov (Mock)</h2>
+            <div class="mc-subtitle">
+                Πάρε ένα <strong>userToken</strong> από το MockGov και κόλλησέ το εδώ.
+            </div>
+        </div>
+    </div>
+
+    <div class="gov-card" th:classappend="${providerOk} ? '' : ' gov-card--warn'">
+        <div class="gov-warn" th:if="${providerOk == false}">
+            Προειδοποίηση: Ο πάροχος MockGov δεν απαντά αυτή τη στιγμή. Δοκίμασε ξανά.
+        </div>
+
+        <div class="gov-note" style="margin-top: 10px">
+            <a class="mc-btn mc-btn-ghost" th:href="${mockGovUiUrl}" target="_blank" rel="noopener">
+                Άνοιξε MockGov για να πάρεις token
+            </a>
+            <span class="mc-muted" style="margin-left: 10px">(ανοίγει σε νέο tab)</span>
+        </div>
+
+        <form th:action="@{/gov/login}" method="post" th:object="${govTokenLoginForm}">
+            <label class="gov-label">Gov userToken</label>
+            <textarea class="gov-input" style="min-height: 110px; resize: vertical"
+                      th:field="*{userToken}" placeholder="Κόλλησε εδώ το token..." required></textarea>
+
+            <p class="gov-error" th:if="${#fields.hasErrors('userToken')}" th:errors="*{userToken}"></p>
+
+            <div class="gov-actions">
+                <button class="mc-btn mc-btn-primary" type="submit">Σύνδεση</button>
+                <a class="mc-btn mc-btn-ghost" th:href="@{/}">Ακύρωση</a>
+            </div>
+
+            <p class="gov-error" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+        </form>
+
+        <div class="gov-note">
+            <strong>Τεχνικό:</strong> Ο browser παίρνει το <code>userToken</code> από το MockGov UI.
+            Έπειτα το MyCityGov κάνει <code>POST /validate</code> προς MockGov (secured) με
+            <code>Authorization: Bearer &lt;clientToken&gt;</code> και παίρνει τα στοιχεία πολίτη.
+        </div>
+    </div>
+</section>
+</html>

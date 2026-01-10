@@ -7,26 +7,53 @@
 </head>
 
 <body>
-<section>
-    <h2>Σύνδεση</h2>
+<section class="mc-auth-page">
+    <div class="mc-auth-card mc-auth-card-centered">
 
-    <p th:if="${param.error}">Λάθος email ή κωδικός.</p>
-    <p th:if="${param.logout}">Έχετε αποσυνδεθεί.</p>
-    <p th:if="${param.registered}">Η εγγραφή ολοκληρώθηκε. Συνδεθείτε.</p>
+        <div class="mc-auth-header">
+            <span class="mc-auth-label">ΕΝΑΡΞΗ</span>
+            <h2>Σύνδεση </h2>
+            <p class="mc-auth-subtitle">
+                Δεν έχεις λογαριασμό;
+                <a th:href="@{/register}">Εγγραφή</a>
+            </p>
+        </div>
 
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label for="username">Email:</label>
-            <input id="username" name="username" type="email" required/>
-        </div>
-        <div>
-            <label for="password">Κωδικός:</label>
-            <input id="password" name="password" type="password" required/>
-        </div>
-        <div>
-            <button type="submit">Είσοδος</button>
-        </div>
-    </form>
+        <p th:if="${param.error}" class="mc-alert mc-alert-error">
+            Λάθος email ή κωδικός.
+        </p>
+        <p th:if="${param.logout}" class="mc-alert mc-alert-info">
+            Έχετε αποσυνδεθεί.
+        </p>
+        <p th:if="${param.registered}" class="mc-alert mc-alert-success">
+            Η εγγραφή ολοκληρώθηκε. Συνδεθείτε.
+        </p>
+
+        <form th:action="@{/login}" method="post" class="mc-form">
+            <div class="mc-form-group">
+                <label for="username">Email</label>
+                <input id="username" name="username" type="email"
+                       placeholder="name@example.com" required/>
+            </div>
+
+            <div class="mc-form-group">
+                <label for="password">Κωδικός πρόσβασης</label>
+                <input id="password" name="password" type="password" required/>
+            </div>
+
+            <div class="mc-form-footer">
+                <label class="mc-checkbox">
+                    <input type="checkbox" name="remember-me"/>
+                    <span>Να με θυμάσαι</span>
+                </label>
+            </div>
+
+            <button type="submit" class="mc-button-primary mc-button-full">
+                Είσοδος στο MyCityGov
+            </button>
+        </form>
+
+    </div>
 </section>
 </body>
 </html>

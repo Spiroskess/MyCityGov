@@ -1,5 +1,6 @@
 package gr.hua.dit.mycitygov.core.model;
 
+import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,15 +11,13 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "requests")
-public class  Request {
+public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Size(max = 20)
-    @Column(name = "protocol_number", nullable = false, length = 20, unique = true)
+    @Column(name = "protocol_number", nullable = false, unique = true, length = 32)
     private String protocolNumber;
 
     @NotNull
@@ -31,16 +30,23 @@ public class  Request {
     @Column(name = "status", nullable = false, length = 32)
     private RequestStatus status = RequestStatus.SUBMITTED;
 
-    // ο πολίτης που έκανε το αίτημα
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assigned_service", length = 32)
+    private MunicipalService assignedService;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citizen_id", nullable = false,
-        foreignKey = @ForeignKey(name = "fk_request_citizen"))
+    @JoinColumn(
+        name = "citizen_id",
+        nullable = false,
+        foreignKey = @ForeignKey(name = "fk_request_citizen")
+    )
     private Person citizen;
 
-    // ο υπάλληλος στον οποίο ανατέθηκε (μπορεί να είναι null αρχικά)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id",
-        foreignKey = @ForeignKey(name = "fk_request_employee"))
+    @JoinColumn(
+        name = "employee_id",
+        foreignKey = @ForeignKey(name = "fk_request_employee")
+    )
     private Person assignedEmployee;
 
     @NotNull
@@ -66,91 +72,45 @@ public class  Request {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
-    public Long getId() {
-        return id;
-    }
+    @Column(length = 500)
+    private String statusComment;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getProtocolNumber() {
-        return protocolNumber;
-    }
+    public String getProtocolNumber() { return protocolNumber; }
+    public void setProtocolNumber(String protocolNumber) { this.protocolNumber = protocolNumber; }
 
-    public void setProtocolNumber(String protocolNumber) {
-        this.protocolNumber = protocolNumber;
-    }
+    public RequestType getType() { return type; }
+    public void setType(RequestType type) { this.type = type; }
 
-    public RequestType getType() {
-        return type;
-    }
+    public RequestStatus getStatus() { return status; }
+    public void setStatus(RequestStatus status) { this.status = status; }
 
-    public void setType(RequestType type) {
-        this.type = type;
-    }
+    public MunicipalService getAssignedService() { return assignedService; }
+    public void setAssignedService(MunicipalService assignedService) { this.assignedService = assignedService; }
 
-    public RequestStatus getStatus() {
-        return status;
-    }
+    public Person getCitizen() { return citizen; }
+    public void setCitizen(Person citizen) { this.citizen = citizen; }
 
-    public void setStatus(RequestStatus status) {
-        this.status = status;
-    }
+    public Person getAssignedEmployee() { return assignedEmployee; }
+    public void setAssignedEmployee(Person assignedEmployee) { this.assignedEmployee = assignedEmployee; }
 
-    public Person getCitizen() {
-        return citizen;
-    }
+    public String getSubject() { return subject; }
+    public void setSubject(String subject) { this.subject = subject; }
 
-    public void setCitizen(Person citizen) {
-        this.citizen = citizen;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public Person getAssignedEmployee() {
-        return assignedEmployee;
-    }
+    public LocalDate getSlaDueDate() { return slaDueDate; }
+    public void setSlaDueDate(LocalDate slaDueDate) { this.slaDueDate = slaDueDate; }
 
-    public void setAssignedEmployee(Person assignedEmployee) {
-        this.assignedEmployee = assignedEmployee;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public String getSubject() {
-        return subject;
-    }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getSlaDueDate() {
-        return slaDueDate;
-    }
-
-    public void setSlaDueDate(LocalDate slaDueDate) {
-        this.slaDueDate = slaDueDate;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public String getStatusComment() { return statusComment; }
+    public void setStatusComment(String statusComment) { this.statusComment = statusComment; }
 }

@@ -30,7 +30,7 @@ To gain access to the db:
 ```shell
 Username: sa
 Password:
-Url: jdbc:h2:file:./LOCAL_DATA/H2/mycitygov2db;
+Url: jdbc:h2:file:/data/mycitygov2db
 ```
 
 ---
@@ -38,16 +38,16 @@ Staff Accounts
 ```shell
 For the ADMIN
 Email: admin@mycity.gov
-Password: Admin1
+Password: Admin1!234
 ```
 ```shell
 For the first EMPLOYEE
 Email: employee1@mycity.gov
-Password: Emp1
+Password: Emp1!23456
 ```
 ```shell
 For the second EMPLOYEE
 Email: employee2@mycity.gov
-Password: Emp2
+Password: Emp2!23456
 ```
 ---

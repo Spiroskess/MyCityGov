@@ -20,3 +20,28 @@ server:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.springframework.security: DEBUG
+
+routee:
+  app-id: 5bba56ece4b0a43fbf239aae
+  app-secret: kDsvtwHe3w
+  sender: HUANOC
+
+mycitygov:
+  mockgov:
+      api-base-url: "http://localhost:8091"
+      public-base-url: "http://localhost:8091"
+      client-token: "mycitygov-client-token"
+
+  noc:
+    base-url: "http://localhost:8081"
+    sms:
+      active: true
+  storage:
+    s3:
+      endpoint: "http://localhost:9000"
+      access-key: "minioadmin"
+      secret-key: "minioadmin"
+      bucket: "mycitygov"
+      region: "us-east-1"
+
