@@ -31,4 +31,8 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findAllByAssignedEmployeeIsNullOrderByCreatedAtDesc();
 
     List<Request> findAllByAssignedEmployeeIsNotNullOrderByCreatedAtDesc();
+
+    List<Request> findAllByAssignedServiceIsNullOrderByCreatedAtDesc();
+
+    List<Request> findAllByAssignedServiceIsNotNullOrderByCreatedAtDesc();
 }

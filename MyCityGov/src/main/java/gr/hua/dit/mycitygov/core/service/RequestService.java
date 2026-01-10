@@ -21,10 +21,8 @@ public interface RequestService {
 
     List<RequestView> getRequestsAssignedToEmployee(Person employee);
 
-    // Admin list (ordered by createdAt DESC)
     List<RequestView> getAllRequests();
 
-    // Admin filters (assignedEmployee null / not null)
     List<RequestView> getUnassignedRequests();
     List<RequestView> getAssignedRequests();
 

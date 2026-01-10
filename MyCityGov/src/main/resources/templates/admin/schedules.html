@@ -43,15 +43,8 @@
                             <option value="">— Επιλογή —</option>
 
                             <option th:each="s : ${T(gr.hua.dit.mycitygov.core.service.model.MunicipalService).values()}"
-                                    th:value="${s}"
-                                    th:text="${
-                                        s.name()=='KEP' ? 'ΚΕΠ' :
-                                        (s.name()=='TECHNICAL_SERVICE' ? 'Τεχνική Υπηρεσία' :
-                                        (s.name()=='SOCIAL_SERVICE' ? 'Κοινωνική Υπηρεσία' :
-                                        (s.name()=='FINANCIAL_SERVICE' ? 'Οικονομική Υπηρεσία' :
-                                        (s.name()=='ENVIRONMENT_SERVICE' ? 'Περιβάλλον / Καθαριότητα' :
-                                        #strings.replace(s.name(),'_',' ')))))
-                                    }">
+                                    th:value="${s.name()}"
+                                    th:text="${s.label()}">
                             </option>
                         </select>
                         <div class="mc-help">Π.χ. ΚΕΠ, Τεχνική Υπηρεσία κ.λπ.</div>
@@ -63,7 +56,7 @@
                             <option value="">— Επιλογή —</option>
 
                             <option th:each="d : ${T(java.time.DayOfWeek).values()}"
-                                    th:value="${d}"
+                                    th:value="${d.name()}"
                                     th:text="${d.getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('el-GR'))}">
                             </option>
                         </select>
@@ -117,17 +110,7 @@
             <tr th:each="s : ${schedules}">
                 <td data-label="Υπηρεσία">
                     <span th:if="${s.service == null}">—</span>
-                    <span th:if="${s.service != null}"
-                          th:text="${
-                            s.service.name()=='KEP' ? 'ΚΕΠ' :
-                            (s.service.name()=='TECHNICAL_SERVICE' ? 'Τεχνική Υπηρεσία' :
-                            (s.service.name()=='SOCIAL_SERVICE' ? 'Κοινωνική Υπηρεσία' :
-                            (s.service.name()=='FINANCIAL_SERVICE' ? 'Οικονομική Υπηρεσία' :
-                            (s.service.name()=='ENVIRONMENT_SERVICE' ? 'Περιβάλλον / Καθαριότητα' :
-                            #strings.replace(s.service.name(),'_',' ')))))
-                          }">
-                        Υπηρεσία
-                    </span>
+                    <span th:if="${s.service != null}" th:text="${s.service.label()}">Υπηρεσία</span>
                 </td>
 
                 <td data-label="Ημέρα">

@@ -22,7 +22,7 @@
 
         <div class="mc-page-actions">
             <a class="mc-btn mc-btn-ghost"
-               th:href="@{/admin/requests(view=${view != null ? view : 'all'})}">
+               th:href="@{/admin/requests(view=${view})}">
                 Πίσω
             </a>
         </div>
@@ -31,12 +31,11 @@
     <div class="mc-card mc-form-card">
         <div class="mc-card-body">
 
-            <form th:action="@{/admin/requests/{id}/assign(id=${requestId}, view=${view != null ? view : 'all'})}"
+            <form th:action="@{/admin/requests/{id}/assign(id=${requestId}, view=${view})}"
                   th:object="${form}"
                   method="post">
 
-                <!-- Γενικό μήνυμα σφαλμάτων (ΠΡΕΠΕΙ να είναι μέσα στο form) -->
-                <div class="mc-alert mc-alert-danger" th:if="${#fields.hasAnyErrors()}">
+                <div class="mc-alert mc-alert-danger" th:if="${#fields.hasErrors('*')}">
                     Υπάρχουν σφάλματα στη φόρμα. Διόρθωσέ τα και ξαναπροσπάθησε.
                 </div>
 
@@ -60,14 +59,8 @@
                                 <option value="">— Επιλογή —</option>
 
                                 <option th:each="s : ${services}"
-                                        th:value="${s}"
-                                        th:with="label=${s.name() == 'KEP' ? 'ΚΕΠ'
-                                            : (s.name() == 'TECHNICAL_SERVICE' ? 'Τεχνική Υπηρεσία'
-                                            : (s.name() == 'SOCIAL_SERVICE' ? 'Κοινωνική Υπηρεσία'
-                                            : (s.name() == 'FINANCIAL_SERVICE' ? 'Οικονομική Υπηρεσία'
-                                            : (s.name() == 'ENVIRONMENT_SERVICE' ? 'Περιβάλλον / Καθαριότητα'
-                                            : s.name()))))}"
-                                        th:text="${label}">
+                                        th:value="${s.name()}"
+                                        th:text="${s.label()}">
                                 </option>
                             </select>
 
@@ -83,7 +76,7 @@
                         <div class="mc-form-title">Τι θα συμβεί μετά</div>
                         <ul class="mc-form-list">
                             <li>Το αίτημα θα εμφανιστεί στην ουρά της επιλεγμένης υπηρεσίας.</li>
-                            <li>Αν είναι “Υποβλήθηκε”, θα γίνει “Σε παραλαβή”.</li>
+                            <li>Αν είναι “Υποβλήθηκε”, θα γίνει “Παραλήφθηκε”.</li>
                             <li>Μπορεί να το αναλάβει υπάλληλος της υπηρεσίας.</li>
                         </ul>
                     </div>
@@ -92,7 +85,7 @@
 
                 <div class="mc-form-actions">
                     <a class="mc-btn mc-btn-ghost"
-                       th:href="@{/admin/requests(view=${view != null ? view : 'all'})}">
+                       th:href="@{/admin/requests(view=${view})}">
                         Ακύρωση
                     </a>
 

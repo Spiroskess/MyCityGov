@@ -42,10 +42,6 @@ public class RequestServiceImpl implements RequestService {
         this.smsNotificationPort = smsNotificationPort;
     }
 
-    // ---------------------------
-    // Citizen: open + view
-    // ---------------------------
-
     @Override
     @Transactional
     public RequestView openRequest(Person citizen, OpenRequestRequest openReq) {
@@ -60,7 +56,7 @@ public class RequestServiceImpl implements RequestService {
         request.setUpdatedAt(Instant.now());
 
         request.setSlaDueDate(calculateSlaDueDate(openReq.type()));
-        request.setAssignedService(inferService(openReq.type()));
+        request.setAssignedService(null);
 
         Request saved = requestRepository.save(request);
         return requestMapper.convertRequestToView(saved);
@@ -75,15 +71,6 @@ public class RequestServiceImpl implements RequestService {
             case ROAD_HOLE             -> today.plusDays(7);
             case CLEANING_ISSUE        -> today.plusDays(5);
             case OTHER                 -> today.plusDays(20);
-        };
-    }
-
-    private MunicipalService inferService(RequestType type) {
-        return switch (type) {
-            case CERTIFICATE_RESIDENCE -> MunicipalService.KEP;
-            case SIDEWALK_LICENSE, LIGHTING_ISSUE, ROAD_HOLE -> MunicipalService.TECHNICAL_SERVICE;
-            case CLEANING_ISSUE -> MunicipalService.ENVIRONMENT_SERVICE;
-            case OTHER -> MunicipalService.KEP;
         };
     }
 
@@ -116,10 +103,6 @@ public class RequestServiceImpl implements RequestService {
             .toList();
     }
 
-    // ---------------------------
-    // Employee: list + queue + claim
-    // ---------------------------
-
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getRequestsAssignedToEmployee(Person employee) {
@@ -129,14 +112,9 @@ public class RequestServiceImpl implements RequestService {
             .toList();
     }
 
-    // ---------------------------
-    // Admin: lists (sorted + filters)
-    // ---------------------------
-
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getAllRequests() {
-        // ✅ πιο πρόσφατα πρώτα
         return requestRepository.findAllByOrderByCreatedAtDesc()
             .stream()
             .map(requestMapper::convertRequestToView)
@@ -146,8 +124,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getUnassignedRequests() {
-        // ✅ assignedEmployee == null
-        return requestRepository.findAllByAssignedEmployeeIsNullOrderByCreatedAtDesc()
+        return requestRepository.findAllByAssignedServiceIsNullOrderByCreatedAtDesc()
             .stream()
             .map(requestMapper::convertRequestToView)
             .toList();
@@ -156,16 +133,11 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getAssignedRequests() {
-        // ✅ assignedEmployee != null
-        return requestRepository.findAllByAssignedEmployeeIsNotNullOrderByCreatedAtDesc()
+        return requestRepository.findAllByAssignedServiceIsNotNullOrderByCreatedAtDesc()
             .stream()
             .map(requestMapper::convertRequestToView)
             .toList();
     }
-
-    // ---------------------------
-    // Admin/Workflow: assign to service
-    // ---------------------------
 
     @Override
     @Transactional
@@ -187,6 +159,10 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getServiceQueue(MunicipalService service) {
+        if (service == null) {
+            return List.of();
+        }
+
         return requestRepository
             .findAllByAssignedServiceAndAssignedEmployeeIsNullOrderByCreatedAtDesc(service)
             .stream()
@@ -211,10 +187,6 @@ public class RequestServiceImpl implements RequestService {
                 return requestMapper.convertRequestToView(saved);
             });
     }
-
-    // ---------------------------
-    // Employee: status update + messages + notify
-    // ---------------------------
 
     @Override
     @Transactional
@@ -271,10 +243,6 @@ public class RequestServiceImpl implements RequestService {
         requestMessageRepository.save(m);
     }
 
-    // ---------------------------
-    // Employee: view my request + messages
-    // ---------------------------
-
     @Override
     @Transactional(readOnly = true)
     public Optional<RequestView> getMyRequestDetails(Long requestId, Person employee) {
@@ -293,10 +261,6 @@ public class RequestServiceImpl implements RequestService {
             .map(requestMessageMapper::toView)
             .toList();
     }
-
-    // ---------------------------
-    // Citizen: additional info
-    // ---------------------------
 
     @Override
     @Transactional
@@ -331,10 +295,6 @@ public class RequestServiceImpl implements RequestService {
         req.setUpdatedAt(Instant.now());
         requestRepository.save(req);
     }
-
-    // ---------------------------
-    // Helpers
-    // ---------------------------
 
     private String generateProtocolNumber() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();

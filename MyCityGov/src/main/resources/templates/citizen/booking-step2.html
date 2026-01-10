@@ -22,7 +22,7 @@
             <div class="mc-summary-row">
                 <span class="mc-summary-pill">
                     <b>Υπηρεσία:</b>
-                    <span th:text="${service}">—</span>
+                    <span th:text="${service.label()}">—</span>
                 </span>
 
                 <span class="mc-summary-pill">
@@ -52,7 +52,7 @@
               th:action="@{/citizen/booking/confirm}"
               method="post">
 
-            <input type="hidden" name="service" th:value="${service}"/>
+            <input type="hidden" name="service" th:value="${service.name()}"/>
             <input type="hidden" name="date" th:value="${date}"/>
 
             <div class="mc-field">
