@@ -1,6 +1,7 @@
 package gr.hua.dit.mycitygov.core.service.model;
 
 public enum MunicipalService {
+    // Δημοτικές υπηρεσίες
     KEP("ΚΕΠ"),
     TECHNICAL_SERVICE("Τεχνική Υπηρεσία"),
     SOCIAL_SERVICE("Κοινωνική Υπηρεσία"),

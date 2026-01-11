@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class AssignRequestForm {
 
+    // ο admin επιλέγει MunicipalService ώστε να αναθέσει/δρομολογήσει ένα αίτημα
     @NotNull
     private MunicipalService service;
 

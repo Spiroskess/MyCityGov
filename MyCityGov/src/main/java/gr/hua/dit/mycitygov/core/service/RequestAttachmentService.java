@@ -7,6 +7,7 @@ import gr.hua.dit.mycitygov.core.service.model.AttachmentView;
 
 import java.util.List;
 
+// Service interface για συνημμένα αιτημάτων
 public interface RequestAttachmentService {
 
     void addForCitizenRequest(Long requestId, Person citizen, AttachmentUpload upload);

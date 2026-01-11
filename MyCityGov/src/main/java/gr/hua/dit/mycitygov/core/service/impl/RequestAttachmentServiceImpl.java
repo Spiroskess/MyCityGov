@@ -38,6 +38,7 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
     @Override
     public void addForCitizenRequest(Long requestId, Person citizen, AttachmentUpload upload) {
+        // Upload συνημμένου από πολίτη: έλεγχος ownership + upload σε S3/MinIO + αποθήκευση metadata στη DB
         Request req = requestRepository.findById(requestId)
             .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
 
@@ -53,10 +54,8 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
         String key = "requests/" + requestId + "/" + UUID.randomUUID() + "_" + original;
 
-        // 1) upload στο MinIO
         fileStorageService.put(key, upload.inputStream(), upload.sizeBytes(), upload.contentType());
 
-        // 2) αποθήκευση metadata στη DB
         RequestAttachment a = new RequestAttachment();
         a.setRequest(req);
         a.setObjectKey(key);
@@ -69,6 +68,7 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
     @Override
     public List<AttachmentView> listForCitizenRequest(Long requestId, Person citizen) {
+        // Λίστα συνημμένων για πολίτη
         Request req = requestRepository.findById(requestId)
             .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
 
@@ -82,10 +82,10 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
     @Override
     public List<AttachmentView> listForEmployeeRequest(Long requestId, Person employee) {
+        // Λίστα συνημμένων για υπάλληλο
         Request req = requestRepository.findById(requestId)
             .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
 
-        // επιτρέπουμε download μόνο αν είναι assigned στον υπάλληλο
         if (req.getAssignedEmployee() == null || !req.getAssignedEmployee().getId().equals(employee.getId())) {
             throw new AccessDeniedException("NOT_ASSIGNED_TO_YOU");
         }
@@ -96,6 +96,7 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
     @Override
     public AttachmentDownload downloadForCitizen(Long requestId, Long attachmentId, Person citizen) {
+        // Download συνημμένου από πολίτη από S3/MinIO
         Request req = requestRepository.findById(requestId)
             .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
 
@@ -116,6 +117,7 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
     @Override
     public AttachmentDownload downloadForEmployee(Long requestId, Long attachmentId, Person employee) {
+        // Download συνημμένου από υπάλληλο
         Request req = requestRepository.findById(requestId)
             .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
 
@@ -133,8 +135,10 @@ public class RequestAttachmentServiceImpl implements RequestAttachmentService {
 
         return new AttachmentDownload(a.getOriginalFilename(), ct, a.getSizeBytes(), in);
     }
+
     @Override
     public void addAdditionalInfoForCitizenRequest(Long requestId, Person citizen, AttachmentUpload upload) {
+        // Upload "επιπλέον στοιχείων" μόνο όταν το αίτημα είναι WAITING_ADDITIONAL_INFO
         Request req = requestRepository.findById(requestId)
             .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
 

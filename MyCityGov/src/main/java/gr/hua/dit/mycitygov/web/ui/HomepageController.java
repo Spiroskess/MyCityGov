@@ -28,9 +28,9 @@ public class HomepageController {
                                final HttpServletRequest request,
                                final Model model) {
 
+        // Homepage: αν δεν είναι logged-in, δείχνει link προς MockGov UI
         if (!AuthUtils.isAuthenticated(authentication)) {
-            // returnTo = εκεί που θα γυρίσει ο MockGov με ?token=...
-            String returnTo = absoluteUrl(request, "/gov/login");
+            String returnTo = absoluteUrl(request, "/gov/login"); // endpoint που θα δεχτεί το token callback
             String encoded = URLEncoder.encode(returnTo, StandardCharsets.UTF_8);
 
             String mockGovUiUrl = mockGovProperties.publicBaseUrl()
@@ -40,6 +40,7 @@ public class HomepageController {
             return "homepage";
         }
 
+        // Αν υπάρχει auth αλλά δεν βρέθηκε Person στο σύστημά μας, μένουμε στο homepage
         if (currentUserProvider.getCurrentUser().isEmpty()) {
             return "homepage";
         }
@@ -48,6 +49,7 @@ public class HomepageController {
     }
 
     private String absoluteUrl(HttpServletRequest request, String path) {
+        // Helper: φτιάχνει absolute URL (scheme/host/port) για να το δώσουμε ως returnTo στο MockGov
         String scheme = request.getScheme();
         String host = request.getServerName();
         int port = request.getServerPort();

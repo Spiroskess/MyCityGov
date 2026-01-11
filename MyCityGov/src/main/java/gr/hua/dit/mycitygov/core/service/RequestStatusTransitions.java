@@ -9,6 +9,7 @@ import java.util.Set;
 
 public final class RequestStatusTransitions {
 
+    // State machine: επιτρεπτές μεταβάσεις κατάστασης αιτήματος
     private static final Map<RequestStatus, Set<RequestStatus>> ALLOWED = Map.of(
         RequestStatus.SUBMITTED, EnumSet.of(RequestStatus.RECEIVED, RequestStatus.REJECTED),
         RequestStatus.RECEIVED, EnumSet.of(RequestStatus.IN_PROGRESS, RequestStatus.REJECTED),
@@ -28,15 +29,15 @@ public final class RequestStatusTransitions {
     private RequestStatusTransitions() {}
 
     public static boolean canMove(final RequestStatus from, final RequestStatus to) {
+        // Έλεγχος αν επιτρέπεται μετάβαση from -> to
         if (from == null || to == null) return false;
         return ALLOWED.getOrDefault(from, Set.of()).contains(to);
     }
 
-    //για να φτιάχνουμε κουμπιά UI με βάση το current status
+    // Για να φτιάχνουμε κουμπιά UI με βάση το current status
     public static Set<RequestStatus> nextStatuses(final RequestStatus from) {
         if (from == null) return Set.of();
         Set<RequestStatus> next = ALLOWED.getOrDefault(from, Set.of());
-        // επιστρέφουμε unmodifiable για ασφάλεια
         return next.isEmpty() ? Set.of() : Collections.unmodifiableSet(next);
     }
 }

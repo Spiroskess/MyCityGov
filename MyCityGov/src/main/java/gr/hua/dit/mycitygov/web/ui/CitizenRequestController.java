@@ -42,6 +42,7 @@ public class CitizenRequestController {
 
     @GetMapping("/citizen/requests")
     public String listCitizenRequests(Model model) {
+        //  εμφανίζει τα ενεργά αιτήματα του πολίτη
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
 
         var all = requestService.getRequestsOfCitizen(citizen);
@@ -55,6 +56,7 @@ public class CitizenRequestController {
 
     @GetMapping("/citizen/requests/completed")
     public String listCitizenCompletedRequests(Model model) {
+        // εμφανίζει ιστορικό ολοκληρωμένων/απορριφθέντων αιτημάτων
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
 
         var all = requestService.getRequestsOfCitizen(citizen);
@@ -68,6 +70,7 @@ public class CitizenRequestController {
 
     @GetMapping("/citizen/request-new")
     public String showNewRequestForm(Model model) {
+        // Φόρμα δημιουργίας νέου αιτήματος
         model.addAttribute("openRequestRequest", new OpenRequestRequest(null, "", ""));
         return "citizen/request-new";
     }
@@ -79,16 +82,15 @@ public class CitizenRequestController {
         @RequestParam(name = "attachments", required = false) MultipartFile[] attachments,
         Model model) {
 
+        // Submit νέου αιτήματος + (optional) upload συνημμένων σε S3/MinIO
         if (bindingResult.hasErrors()) {
             return "citizen/request-new";
         }
 
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
 
-        // δημιουργία αιτήματος
         var created = requestService.openRequest(citizen, openRequestRequest);
 
-        // upload + αποθήκευση metadata στη DB
         if (attachments != null) {
             for (MultipartFile f : attachments) {
                 if (f == null || f.isEmpty()) continue;
@@ -114,6 +116,7 @@ public class CitizenRequestController {
 
     @GetMapping("/citizen/requests/{id}")
     public String citizenRequestDetails(@PathVariable Long id, Model model) {
+        // detail σελίδα αιτήματος (μαζί με messages + attachments)
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
 
         var opt = requestService.getCitizenRequestDetails(id, citizen);
@@ -128,12 +131,11 @@ public class CitizenRequestController {
         return "citizen/request-details";
     }
 
-    // Download συνημμένου από πολίτη
     @GetMapping("/citizen/requests/{requestId}/attachments/{attachmentId}/download")
     @ResponseBody
     public ResponseEntity<Resource> downloadCitizenAttachment(@PathVariable Long requestId,
                                                               @PathVariable Long attachmentId) {
-
+        // Download συνημμένου από πολίτη
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
         var dl = requestAttachmentService.downloadForCitizen(requestId, attachmentId, citizen);
 
@@ -155,6 +157,7 @@ public class CitizenRequestController {
     }
 
     private boolean isCompletedStatus(RequestStatus status) {
+        // Τερματικές καταστάσεις για “Completed” tab
         return status == RequestStatus.COMPLETED || status == RequestStatus.REJECTED;
     }
 
@@ -163,7 +166,7 @@ public class CitizenRequestController {
                                        @RequestParam(name = "attachments", required = false) MultipartFile[] attachments,
                                        @RequestParam(name = "note", required = false) String note,
                                        RedirectAttributes ra) {
-
+        // Upload πρόσθετων αρχείων από πολίτη μόνο όταν το αίτημα είναι WAITING_ADDITIONAL_INFO
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
 
         if (attachments == null || attachments.length == 0) {
@@ -184,7 +187,6 @@ public class CitizenRequestController {
                     f.getInputStream()
                 );
 
-                // ✅ επιτρέπεται μόνο όταν WAITING_ADDITIONAL_INFO
                 requestAttachmentService.addAdditionalInfoForCitizenRequest(id, citizen, upload);
                 uploaded++;
 
@@ -203,12 +205,10 @@ public class CitizenRequestController {
             return "redirect:/citizen/requests/" + id;
         }
 
-        // ✅ γράφει μήνυμα στο ιστορικό ώστε να το δει και ο υπάλληλος
+        // Καταγράφει μήνυμα στο ιστορικό ότι ο πολίτης υπέβαλε επιπλέον στοιχεία
         try {
             requestService.citizenSubmittedAdditionalInfo(id, citizen, uploaded, note);
-        } catch (Exception ignored) {
-            // Αν αποτύχει το “μήνυμα”, δεν κόβουμε το upload.
-        }
+        } catch (Exception ignored) {}
 
         ra.addFlashAttribute("uploadOk", "Ανέβηκαν επιτυχώς " + uploaded + " αρχείο(α).");
         return "redirect:/citizen/requests/" + id;

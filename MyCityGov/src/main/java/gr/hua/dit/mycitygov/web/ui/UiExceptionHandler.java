@@ -18,6 +18,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+/**
+ * Global UI error handler: μετατρέπει exceptions σε φιλικές error σελίδες (error / error/404).
+ */
 @ControllerAdvice(basePackages = "gr.hua.dit.mycitygov.web")
 @Order(2)
 public class UiExceptionHandler {
@@ -30,6 +33,7 @@ public class UiExceptionHandler {
                                  final HttpServletResponse response,
                                  final Model model) {
 
+        // Χαρτογραφεί exceptions -> HTTP status (π.χ. 404/400/401/403/500) για σωστό UI response
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         if (exception instanceof NoResourceFoundException) {
@@ -58,6 +62,7 @@ public class UiExceptionHandler {
             exception.getMessage()
         );
 
+        // Στέλνει βασικά στοιχεία στο template (error.html / 404.html)
         model.addAttribute("status", status.value());
         model.addAttribute("error", status.getReasonPhrase());
         model.addAttribute("message", exception.getMessage());

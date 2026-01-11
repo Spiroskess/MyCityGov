@@ -1,10 +1,7 @@
 package gr.hua.dit.mycitygov.core.model;
 
 /**
- * Κατάσταση αιτήματος.
- *
- * Περιλαμβάνει ελληνικές ετικέτες και UI κλάσεις ώστε να μην εμφανίζονται
- * αγγλικές τιμές (π.χ. "SUBMITTED") στα templates.
+ * Κατάσταση αιτήματος με ελληνικό label + CSS class για εμφάνιση στο UI
  */
 public enum RequestStatus {
 
@@ -23,20 +20,9 @@ public enum RequestStatus {
         this.badgeClass = badgeClass;
     }
 
-    /** Ελληνική ετικέτα για εμφάνιση στο UI. */
-    public String label() {
-        return labelEl;
-    }
-
-    /**
-     * CSS class για το badge (π.χ. mc-badge-info).
-     */
-    public String badgeClass() {
-        return badgeClass;
-    }
+    public String label() { return labelEl; }
+    public String badgeClass() { return badgeClass; }
 
     @Override
-    public String toString() {
-        return labelEl;
-    }
+    public String toString() { return labelEl; }
 }

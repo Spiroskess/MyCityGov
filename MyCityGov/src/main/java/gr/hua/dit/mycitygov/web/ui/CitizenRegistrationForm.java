@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public class CitizenRegistrationForm {
 
+    // Form model για UI registration πολίτη
     @NotBlank
     @Email
     @Size(max = 100)
@@ -31,6 +32,7 @@ public class CitizenRegistrationForm {
     @Size(max = 11)
     private String amka;
 
+    // password + confirmPassword για έλεγχο ταύτισης κωδικών στο UI
     @NotBlank
     @Size(min = 4, max = 24)
     private String password;
@@ -41,67 +43,27 @@ public class CitizenRegistrationForm {
 
     // getters & setters
 
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getFirstName() {
-        return firstName;
-    }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public String getMobilePhoneNumber() { return mobilePhoneNumber; }
+    public void setMobilePhoneNumber(String mobilePhoneNumber) { this.mobilePhoneNumber = mobilePhoneNumber; }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public String getAfm() { return afm; }
+    public void setAfm(String afm) { this.afm = afm; }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    public String getAmka() { return amka; }
+    public void setAmka(String amka) { this.amka = amka; }
 
-    public String getMobilePhoneNumber() {
-        return mobilePhoneNumber;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public void setMobilePhoneNumber(String mobilePhoneNumber) {
-        this.mobilePhoneNumber = mobilePhoneNumber;
-    }
-
-    public String getAfm() {
-        return afm;
-    }
-
-    public void setAfm(String afm) {
-        this.afm = afm;
-    }
-
-    public String getAmka() {
-        return amka;
-    }
-
-    public void setAmka(String amka) {
-        this.amka = amka;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
+    public String getConfirmPassword() { return confirmPassword; }
+    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
 }

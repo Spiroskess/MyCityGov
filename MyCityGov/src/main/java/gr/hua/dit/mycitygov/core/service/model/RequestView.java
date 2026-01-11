@@ -5,7 +5,7 @@ import gr.hua.dit.mycitygov.core.model.RequestType;
 
 import java.time.Instant;
 import java.time.LocalDate;
-
+// DTO/View για προβολή αιτήματος στο UI/REST
 public record RequestView(
     Long id,
     String protocolNumber,

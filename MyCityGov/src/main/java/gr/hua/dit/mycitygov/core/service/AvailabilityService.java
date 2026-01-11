@@ -23,6 +23,7 @@ public class AvailabilityService {
     }
 
     public List<LocalTime> getAvailableTimes(MunicipalService service, LocalDate date) {
+        // Υπολογίζει διαθέσιμα time slots για μια υπηρεσία και ημερομηνία
         return getAvailableTimes(service, date, null);
     }
 
@@ -30,6 +31,7 @@ public class AvailabilityService {
      * Όπως το getAvailableTimes, αλλά μπορεί να αγνοήσει ένα συγκεκριμένο ραντεβού
      */
     public List<LocalTime> getAvailableTimes(MunicipalService service, LocalDate date, Long excludeAppointmentId) {
+        // Συνδυάζει ωράρια (ServiceSchedule) + ήδη κλεισμένα ραντεβού για να βγάλει διαθέσιμα slots
         if (service == null) throw new IllegalArgumentException("service is null");
         if (date == null) throw new IllegalArgumentException("date is null");
 
@@ -41,7 +43,7 @@ public class AvailabilityService {
             return List.of();
         }
 
-        // 1 query για τη μέρα (από πρώτο start έως τελευταίο end)
+        // Παίρνει ένα "εύρος ημέρας" ώστε να κάνει 1 query για τα ραντεβού της ημέρας
         LocalTime minStart = schedules.get(0).getStartTime();
         LocalTime maxEnd = schedules.get(0).getEndTime();
         for (ServiceSchedule s : schedules) {
@@ -52,6 +54,7 @@ public class AvailabilityService {
         LocalDateTime start = LocalDateTime.of(date, minStart);
         LocalDateTime end = LocalDateTime.of(date, maxEnd);
 
+        // “Κλεισμένα” slots (μόνο REQUESTED/CONFIRMED) για να μην προταθούν ξανά
         Set<LocalTime> booked = new HashSet<>();
         appointmentRepository.findByServiceAndAppointmentDateTimeBetween(service, start, end)
             .forEach(a -> {
@@ -61,7 +64,7 @@ public class AvailabilityService {
                 }
             });
 
-        // Slots για ΚΑΘΕ διάστημα της ημέρας
+        // Δημιουργεί slots ανά διάστημα ωραρίου (start->end) με βήμα slotMinutes
         List<LocalTime> slots = new ArrayList<>();
         for (ServiceSchedule s : schedules) {
             int step = s.getSlotMinutes() > 0 ? s.getSlotMinutes() : 15;

@@ -14,6 +14,7 @@ import java.util.Optional;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
+    // Queries για ραντεβού ανά πολίτη/υπάλληλο/υπηρεσία
     List<Appointment> findByCitizenId(Long citizenId);
 
     List<Appointment> findByCitizenIdAndStatusInOrderByAppointmentDateTimeDesc(
@@ -47,6 +48,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         Collection<AppointmentStatus> statuses
     );
 
+    // Έλεγχος για να μην υπάρχουν επικαλυπτόμενα ραντεβού στην ίδια υπηρεσία (ίδιο slot)
     @Query("""
         select (count(a) > 0)
         from Appointment a
@@ -62,6 +64,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         @Param("excludeId") Long excludeId
     );
 
+    // Έλεγχος για να μην έχει ο ίδιος υπάλληλος 2 ραντεβού στο ίδιο slot
     @Query("""
         select (count(a) > 0)
         from Appointment a

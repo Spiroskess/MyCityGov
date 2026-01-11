@@ -22,14 +22,16 @@ public class AdminScheduleController {
 
     @GetMapping
     public String list(@RequestParam(required = false) String ok, Model model) {
+        // Admin UI: προβολή + φόρμα διαχείρισης ωραρίων ραντεβού ανά υπηρεσία/ημέρα
         model.addAttribute("schedules", adminScheduleService.findAll());
 
         if (!model.containsAttribute("schedule")) {
-            model.addAttribute("schedule", new ServiceSchedule());
+            model.addAttribute("schedule", new ServiceSchedule()); // φόρμα δημιουργίας νέου ωραρίου
         }
         model.addAttribute("services", MunicipalService.values());
         model.addAttribute("days", DayOfWeek.values());
 
+        // Labels για πιο ωραία εμφάνιση στο template
         model.addAttribute("serviceLabels", serviceLabels());
         model.addAttribute("dayLabels", dayLabels());
 
@@ -42,12 +44,14 @@ public class AdminScheduleController {
 
     @PostMapping
     public String save(@ModelAttribute("schedule") ServiceSchedule schedule, Model model) {
+        // Save ωραρίου: το business validation/overlap check γίνεται στο AdminScheduleService
         try {
             adminScheduleService.create(schedule);
             return "redirect:/admin/schedules?ok=1";
         } catch (Exception ex) {
             model.addAttribute("error", ex.getMessage());
 
+            // Ξαναγεμίζει τα required data για να ξαναεμφανιστεί σωστά η σελίδα με error
             model.addAttribute("schedules", adminScheduleService.findAll());
             model.addAttribute("services", MunicipalService.values());
             model.addAttribute("days", DayOfWeek.values());
@@ -60,11 +64,13 @@ public class AdminScheduleController {
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id) {
+        // Διαγραφή ωραρίου (admin action)
         adminScheduleService.delete(id);
         return "redirect:/admin/schedules?ok=1";
     }
 
     private Map<MunicipalService, String> serviceLabels() {
+        // Map enum -> ελληνική ετικέτα
         return Map.of(
             MunicipalService.KEP, "ΚΕΠ",
             MunicipalService.TECHNICAL_SERVICE, "Τεχνική Υπηρεσία",
@@ -75,6 +81,7 @@ public class AdminScheduleController {
     }
 
     private Map<DayOfWeek, String> dayLabels() {
+        // Map DayOfWeek -> ελληνική ετικέτα
         return Map.of(
             DayOfWeek.MONDAY, "Δευτέρα",
             DayOfWeek.TUESDAY, "Τρίτη",

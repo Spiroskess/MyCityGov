@@ -4,7 +4,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
 /**
- * Authentication utilities for controllers (ίδιο με του καθηγητή).
+ * Utility κλάση για έλεγχο authentication σε controllers (authenticated vs anonymous).
  */
 final class AuthUtils {
 

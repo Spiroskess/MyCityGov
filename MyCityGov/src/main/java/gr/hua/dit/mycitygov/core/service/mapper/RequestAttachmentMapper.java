@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RequestAttachmentMapper {
-
+    // Mapper: μετατρέπει RequestAttachment entity σε AttachmentView DTO
     public AttachmentView toView(RequestAttachment a) {
         return new AttachmentView(
             a.getId(),

@@ -1,6 +1,5 @@
 package gr.hua.dit.mycitygov.web.ui;
 
-
 import gr.hua.dit.mycitygov.core.model.PersonRole;
 import gr.hua.dit.mycitygov.core.service.PersonService;
 import gr.hua.dit.mycitygov.core.service.model.CreatePersonRequest;
@@ -33,21 +32,22 @@ public class RegistrationController {
 
     @GetMapping("/register")
     public String showRegister(final Authentication authentication, final Model model) {
+        // UI registration σελίδα: αν είναι ήδη logged-in, redirect στο profile
         if (authentication != null && authentication.isAuthenticated()
             && !"anonymousUser".equals(authentication.getPrincipal())) {
             return "redirect:/profile";
         }
 
-        // Default ρόλος: Πολίτης
+        // Default φόρμα CreatePersonRequest (DTO) με ρόλο CITIZEN
         CreatePersonRequest form = new CreatePersonRequest(
-            PersonRole.CITIZEN, // προεπιλογή ρόλου
-            "",                 // email
-            "",                 // firstName
-            "",                 // lastName
-            "",                 // mobilePhoneNumber
-            "",                 // afm
-            "",                 // amka
-            ""                  // password
+            PersonRole.CITIZEN,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
         );
 
         model.addAttribute("createPersonRequest", form);
@@ -61,6 +61,7 @@ public class RegistrationController {
         final BindingResult bindingResult,
         final Model model
     ) {
+        // Submit registration: validation στο controller + business στο service
         if (authentication != null && authentication.isAuthenticated()
             && !"anonymousUser".equals(authentication.getPrincipal())) {
             return "redirect:/profile";
@@ -71,7 +72,6 @@ public class RegistrationController {
             return "register";
         }
 
-        // Κανονική δημιουργία χρήστη μέσω service
         CreatePersonResult createPersonResult = this.personService.createPerson(createPersonRequest, true);
 
         if (createPersonResult.created()) {
@@ -79,7 +79,7 @@ public class RegistrationController {
             return "redirect:/?registered=1";
         }
 
-        // Αν απέτυχε στείλε μήνυμα λάθους
+        // Αν απέτυχε (π.χ. phone validation), δείχνει errorMessage στο UI
         model.addAttribute("createPersonRequest", createPersonRequest);
         model.addAttribute("errorMessage", createPersonResult.reason());
         return "register";

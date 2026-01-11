@@ -4,7 +4,7 @@ import gr.hua.dit.mycitygov.core.model.RequestType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
+// DTO για άνοιγμα/υποβολή αιτήματος από πολίτη
 public record OpenRequestRequest(
     @NotNull RequestType type,
     @NotNull @NotBlank @Size(max = 255) String subject,

@@ -26,6 +26,7 @@ public class CitizenBookingController {
 
     @GetMapping
     public String step1(Model model) {
+        // Booking flow  επιλογή δημοτικής υπηρεσίας
         model.addAttribute("services", MunicipalService.values());
         return "citizen/booking-step1";
     }
@@ -34,14 +35,13 @@ public class CitizenBookingController {
     public String step2(@RequestParam MunicipalService service,
                         @RequestParam String date,
                         Model model) {
-
+        // Booking flow  εμφανίζει διαθέσιμες ώρες για υπηρεσία + ημερομηνία
         LocalDate selectedDate = LocalDate.parse(date);
+
         model.addAttribute("service", service);
         model.addAttribute("date", selectedDate);
-        model.addAttribute(
-            "times",
-            availabilityService.getAvailableTimes(service, selectedDate)
-        );
+        model.addAttribute("times", availabilityService.getAvailableTimes(service, selectedDate));
+
         return "citizen/booking-step2";
     }
 
@@ -51,7 +51,7 @@ public class CitizenBookingController {
                           @RequestParam String date,
                           @RequestParam String time,
                           Model model) {
-
+        // Booking confirm: δημιουργεί το ραντεβού
         LocalDate d = LocalDate.parse(date);
         LocalTime t = LocalTime.parse(time);
 
@@ -60,13 +60,10 @@ public class CitizenBookingController {
             appointmentService.book(citizenId, service, d, t);
             return "redirect:/citizen/appointments";
         } catch (Exception ex) {
-            // σωστό UI error handling
+            // Αν αποτύχει , ξαναδείχνει  με μήνυμα λάθους
             model.addAttribute("service", service);
             model.addAttribute("date", d);
-            model.addAttribute(
-                "times",
-                availabilityService.getAvailableTimes(service, d)
-            );
+            model.addAttribute("times", availabilityService.getAvailableTimes(service, d));
             model.addAttribute("error", ex.getMessage());
             return "citizen/booking-step2";
         }

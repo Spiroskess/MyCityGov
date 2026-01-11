@@ -28,21 +28,20 @@ public class GovUiLoginServiceImpl implements GovUiLoginService {
 
     @Override
     public void pingProvider() {
-        // GET προς external χωρίς PII (πιάνει requirement GET)
+        // GET προς MockGov για status/health
         mockGovPort.status();
     }
 
     @Override
     @Transactional
     public Person loginOrRegisterCitizenByToken(String userToken) {
+        // Gov login μέσω token: validate στο external service και μετά login/registration στο MyCityGov
         if (userToken == null || userToken.isBlank()) {
             throw new IllegalArgumentException("Το gov token είναι κενό.");
         }
 
-        // validate token -> identity (secured external POST)
         CitizenIdentityDto dto = mockGovPort.validateUserToken(userToken.trim());
 
-        // find existing
         Person existing = personRepository.findByAfm(dto.afm())
             .or(() -> personRepository.findByAmka(dto.amka()))
             .orElse(null);
@@ -54,11 +53,9 @@ public class GovUiLoginServiceImpl implements GovUiLoginService {
             return existing;
         }
 
-        // create new citizen through PersonService (business rules)
+        // Auto-create πολίτη αν δεν υπάρχει
         String email = buildUniqueEmail(dto.amka());
         String mobile = buildUniqueMobile(dto.afm());
-
-        // required by CreatePersonRequest (για να περάσει validation του registration logic)
         String rawPassword = "GovExt-" + dto.amka();
 
         CreatePersonRequest req = new CreatePersonRequest(
@@ -79,18 +76,16 @@ public class GovUiLoginServiceImpl implements GovUiLoginService {
             .orElseThrow(() -> new IllegalStateException("Αποτυχία δημιουργίας πολίτη από gov login."));
     }
 
-    /**
-     * Optional: κράτα το παλιό flow (issue + validate) αν θες.
-     * Πλέον το UI του MyCityGov πρέπει να δουλεύει μόνο με token.
-     */
     @Override
     @Transactional
     public Person loginOrRegisterCitizen(String afm, String amka, String lastName) {
+        // Legacy flow: issue token + validate token
         String userToken = mockGovPort.issueUserToken(afm, amka, lastName);
         return loginOrRegisterCitizenByToken(userToken);
     }
 
     private String buildUniqueEmail(String amka) {
+        // Φτιάχνει “μοναδικό” email για gov-created accounts
         String base = amka + "@gov.mock";
         if (!personRepository.existsByEmailAddressIgnoreCase(base)) return base;
 
@@ -102,6 +97,7 @@ public class GovUiLoginServiceImpl implements GovUiLoginService {
     }
 
     private String buildUniqueMobile(String afm) {
+        // Φτιάχνει “μοναδικό” κινητό (dummy) για gov-created accounts
         String base = "69" + last8Digits(afm);
         if (!personRepository.existsByMobilePhoneNumber(base)) return base;
 

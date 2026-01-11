@@ -11,23 +11,24 @@ import java.util.Optional;
 public interface ServiceScheduleRepository
     extends JpaRepository<ServiceSchedule, Long> {
 
+    // Εύρεση ωραρίου για συγκεκριμένη υπηρεσία και ημέρα
     Optional<ServiceSchedule> findByServiceAndDayOfWeek(
         MunicipalService service,
         DayOfWeek dayOfWeek
     );
 
-    /** Πολλαπλά διαστήματα ανά (Υπηρεσία + Ημέρα). */
+    // Πολλαπλά διαστήματα ωραρίου ανά (υπηρεσία + ημέρα)
     List<ServiceSchedule> findAllByServiceAndDayOfWeekOrderByStartTimeAsc(
         MunicipalService service,
         DayOfWeek dayOfWeek
     );
 
-    /** Μόνο ενεργά ωράρια, ταξινομημένα. */
+    // Μόνο ενεργά ωράρια για δημιουργία διαθέσιμων slots
     List<ServiceSchedule> findAllByServiceAndDayOfWeekAndEnabledTrueOrderByStartTimeAsc(
         MunicipalService service,
         DayOfWeek dayOfWeek
     );
 
-    /** Καλύτερη εμφάνιση στο admin table. */
+    // Ταξινόμηση για καλύτερη εμφάνιση στον admin πίνακα
     List<ServiceSchedule> findAllByOrderByServiceAscDayOfWeekAscStartTimeAsc();
 }

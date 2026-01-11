@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+// Service interface για business logic ραντεβού (booking, αλλαγές, ακυρώσεις, λίστες)
 public interface AppointmentService {
 
     Appointment book(Long citizenId, MunicipalService service, LocalDate date, LocalTime time);

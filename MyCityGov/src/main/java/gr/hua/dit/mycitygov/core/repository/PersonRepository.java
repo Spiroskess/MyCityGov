@@ -12,16 +12,20 @@ import java.util.Optional;
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
+    // Αναζήτηση χρήστη με βασικά μοναδικά πεδία (email/afm/amka)
     Optional<Person> findByEmailAddressIgnoreCase(String emailAddress);
     Optional<Person> findByAfm(String afm);
     Optional<Person> findByAmka(String amka);
 
+    // Έλεγχοι uniqueness για registration/validation
     boolean existsByEmailAddressIgnoreCase(String emailAddress);
     boolean existsByAfm(String afm);
     boolean existsByAmka(String amka);
     boolean existsByMobilePhoneNumber(String mobilePhoneNumber);
 
+    // Λίστες χρηστών ανά ρόλο (π.χ. όλοι οι EMPLOYEE)
     List<Person> findAllByRoleOrderByLastName(PersonRole role);
 
+    // Λίστες υπαλλήλων ανά υπηρεσία (π.χ. EMPLOYEE στο ΚΕΠ)
     List<Person> findAllByRoleAndMunicipalServiceOrderByLastName(PersonRole role, MunicipalService municipalService);
 }

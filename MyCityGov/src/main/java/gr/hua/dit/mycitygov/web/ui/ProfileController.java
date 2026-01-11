@@ -15,8 +15,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 /**
- * /profile -> εμφανίζει διαφορετικό UI ανά ρόλο (citizen/employee/admin).
- * Το "me" συνεχίζει να μπαίνει σε όλα τα models από το CurrentUserControllerAdvice.
+ * Profile UI controller: δείχνει προφίλ και στατιστικά ανά ρόλο (citizen/employee/admin).
  */
 @Controller
 public class ProfileController {
@@ -35,10 +34,10 @@ public class ProfileController {
 
     @GetMapping("/profile")
     public String showProfile(Model model) {
+        // /profile: φορτώνει τον current Person, κάνει mask σε ΑΦΜ/ΑΜΚΑ και φορτώνει stats ανά ρόλο
         final Person person = currentUserProvider.getCurrentPerson().orElse(null);
         if (person == null) {
-            // Fallback template αν κάποιος χτυπήσει /profile χωρίς login
-            return "profile";
+            return "profile"; // fallback αν γίνει access χωρίς login
         }
 
         model.addAttribute("person", person);
@@ -63,6 +62,7 @@ public class ProfileController {
     }
 
     private void enrichCitizen(Model model, Person citizen) {
+        // Υπολογισμός counters για citizen profile
         final var requests = requestService.getRequestsOfCitizen(citizen);
 
         long activeRequests = requests.stream()
@@ -87,6 +87,7 @@ public class ProfileController {
     }
 
     private void enrichEmployee(Model model, Person employee) {
+        // Counters για employee profile
         final var myRequests = requestService.getRequestsAssignedToEmployee(employee);
         long openAssigned = myRequests.stream()
             .filter(r -> r.status() != RequestStatus.COMPLETED && r.status() != RequestStatus.REJECTED)
@@ -110,6 +111,7 @@ public class ProfileController {
     }
 
     private void enrichAdmin(Model model, Person admin) {
+        // Admin profile: βασικά totals (requests + appointments)
         long allRequests = requestService.getAllRequests().size();
         long unassignedRequests = requestService.getUnassignedRequests().size();
         long assignedRequests = requestService.getAssignedRequests().size();
@@ -123,6 +125,7 @@ public class ProfileController {
     }
 
     private static String maskRight(String value, int keepRight) {
+        // Mask helper (π.χ. ΑΦΜ/ΑΜΚΑ) κρατάει τα τελευταία N ψηφία
         if (value == null) return "-";
         final String v = value.trim();
         if (v.isEmpty()) return "-";
@@ -133,6 +136,7 @@ public class ProfileController {
     }
 
     private static String formatCreatedAt(Person person) {
+        // Format createdAt σε human readable string
         try {
             var zone = ZoneId.of("Europe/Athens");
             var dt = person.getCreatedAt().atZone(zone);

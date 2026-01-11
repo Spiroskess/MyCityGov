@@ -28,6 +28,7 @@ public class GlobalErrorHandlerRestControllerAdvice {
     public ResponseEntity<ApiError> handleAnyError(final Exception exception,
                                                    final HttpServletRequest request) {
 
+        // Global handler για REST: μετατρέπει exceptions σε ενιαίο JSON ApiError με σωστό HTTP status
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         if (exception instanceof NoResourceFoundException) {

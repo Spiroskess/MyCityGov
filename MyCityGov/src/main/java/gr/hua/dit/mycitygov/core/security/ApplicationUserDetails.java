@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
+ * UserDetails υλοποίηση για Spring Security (κρατάει id/email/role και δίνει authorities ROLE_*).
+ */
+/**
  * Immutable view implementing Spring's {@link UserDetails} for representing a user in runtime.
  */
 @SuppressWarnings("RedundantMethodOverride")

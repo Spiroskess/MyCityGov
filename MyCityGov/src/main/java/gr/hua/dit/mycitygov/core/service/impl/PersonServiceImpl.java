@@ -34,7 +34,7 @@ public class PersonServiceImpl implements PersonService {
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
 
-    // NOC ports
+    // External integrations (NOC) για validation τηλεφώνου και SMS notifications
     private final PhoneNumberPort phoneNumberPort;
     private final SmsNotificationPort smsNotificationPort;
 
@@ -62,18 +62,16 @@ public class PersonServiceImpl implements PersonService {
             throw new NullPointerException("request");
         }
 
-        // Defensive validation (ισχύει και εκτός MVC @Valid)
+        // Manual validation
         final Set<ConstraintViolation<CreatePersonRequest>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
             return CreatePersonResult.fail(violations.iterator().next().getMessage());
         }
 
-        // Default ρόλος αν έρθει null
-        PersonRole role = request.role() != null
-            ? request.role()
-            : PersonRole.CITIZEN;
+        // Default ρόλος αν δεν δοθεί (CITIZEN)
+        PersonRole role = request.role() != null ? request.role() : PersonRole.CITIZEN;
 
-        // Uniqueness checks
+        // Uniqueness checks (email/AFM/AMKA)
         if (personRepository.existsByEmailAddressIgnoreCase(request.emailAddress())) {
             return CreatePersonResult.fail("Υπάρχει ήδη χρήστης με αυτό το email.");
         }
@@ -84,7 +82,7 @@ public class PersonServiceImpl implements PersonService {
             return CreatePersonResult.fail("Υπάρχει ήδη χρήστης με αυτό το ΑΜΚΑ.");
         }
 
-        // Validate & normalize phone via NOC
+        // Validation τηλεφώνου μέσω external NOC service + αποθήκευση σε e164 μορφή
         PhoneNumberValidationResult validation = phoneNumberPort.validate(request.mobilePhoneNumber());
         if (validation == null || !validation.isValidMobile()) {
             return CreatePersonResult.fail("Μη έγκυρο κινητό (πρέπει να είναι mobile).");
@@ -99,12 +97,13 @@ public class PersonServiceImpl implements PersonService {
         person.setMobilePhoneNumber(e164);
         person.setAfm(request.afm());
         person.setAmka(request.amka());
-        person.setPasswordHash(passwordEncoder.encode(request.rawPassword()));
+        person.setPasswordHash(passwordEncoder.encode(request.rawPassword())); // αποθήκευση hash όχι plain
 
         person = personRepository.save(person);
         PersonView view = personMapper.convertPersonToPersonView(person);
 
         if (notify) {
+            // Προαιρετική αποστολή SMS μέσω external NOC service
             String msg = "MyCityGov: Καλώς ήρθες " + person.getFirstName()
                 + "! Η εγγραφή σου ολοκληρώθηκε επιτυχώς.";
             smsNotificationPort.sendSms(person.getMobilePhoneNumber(), msg);

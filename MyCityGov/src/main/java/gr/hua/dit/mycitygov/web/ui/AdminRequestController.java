@@ -27,6 +27,7 @@ public class AdminRequestController {
         @RequestParam(name = "view", defaultValue = "all") String view,
         Model model
     ) {
+        //  λίστα αιτημάτων με φίλτρο
         String safeView = normalizeView(view);
 
         List<RequestView> all = requestService.getAllRequests();
@@ -42,6 +43,7 @@ public class AdminRequestController {
         model.addAttribute("view", safeView);
         model.addAttribute("requests", shown);
 
+        // counts για tabs/filters στο template
         model.addAttribute("countAll", all.size());
         model.addAttribute("countUnassigned", unassigned.size());
         model.addAttribute("countAssigned", assigned.size());
@@ -55,13 +57,12 @@ public class AdminRequestController {
         @RequestParam(name = "view", defaultValue = "all") String view,
         Model model
     ) {
+        // φόρμα ανάθεσης αιτήματος σε δημοτική υπηρεσία
         model.addAttribute("requestId", id);
         model.addAttribute("services", MunicipalService.values());
         model.addAttribute("form", new AssignRequestForm());
 
-        // για να γυρίσουμε πίσω στην ίδια προβολή μετά το POST
-        model.addAttribute("view", normalizeView(view));
-
+        model.addAttribute("view", normalizeView(view)); // επιστροφή στην ίδια προβολή
         return "admin/request-assign";
     }
 
@@ -73,6 +74,7 @@ public class AdminRequestController {
         BindingResult bindingResult,
         Model model
     ) {
+        // POST ανάθεσης με validation (π.χ. να έχει επιλεγεί υπηρεσία)
         String safeView = normalizeView(view);
 
         if (bindingResult.hasErrors()) {
@@ -84,11 +86,11 @@ public class AdminRequestController {
 
         requestService.assignRequestToService(id, form.getService());
 
-        // επιστρέφει στην ίδια προβολή (all/unassigned/assigned)
         return "redirect:/admin/requests?view=" + safeView;
     }
 
     private String normalizeView(String view) {
+        // Sanitization για να μην περνάνε άκυρες τιμές query param στο UI
         if (view == null) return "all";
         return switch (view) {
             case "all", "unassigned", "assigned" -> view;

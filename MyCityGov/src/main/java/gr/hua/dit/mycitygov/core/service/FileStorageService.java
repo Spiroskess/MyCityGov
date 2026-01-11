@@ -23,10 +23,11 @@ public class FileStorageService {
     public FileStorageService(S3Client s3, S3StorageProperties props) {
         this.s3 = s3;
         this.props = props;
-        ensureBucketExists();
+        ensureBucketExists(); // init: σιγουρεύεται ότι υπάρχει bucket στο S3/MinIO
     }
 
     private void ensureBucketExists() {
+        // Δημιουργεί bucket αν δεν υπάρχει
         try {
             s3.headBucket(HeadBucketRequest.builder().bucket(props.getBucket()).build());
         } catch (Exception e) {
@@ -35,6 +36,7 @@ public class FileStorageService {
     }
 
     public void put(String key, InputStream inputStream, long sizeBytes, String contentType) {
+        // Upload αρχείου στο S3/MinIO με key
         String ct = (contentType == null || contentType.isBlank())
             ? "application/octet-stream"
             : contentType;
@@ -48,7 +50,9 @@ public class FileStorageService {
             RequestBody.fromInputStream(inputStream, sizeBytes)
         );
     }
+
     public ResponseInputStream<GetObjectResponse> get(String key) {
+        // Download αρχείου από S3/MinIO και επιστρέφει stream
         return s3.getObject(
             GetObjectRequest.builder()
                 .bucket(props.getBucket())

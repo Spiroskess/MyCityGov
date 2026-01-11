@@ -16,7 +16,7 @@ public class CitizenAppointmentsController {
         this.appointmentService = appointmentService;
     }
 
-    //Ενεργά ραντεβού menu:"Ραντεβού"
+    //εμφανίζει τα ενεργά ραντεβού
     @GetMapping
     public String listActive(Authentication authentication, Model model) {
         Long citizenId = CurrentUserIds.currentUserId(authentication);
@@ -24,7 +24,7 @@ public class CitizenAppointmentsController {
         return "citizen/appointments";
     }
 
-    //Ολοκληρωμένα/Ακυρωμένα
+    //εμφανίζει τα ολοκληρωμένα/ακυρωμένα ραντεβού
     @GetMapping("/completed")
     public String listCompleted(Authentication authentication, Model model) {
         Long citizenId = CurrentUserIds.currentUserId(authentication);
@@ -32,7 +32,7 @@ public class CitizenAppointmentsController {
         return "citizen/appointments-completed";
     }
 
-    // Ακύρωση
+    // Ακύρωση ραντεβού
     @PostMapping("/{id}/cancel")
     public String cancel(Authentication authentication, @PathVariable Long id) {
         Long citizenId = CurrentUserIds.currentUserId(authentication);
@@ -40,7 +40,7 @@ public class CitizenAppointmentsController {
         return "redirect:/citizen/appointments";
     }
 
-    // Νέο ραντεβού - booking flow
+    // Redirect στο booking flow
     @GetMapping("/new")
     public String newAppointment() {
         return "redirect:/citizen/booking";

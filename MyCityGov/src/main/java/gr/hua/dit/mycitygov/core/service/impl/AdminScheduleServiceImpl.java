@@ -20,12 +20,14 @@ public class AdminScheduleServiceImpl implements AdminScheduleService {
 
     @Override
     public List<ServiceSchedule> findAll() {
+        // Επιστρέφει όλα τα ωράρια ταξινομημένα για admin πίνακα
         return repo.findAllByOrderByServiceAscDayOfWeekAscStartTimeAsc();
     }
 
     @Override
     @Transactional
     public ServiceSchedule create(ServiceSchedule schedule) {
+        // Business validation για ωράρια + κανόνας "όχι επικαλύψεις" (overlaps)
         if (schedule == null) throw new IllegalArgumentException("schedule is null");
         if (schedule.getService() == null) throw new IllegalArgumentException("Διάλεξε υπηρεσία.");
         if (schedule.getDayOfWeek() == null) throw new IllegalArgumentException("Διάλεξε ημέρα.");
@@ -39,8 +41,7 @@ public class AdminScheduleServiceImpl implements AdminScheduleService {
             throw new IllegalArgumentException("Η ώρα 'Από' πρέπει να είναι πριν από την ώρα 'Έως'.");
         }
 
-        // ΠΟΛΛΑΠΛΑ ΔΙΑΣΤΗΜΑΤΑ ανά (Υπηρεσία + Ημέρα) επιτρέπονται.
-        // ΑΛΛΑ δεν επιτρέπονται επικαλύψεις (overlaps) μεταξύ διαστημάτων.
+        // Δεν επιτρέπονται επικαλυπτόμενα ωράρια στην ίδια (Υπηρεσία + Ημέρα)
         List<ServiceSchedule> existing = repo.findAllByServiceAndDayOfWeekOrderByStartTimeAsc(
             schedule.getService(), schedule.getDayOfWeek()
         );
@@ -60,14 +61,14 @@ public class AdminScheduleServiceImpl implements AdminScheduleService {
     }
 
     private boolean overlaps(LocalTime startA, LocalTime endA, LocalTime startB, LocalTime endB) {
-        // overlap αν startA < endB ΚΑΙ endA > startB
-        // (αν ακουμπάνε ακριβώς, π.χ. 13:00–15:00 και 15:00–17:00, ΔΕΝ είναι overlap)
+        // overlap αν startA < endB && endA > startB (αν ακουμπάνε ακριβώς, δεν είναι overlap)
         return startA.isBefore(endB) && endA.isAfter(startB);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
+        // Διαγραφή ωραρίου από admin
         if (id == null) throw new IllegalArgumentException("id is null");
         repo.deleteById(id);
     }

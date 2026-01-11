@@ -17,7 +17,7 @@ public class S3StorageConfig {
 
     @Bean
     public S3Client s3Client(S3StorageProperties p) {
-
+        // Δημιουργεί S3 client (π.χ. για MinIO)
         if (p.getEndpoint() == null || p.getEndpoint().isBlank()) {
             throw new IllegalStateException("Λείπει mycitygov.storage.s3.endpoint στο application.yml");
         }

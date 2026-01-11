@@ -6,8 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Δεν υπάρχει πια login view.
- * Κρατάμε το /login μόνο για redirect (παλιά links / Spring redirects).
+ * Controller-redirect για /login: δεν έχει ξεχωριστό login view, όλα γίνονται από την homepage.
  */
 @Controller
 public class AuthController {
@@ -16,12 +15,12 @@ public class AuthController {
     public String loginRedirect(final Authentication authentication,
                                 final HttpServletRequest request) {
 
-        // Αν είναι ήδη συνδεδεμένος, πήγαινέ τον στο "/" 
+        // Αν είναι ήδη logged-in, απλά επέστρεψε στο home
         if (AuthUtils.isAuthenticated(authentication)) {
             return "redirect:/";
         }
 
-        // Μεταφέρουμε τα query params στο homepage για να εμφανίζονται τα alerts εκεί
+        // Περνάει error/logout/registered flags στο "/" για να εμφανιστούν alerts στο homepage
         if (request.getParameter("error") != null) {
             return "redirect:/?error=1";
         }

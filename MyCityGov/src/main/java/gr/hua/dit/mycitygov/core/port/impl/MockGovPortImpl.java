@@ -21,6 +21,7 @@ public class MockGovPortImpl implements MockGovPort {
 
     @Override
     public ProviderStatusDto status() {
+        // GET προς external MockGov service για health/status
         String url = props.apiBaseUrl() + "/external-auth/api/v1/status";
         HttpEntity<Void> entity = new HttpEntity<>(authHeaders());
 
@@ -39,6 +40,7 @@ public class MockGovPortImpl implements MockGovPort {
 
     @Override
     public String issueUserToken(String afm, String amka, String lastName) {
+        // POST προς external MockGov για έκδοση user token
         String url = props.apiBaseUrl() + "/external-auth/api/v1/issue";
         HttpEntity<IssueTokenRequest> entity =
             new HttpEntity<>(new IssueTokenRequest(afm, amka, lastName), authHeaders());
@@ -55,13 +57,13 @@ public class MockGovPortImpl implements MockGovPort {
             }
             throw new IllegalStateException("MockGov issue failed: " + resp.getStatusCode());
         } catch (RestClientResponseException ex) {
-            // 401/404/400 -> θα το χειριστούμε στο UI σαν govError
             throw new IllegalArgumentException("Αποτυχία ταυτοποίησης (issue): " + ex.getRawStatusCode(), ex);
         }
     }
 
     @Override
     public CitizenIdentityDto validateUserToken(String userToken) {
+        // POST προς external MockGov για έλεγχο/επαλήθευση token
         String url = props.apiBaseUrl() + "/external-auth/api/v1/validate";
         HttpEntity<ValidateTokenRequest> entity =
             new HttpEntity<>(new ValidateTokenRequest(userToken), authHeaders());
@@ -80,6 +82,7 @@ public class MockGovPortImpl implements MockGovPort {
     }
 
     private HttpHeaders authHeaders() {
+        // Authorization header για secured external API calls (Bearer client token)
         HttpHeaders h = new HttpHeaders();
         h.setContentType(MediaType.APPLICATION_JSON);
         h.set(HttpHeaders.AUTHORIZATION, "Bearer " + props.clientToken());

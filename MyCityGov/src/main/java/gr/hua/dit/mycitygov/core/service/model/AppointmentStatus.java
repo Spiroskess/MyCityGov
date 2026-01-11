@@ -1,6 +1,7 @@
 package gr.hua.dit.mycitygov.core.service.model;
 
 public enum AppointmentStatus {
+    // Κατάσταση ραντεβού με ελληνικό label
     REQUESTED("Σε αναμονή", "mc-badge-warn"),
     CONFIRMED("Επιβεβαιωμένο", "mc-badge-info"),
     CANCELLED("Ακυρώθηκε", "mc-badge-danger"),

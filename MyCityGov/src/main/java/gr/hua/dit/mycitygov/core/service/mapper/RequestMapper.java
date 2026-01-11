@@ -11,6 +11,7 @@ import java.util.EnumSet;
 @Component
 public class RequestMapper {
 
+    // Mapper- Request entity -> RequestView DTO
     private static final EnumSet<RequestStatus> TERMINAL_STATUSES =
         EnumSet.of(RequestStatus.COMPLETED, RequestStatus.REJECTED);
 
@@ -36,7 +37,7 @@ public class RequestMapper {
             request.getStatus(),
             request.getAssignedService(),
             request.getSubject(),
-            request.getDescription(),    
+            request.getDescription(),
             citizenName,
             employeeName,
             request.getCreatedAt(),

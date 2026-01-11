@@ -35,11 +35,13 @@ public class EmployeeRequestController {
 
     @GetMapping("/employee/requests")
     public String employeeRequestsIndex() {
+        // Default redirect για employee requests -> ουρά υπηρεσίας
         return "redirect:/employee/requests-service";
     }
 
     @GetMapping("/employee/requests-service")
     public String serviceQueue(Model model) {
+        // Employee UI - ουρά αιτημάτων της υπηρεσίας του (unclaimed)
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
         MunicipalService service = employee.getMunicipalService();
 
@@ -50,6 +52,7 @@ public class EmployeeRequestController {
 
     @GetMapping("/employee/requests-mine")
     public String myRequests(Model model) {
+        // Employee UI - τα αιτήματα που έχουν ανατεθεί στον συγκεκριμένο υπάλληλο
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
         model.addAttribute("requests", requestService.getRequestsAssignedToEmployee(employee));
         return "employee/requests-mine";
@@ -59,6 +62,7 @@ public class EmployeeRequestController {
     public String requestDetails(@PathVariable Long id,
                                  @RequestParam(required = false) String err,
                                  Model model) {
+        // Employee UI - details αιτήματος
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
 
         var opt = requestService.getMyRequestDetails(id, employee);
@@ -70,18 +74,17 @@ public class EmployeeRequestController {
         model.addAttribute("messages", requestService.getMyRequestMessages(id, employee));
         model.addAttribute("err", err);
 
-        // attachments για το UI του υπαλλήλου
+        // attachments που έχει ανεβάσει ο πολίτης
         model.addAttribute("attachments", requestAttachmentService.listForEmployeeRequest(id, employee));
 
         return "employee/request-details";
     }
 
-    // Download συνημμένου (μόνο αν το request είναι assigned στον υπάλληλο)
     @GetMapping("/employee/requests/{requestId}/attachments/{attachmentId}/download")
     @ResponseBody
     public ResponseEntity<Resource> downloadEmployeeAttachment(@PathVariable Long requestId,
                                                                @PathVariable Long attachmentId) {
-
+        // Download συνημμένου
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
         var dl = requestAttachmentService.downloadForEmployee(requestId, attachmentId, employee);
 
@@ -104,6 +107,7 @@ public class EmployeeRequestController {
 
     @PostMapping("/employee/requests/claim")
     public String claim(@RequestParam Long requestId) {
+        // “Ανάληψη” αιτήματος από υπάλληλο
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
         requestService.claimRequest(requestId, employee);
         return "redirect:/employee/requests-service";
@@ -114,7 +118,7 @@ public class EmployeeRequestController {
                                @RequestParam RequestStatus nextStatus,
                                @RequestParam(required = false) String comment,
                                @RequestParam(required = false) String redirectTo) {
-
+        // Αλλαγή status αιτήματος από υπάλληλο
         Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
 
         try {

@@ -5,6 +5,7 @@ public record CreatePersonResult(
     String reason,
     PersonView personView
 ) {
+    // Result wrapper για registration είτε success είτε fail με reason μήνυμα
 
     public static CreatePersonResult success(final PersonView personView) {
         if (personView == null) throw new NullPointerException();

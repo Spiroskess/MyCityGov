@@ -22,6 +22,7 @@ public class PhoneNumberPortImpl implements PhoneNumberPort {
 
     @Override
     public PhoneNumberValidationResult validate(final String rawPhoneNumber) {
+        // GET προς external NOC service για validation τηλεφώνου
         final String url = nocProperties.baseUrl()
             + "/api/v1/phone-numbers/" + rawPhoneNumber + "/validations";
 

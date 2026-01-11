@@ -10,6 +10,7 @@ import gr.hua.dit.mycitygov.core.service.model.RequestView;
 import java.util.List;
 import java.util.Optional;
 
+// Service interface για business logic αιτημάτων: υποβολή, ανάθεση, status transitions, ιστορικό μηνυμάτων
 public interface RequestService {
 
     RequestView openRequest(Person citizen, OpenRequestRequest openRequestRequest);

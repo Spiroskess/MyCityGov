@@ -21,6 +21,7 @@ public class SessionLoginService {
         this.userDetailsService = userDetailsService;
     }
 
+    // κάνει login χρήστη στο UI (session/cookie) χωρίς να περάσει από form login
     public void loginByEmail(String email, HttpServletRequest request, HttpServletResponse response) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 

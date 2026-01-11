@@ -27,6 +27,7 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
 
     @Override
     public boolean sendSms(final String e164, final String content) {
+        // POST προς external NOC service για αποστολή SMS (με flag on/off από properties)
         LOGGER.error("SENDING SMS JSON e164={} content='{}'", e164, content);
         if (e164 == null || e164.isBlank()) throw new IllegalArgumentException("e164 is blank");
         if (content == null || content.isBlank()) throw new IllegalArgumentException("content is blank");

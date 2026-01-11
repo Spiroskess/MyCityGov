@@ -36,6 +36,7 @@ public class DashboardController {
 
     @GetMapping("/dashboard")
     public String dashboardRoot() {
+        // Κοινό entry-point: κάνει redirect σε citizen/employee/admin dashboard ανάλογα με το role
         final CurrentUser me = currentUserProvider.requireCurrentUser();
         return switch (me.role()) {
             case CITIZEN -> "redirect:/citizen/dashboard";
@@ -46,6 +47,7 @@ public class DashboardController {
 
     @GetMapping("/citizen/dashboard")
     public String citizenDashboard(Model model) {
+        // Citizen dashboard - counters + πρόσφατα αιτήματα + επερχόμενα ραντεβού
         final Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
 
         model.addAttribute("person", citizen);
@@ -88,6 +90,7 @@ public class DashboardController {
 
     @GetMapping("/employee/dashboard")
     public String employeeDashboard(Model model) {
+        // Employee dashboard- δικά μου αιτήματα + ουρά υπηρεσίας + ενεργά ραντεβού
         final Person employee = currentUserProvider.getCurrentPerson().orElseThrow();
 
         model.addAttribute("person", employee);
@@ -148,6 +151,7 @@ public class DashboardController {
 
     @GetMapping("/admin/dashboard")
     public String adminDashboard(Model model) {
+        // Admin dashboard- συνολικά αιτήματα (assigned/unassigned) + SLA overdue + ραντεβού
         final Person admin = currentUserProvider.getCurrentPerson().orElseThrow();
 
         model.addAttribute("person", admin);
@@ -190,6 +194,7 @@ public class DashboardController {
     }
 
     private static String greeting() {
+        // Μικρό helper για greeting ανά ώρα
         try {
             LocalTime now = LocalTime.now(ZoneId.of("Europe/Athens"));
             int h = now.getHour();

@@ -14,25 +14,31 @@ public class RequestAttachment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Συνημμένο που ανήκει σε συγκεκριμένο αίτημα (Many-to-One)
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_id", nullable = false)
     private Request request;
 
+    // Το "κλειδί" του αρχείου στο S3/MinIO (path/object name)
     @NotBlank
     @Column(name = "object_key", nullable = false, length = 600)
     private String objectKey;
 
+    // Το αρχικό όνομα αρχείου που ανέβασε ο χρήστης
     @NotBlank
     @Column(name = "original_filename", nullable = false, length = 255)
     private String originalFilename;
 
+    // MIME type (π.χ. application/pdf)
     @Column(name = "content_type", length = 120)
     private String contentType;
 
+    // Μέγεθος αρχείου σε bytes
     @Column(name = "size_bytes", nullable = false)
     private long sizeBytes;
 
+    // Χρόνος upload
     @NotNull
     @Column(name = "uploaded_at", nullable = false, updatable = false)
     private Instant uploadedAt = Instant.now();

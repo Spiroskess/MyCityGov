@@ -3,6 +3,9 @@ package gr.hua.dit.mycitygov.web;
 import gr.hua.dit.mycitygov.core.security.ApplicationUserDetails;
 import org.springframework.security.core.Authentication;
 
+/**
+ * Helper: παίρνει το personId του συνδεδεμένου χρήστη από το Spring Security principal (ApplicationUserDetails).
+ */
 public final class CurrentUserIds {
 
     private CurrentUserIds() {}

@@ -17,16 +17,19 @@ import org.springframework.security.web.context.SecurityContextRepository;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    // Κρυπτογράφηση κωδικών χρηστών (BCrypt)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // AuthenticationManager για login με username/password
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
+    // Αποθήκευση SecurityContext στο session (cookie-based UI security)
     @Bean
     public SecurityContextRepository securityContextRepository() {
         return new HttpSessionSecurityContextRepository();
@@ -40,34 +43,35 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
-                // Public pages/assets + gov login UI page
+                // Public σελίδες και assets
                 .requestMatchers(
                     "/", "/login", "/register",
-                    "/gov-token-login",     // legacy link από homepage -> redirect:/gov/login
-                    "/gov/**",              // gov login (π.χ. /gov/login)
+                    "/gov-token-login",
+                    "/gov/**",
                     "/css/**", "/js/**",
                     "/h2-console/**"
                 ).permitAll()
 
+                // Role-based πρόσβαση στο UI
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/employee/**").hasRole("EMPLOYEE")
                 .requestMatchers("/citizen/**").hasRole("CITIZEN")
                 .anyRequest().authenticated()
             )
 
-            .headers(headers -> headers
-                .frameOptions(frame -> frame.sameOrigin())
-            )
+            // Για να λειτουργεί το H2 console σε iframe
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 
+            // Session-based security context (χρησιμοποιείται και από το manual login service σου)
             .securityContext(sc -> sc
                 .securityContextRepository(securityContextRepository())
                 .requireExplicitSave(true)
             )
 
+            // Form login για το UI
             .formLogin(form -> form
                 .loginPage("/")
                 .loginProcessingUrl("/login")
-                // Καλύτερα "/" για να σε κάνει redirect ο controller σου ανά ρόλο (admin/employee/citizen)
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/?error=1")
                 .permitAll()

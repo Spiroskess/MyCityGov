@@ -13,23 +13,28 @@ public class ServiceSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Ωράριο ανά δημοτική υπηρεσία (ΚΕΠ/Τεχνική κλπ)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MunicipalService service;
 
+    // Ημέρα εβδομάδας για την οποία ισχύει το ωράριο
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DayOfWeek dayOfWeek;
 
+    // Ώρες λειτουργίας για ραντεβού
     @Column(nullable = false)
     private LocalTime startTime;
 
     @Column(nullable = false)
     private LocalTime endTime;
 
+    // Ενεργοποίηση/απενεργοποίηση ωραρίου
     @Column(nullable = false)
     private boolean enabled = true;
 
+    // Διάρκεια slot (π.χ. 15 λεπτά)
     private int slotMinutes = 15;
 
     public Long getId() { return id; }

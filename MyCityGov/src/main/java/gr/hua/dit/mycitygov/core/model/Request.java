@@ -17,6 +17,7 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Μοναδικός αριθμός πρωτοκόλλου για ιχνηλασιμότητα
     @Column(name = "protocol_number", nullable = false, unique = true, length = 32)
     private String protocolNumber;
 
@@ -25,15 +26,18 @@ public class Request {
     @Column(name = "type", nullable = false, length = 32)
     private RequestType type;
 
+    // Κατάσταση αιτήματος (SUBMITTED/IN_PROGRESS/COMPLETED/REJECTED κλπ)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 32)
     private RequestStatus status = RequestStatus.SUBMITTED;
 
+    // Σε ποια δημοτική υπηρεσία ανήκει/δρομολογήθηκε το αίτημα
     @Enumerated(EnumType.STRING)
     @Column(name = "assigned_service", length = 32)
     private MunicipalService assignedService;
 
+    // Πολίτης που υπέβαλε το αίτημα (σχέση Many-to-One)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "citizen_id",
@@ -42,6 +46,7 @@ public class Request {
     )
     private Person citizen;
 
+    // Υπάλληλος που έχει αναλάβει το αίτημα (προαιρετικό)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "employee_id",
@@ -61,9 +66,11 @@ public class Request {
     @Column(name = "description", nullable = false, length = 2000)
     private String description;
 
+    // SLA προθεσμία (χρησιμοποιείται για "εκπρόθεσμο" reporting)
     @Column(name = "sla_due_date")
     private LocalDate slaDueDate;
 
+    // Timestamps δημιουργίας/ενημέρωσης
     @NotNull
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
@@ -72,6 +79,7 @@ public class Request {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
+    // Σχόλιο/αιτιολόγηση αλλαγής κατάστασης
     @Column(length = 500)
     private String statusComment;
 

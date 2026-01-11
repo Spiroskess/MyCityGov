@@ -22,7 +22,7 @@ public class InitializationService {
     private final PersonService personService;
     private final PersonRepository personRepository;
 
-    /** Για να τρέχει μόνο μία φορά. */
+    // Seed service: τρέχει στο startup για να δημιουργήσει αρχικούς χρήστες (admin/employees)
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     public InitializationService(final PersonService personService,
@@ -35,6 +35,7 @@ public class InitializationService {
 
     @PostConstruct
     public void initialize() {
+        // Εκτελεί seeding μία φορά
         if (!initialized.compareAndSet(false, true)) {
             return;
         }
@@ -42,7 +43,7 @@ public class InitializationService {
         LOGGER.info("Starting MyCityGov initialization (seed users)…");
 
         final List<SeedUser> users = List.of(
-            // ADMIN (χωρίς υπηρεσία)
+            // Default ADMIN account
             new SeedUser(
                 new CreatePersonRequest(
                     PersonRole.ADMIN,
@@ -52,12 +53,12 @@ public class InitializationService {
                     "+306900000000",
                     "999999999",
                     "99999999999",
-                    "Admin1!234"     //  >=9 chars + σύμβολο
+                    "Admin1!234"
                 ),
                 null
             ),
 
-            // EMPLOYEE -> ΚΕΠ
+            // Default EMPLOYEE accounts
             new SeedUser(
                 new CreatePersonRequest(
                     PersonRole.EMPLOYEE,
@@ -67,12 +68,11 @@ public class InitializationService {
                     "+306900000001",
                     "111111111",
                     "11111111111",
-                    "Emp1!23456"     // >=9 chars + σύμβολο
+                    "Emp1!23456"
                 ),
                 MunicipalService.KEP
             ),
 
-            // EMPLOYEE -> Τεχνική Υπηρεσία
             new SeedUser(
                 new CreatePersonRequest(
                     PersonRole.EMPLOYEE,
@@ -82,7 +82,7 @@ public class InitializationService {
                     "+306900000002",
                     "222222222",
                     "22222222222",
-                    "Emp2!23456"     // >=9 chars + σύμβολο
+                    "Emp2!23456"
                 ),
                 MunicipalService.TECHNICAL_SERVICE
             )
@@ -90,10 +90,9 @@ public class InitializationService {
 
         for (SeedUser seed : users) {
 
-            // Μόνο citizens θα ειδοποιούνται με SMS
             final boolean sendSms = seed.request().role() == PersonRole.CITIZEN;
 
-            // Αν υπάρχει ήδη, απλά κάνε assign υπηρεσία (αν χρειάζεται) και συνέχισε
+            // Αν υπάρχει ήδη, δεν ξαναδημιουργείται
             if (personRepository.findByEmailAddressIgnoreCase(seed.request().emailAddress()).isPresent()) {
                 LOGGER.info("Seed user already exists: {}", seed.request().emailAddress());
 
@@ -103,7 +102,7 @@ public class InitializationService {
                 continue;
             }
 
-            // Δημιουργία + έλεγχος αποτελέσματος (να μη σκάει αν αποτύχει validation/uniqueness)
+            // Δημιουργία μέσω PersonService
             final CreatePersonResult result = personService.createPerson(seed.request(), sendSms);
 
             if (!result.created()) {
@@ -114,7 +113,6 @@ public class InitializationService {
                 continue;
             }
 
-            //  Κάνε assign ΜΟΝΟ αν ο user δημιουργήθηκε ή υπάρχει ήδη
             if (seed.municipalService() != null) {
                 assignMunicipalService(seed.request().emailAddress(), seed.municipalService());
             }
@@ -124,6 +122,7 @@ public class InitializationService {
     }
 
     private void assignMunicipalService(final String emailAddress, final MunicipalService municipalService) {
+        // Helper assigns municipal service σε υπάρχον seed employee
         final Person person = personRepository.findByEmailAddressIgnoreCase(emailAddress)
             .orElseThrow(() -> new IllegalStateException("Seed person not found: " + emailAddress));
 

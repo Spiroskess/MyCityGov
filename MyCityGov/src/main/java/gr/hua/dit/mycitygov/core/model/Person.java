@@ -24,11 +24,12 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Ρόλος χρήστη (CITIZEN / EMPLOYEE / ADMIN)
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 16)
     private PersonRole role;
 
-    // Υπηρεσία υπαλλήλου
+    // Υπηρεσία υπαλλήλου (για citizens μπορεί να είναι null)
     @Enumerated(EnumType.STRING)
     @Column(name = "municipal_service", length = 32)
     private MunicipalService municipalService;
@@ -70,12 +71,14 @@ public class Person {
     @Column(name = "amka", nullable = false, length = 11, unique = true)
     private String amka;
 
+    // Αποθηκεύουμε hash κωδικού (όχι plain password)
     @NotNull
     @NotBlank
     @Size(max = 255)
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
+    // Ημερομηνία δημιουργίας λογαριασμού
     @NotNull
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
