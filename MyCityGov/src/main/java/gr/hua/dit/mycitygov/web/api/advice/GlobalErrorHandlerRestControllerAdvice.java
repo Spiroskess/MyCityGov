@@ -1,11 +1,10 @@
 package gr.hua.dit.mycitygov.web.api.advice;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,6 +12,7 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -37,8 +37,19 @@ public class GlobalErrorHandlerRestControllerAdvice {
             status = HttpStatus.UNAUTHORIZED;
         } else if (exception instanceof AuthorizationDeniedException || exception instanceof AccessDeniedException) {
             status = HttpStatus.FORBIDDEN;
+
+            // ✅ business rules → 409
+        } else if (exception instanceof IllegalStateException) {
+            status = HttpStatus.CONFLICT;
+
+            // ✅ conversion/type mismatch → 400
+        } else if (exception instanceof MethodArgumentTypeMismatchException
+            || exception instanceof ConversionFailedException) {
+            status = HttpStatus.BAD_REQUEST;
+
         } else if (exception instanceof IllegalArgumentException) {
             status = HttpStatus.BAD_REQUEST;
+
         } else if (exception instanceof ResponseStatusException responseStatusException) {
             try {
                 status = HttpStatus.valueOf(responseStatusException.getStatusCode().value());

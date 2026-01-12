@@ -12,20 +12,19 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Η ημερομηνία/ώρα του ραντεβού
     private LocalDateTime appointmentDateTime;
 
-    // Κατάσταση ραντεβού (π.χ. REQUESTED/CONFIRMED/CANCELLED)
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status = AppointmentStatus.REQUESTED;
 
-    // Δημοτική υπηρεσία που αφορά το ραντεβού (ΚΕΠ/Τεχνική κλπ)
+    // Η ΥΠΗΡΕΣΙΑ για ραντεβού
     @Enumerated(EnumType.STRING)
     private MunicipalService service;
 
-    // Αποθηκεύουμε απλά IDs (πολίτης/υπάλληλος) αντί για @ManyToOne
+    // Απλά IDs
     private Long citizenId;
     private Long employeeId;
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

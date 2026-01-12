@@ -20,8 +20,18 @@
 
     <properties>
         <java.version>21</java.version>
+
         <!-- AWS SDK BOM version -->
         <aws.sdk.version>2.25.68</aws.sdk.version>
+
+        <!-- springdoc version (compatible with Spring Boot 3.5.x) -->
+        <springdoc.version>2.8.14</springdoc.version>
+
+        <!-- jjwt version -->
+        <jjwt.version>0.11.5</jjwt.version>
+
+        <!-- thymeleaf layout -->
+        <thymeleaf.layout.version>3.4.0</thymeleaf.layout.version>
     </properties>
 
     <!-- AWS SDK BOM -->
@@ -74,7 +84,7 @@
         <dependency>
             <groupId>nz.net.ultraq.thymeleaf</groupId>
             <artifactId>thymeleaf-layout-dialect</artifactId>
-            <version>3.4.0</version>
+            <version>${thymeleaf.layout.version}</version>
         </dependency>
 
         <!-- DEVTOOLS -->
@@ -102,6 +112,32 @@
             <artifactId>apache-client</artifactId>
         </dependency>
 
+        <!-- Swagger / OpenAPI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- TEST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -125,4 +161,3 @@
     </build>
 
 </project>
-

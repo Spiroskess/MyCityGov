@@ -1,6 +1,7 @@
 package gr.hua.dit.mycitygov.core.service;
 
 import gr.hua.dit.mycitygov.core.model.Appointment;
+import gr.hua.dit.mycitygov.core.service.model.AppointmentStatus;
 import gr.hua.dit.mycitygov.core.service.model.MunicipalService;
 
 import java.time.LocalDate;
@@ -31,4 +32,7 @@ public interface AppointmentService {
     List<Appointment> listForEmployee(Long employeeId);
 
     List<Appointment> listForAdmin();
+
+    // ✅ ADMIN αλλάζει status ραντεβού
+    Appointment setStatusByAdmin(Long appointmentId, AppointmentStatus status);
 }

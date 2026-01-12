@@ -14,6 +14,13 @@ spring:
       enabled: true
       path: /h2-console
 
+# ✅ Swagger / OpenAPI (springdoc)
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
 server:
   port: 8080
   error:
@@ -36,14 +43,15 @@ routee:
 
 mycitygov:
   mockgov:
-      api-base-url: "http://localhost:8091"
-      public-base-url: "http://localhost:8091"
-      client-token: "mycitygov-client-token"
+    api-base-url: "http://localhost:8091"
+    public-base-url: "http://localhost:8091"
+    client-token: "mycitygov-client-token"
 
   noc:
     base-url: "http://localhost:8081"
     sms:
       active: true
+
   storage:
     s3:
       endpoint: "http://localhost:9000"
@@ -52,3 +60,11 @@ mycitygov:
       bucket: "mycitygov"
       region: "us-east-1"
 
+# ✅ JWT Config (για το JwtConfig @ConfigurationProperties(prefix="security.jwt"))
+security:
+  jwt:
+    # ΠΡΕΠΕΙ να είναι >= 32 χαρακτήρες για HS256
+    secret: "CHANGE_ME_32CHARS_MINIMUM_CHANGE_ME_32CHARS"
+    issuer: "mycitygov"
+    audience: "mycitygov-clients"
+    ttlMinutes: 120
