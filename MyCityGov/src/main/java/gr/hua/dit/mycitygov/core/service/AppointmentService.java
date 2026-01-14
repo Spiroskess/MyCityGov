@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-// Service interface για business logic ραντεβού (booking, αλλαγές, ακυρώσεις, λίστες)
 public interface AppointmentService {
 
     Appointment book(Long citizenId, MunicipalService service, LocalDate date, LocalTime time);
@@ -33,6 +32,11 @@ public interface AppointmentService {
 
     List<Appointment> listForAdmin();
 
-    // ✅ ADMIN αλλάζει status ραντεβού
     Appointment setStatusByAdmin(Long appointmentId, AppointmentStatus status);
+
+    /**
+     *IMPORTANT (to satisfy "no repositories in controllers"):
+     * Loads an appointment and enforces access control rules for an employee.
+     */
+    Appointment getForEmployeeOrThrow(Long employeeId, Long appointmentId);
 }

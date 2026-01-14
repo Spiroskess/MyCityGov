@@ -1,41 +1,41 @@
 package gr.hua.dit.mycitygov.web.rest;
 
 import gr.hua.dit.mycitygov.core.model.Appointment;
-import gr.hua.dit.mycitygov.core.model.Person;
-import gr.hua.dit.mycitygov.core.repository.PersonRepository;
+import gr.hua.dit.mycitygov.core.security.CurrentUserProvider;
 import gr.hua.dit.mycitygov.core.service.AppointmentService;
-import gr.hua.dit.mycitygov.web.rest.model.BookAppointmentRequest;
-import gr.hua.dit.mycitygov.web.rest.model.RescheduleAppointmentRequest;
-import gr.hua.dit.mycitygov.web.rest.model.UpdateAppointmentStatusRequest;
+import gr.hua.dit.mycitygov.web.rest.model.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @SecurityRequirement(name = "BearerAuth")
+@Tag(name = "1 - Appointments")
 @RestController
 @RequestMapping(value = "/api/appointments", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AppointmentRestController {
 
     private final AppointmentService appointmentService;
-    private final PersonRepository personRepository;
+    private final CurrentUserProvider currentUserProvider;
 
-    public AppointmentRestController(AppointmentService appointmentService, PersonRepository personRepository) {
+    public AppointmentRestController(AppointmentService appointmentService, CurrentUserProvider currentUserProvider) {
         this.appointmentService = appointmentService;
-        this.personRepository = personRepository;
+        this.currentUserProvider = currentUserProvider;
     }
 
-    // -------------------------
-    // Helpers
-    // -------------------------
-    private Person me(Authentication auth) {
-        String email = auth.getName();
-        return personRepository.findByEmailAddressIgnoreCase(email)
-            .orElseThrow(() -> new IllegalStateException("User not found by email: " + email));
+    private AppointmentDto toDto(Appointment a) {
+        return new AppointmentDto(
+            a.getId(),
+            a.getCitizenId(),
+            a.getEmployeeId(),
+            a.getService(),
+            a.getAppointmentDateTime(),
+            a.getStatus()
+        );
     }
 
     // -------------------------
@@ -44,17 +44,17 @@ public class AppointmentRestController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<Appointment> getAllAppointments() {
-        return appointmentService.listForAdmin();
+    public List<AppointmentDto> getAllAppointments() {
+        return appointmentService.listForAdmin().stream().map(this::toDto).toList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping(value = "/{appointmentId}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Appointment setStatusByAdmin(
+    public AppointmentDto setStatusByAdmin(
         @PathVariable Long appointmentId,
         @Valid @RequestBody UpdateAppointmentStatusRequest request
     ) {
-        return appointmentService.setStatusByAdmin(appointmentId, request.status);
+        return toDto(appointmentService.setStatusByAdmin(appointmentId, request.status));
     }
 
     // -------------------------
@@ -63,38 +63,37 @@ public class AppointmentRestController {
 
     @PreAuthorize("hasRole('CITIZEN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Appointment book(@Valid @RequestBody BookAppointmentRequest request, Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.book(me.getId(), request.service, request.date, request.time);
+    public AppointmentDto book(@Valid @RequestBody BookAppointmentRequest request) {
+        long citizenId = currentUserProvider.requireCitizenId();
+        return toDto(appointmentService.book(citizenId, request.service, request.date, request.time));
     }
 
     @PreAuthorize("hasRole('CITIZEN')")
     @GetMapping("/my")
-    public List<Appointment> myAppointments(Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.listForCitizen(me.getId());
+    public List<AppointmentDto> myAppointments() {
+        long citizenId = currentUserProvider.requireCitizenId();
+        return appointmentService.listForCitizen(citizenId).stream().map(this::toDto).toList();
     }
 
     @PreAuthorize("hasRole('CITIZEN')")
     @GetMapping("/my/active")
-    public List<Appointment> myActive(Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.listActiveForCitizen(me.getId());
+    public List<AppointmentDto> myActive() {
+        long citizenId = currentUserProvider.requireCitizenId();
+        return appointmentService.listActiveForCitizen(citizenId).stream().map(this::toDto).toList();
     }
 
     @PreAuthorize("hasRole('CITIZEN')")
     @GetMapping("/my/completed")
-    public List<Appointment> myCompleted(Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.listCompletedForCitizen(me.getId());
+    public List<AppointmentDto> myCompleted() {
+        long citizenId = currentUserProvider.requireCitizenId();
+        return appointmentService.listCompletedForCitizen(citizenId).stream().map(this::toDto).toList();
     }
 
-    // Σημ: το "DELETE" εδώ στην πράξη = cancel (όπως το βλέπεις στα responses σου)
     @PreAuthorize("hasRole('CITIZEN')")
     @DeleteMapping("/{appointmentId}")
-    public Appointment cancelMyAppointment(@PathVariable Long appointmentId, Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.cancelByCitizen(me.getId(), appointmentId);
+    public AppointmentDto cancelMyAppointment(@PathVariable Long appointmentId) {
+        long citizenId = currentUserProvider.requireCitizenId();
+        return toDto(appointmentService.cancelByCitizen(citizenId, appointmentId));
     }
 
     // -------------------------
@@ -103,40 +102,39 @@ public class AppointmentRestController {
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     @GetMapping("/employee")
-    public List<Appointment> listForEmployee(Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.listForEmployee(me.getId());
+    public List<AppointmentDto> listForEmployee() {
+        long employeeId = currentUserProvider.requireEmployeeId();
+        return appointmentService.listForEmployee(employeeId).stream().map(this::toDto).toList();
     }
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     @PatchMapping("/{appointmentId}/confirm")
-    public Appointment confirm(@PathVariable Long appointmentId, Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.confirmByEmployee(me.getId(), appointmentId);
+    public AppointmentDto confirm(@PathVariable Long appointmentId) {
+        long employeeId = currentUserProvider.requireEmployeeId();
+        return toDto(appointmentService.confirmByEmployee(employeeId, appointmentId));
     }
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     @PatchMapping("/{appointmentId}/complete")
-    public Appointment complete(@PathVariable Long appointmentId, Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.completeByEmployee(me.getId(), appointmentId);
+    public AppointmentDto complete(@PathVariable Long appointmentId) {
+        long employeeId = currentUserProvider.requireEmployeeId();
+        return toDto(appointmentService.completeByEmployee(employeeId, appointmentId));
     }
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     @PatchMapping(value = "/{appointmentId}/reschedule", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Appointment reschedule(
+    public AppointmentDto reschedule(
         @PathVariable Long appointmentId,
-        @Valid @RequestBody RescheduleAppointmentRequest request,
-        Authentication auth
+        @Valid @RequestBody RescheduleAppointmentRequest request
     ) {
-        Person me = me(auth);
-        return appointmentService.rescheduleByEmployee(me.getId(), appointmentId, request.date, request.time);
+        long employeeId = currentUserProvider.requireEmployeeId();
+        return toDto(appointmentService.rescheduleByEmployee(employeeId, appointmentId, request.date, request.time));
     }
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     @PatchMapping("/{appointmentId}/cancel")
-    public Appointment cancelByEmployee(@PathVariable Long appointmentId, Authentication auth) {
-        Person me = me(auth);
-        return appointmentService.cancelByEmployee(me.getId(), appointmentId);
+    public AppointmentDto cancelByEmployee(@PathVariable Long appointmentId) {
+        long employeeId = currentUserProvider.requireEmployeeId();
+        return toDto(appointmentService.cancelByEmployee(employeeId, appointmentId));
     }
 }

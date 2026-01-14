@@ -14,12 +14,14 @@ spring:
       enabled: true
       path: /h2-console
 
-# ✅ Swagger / OpenAPI (springdoc)
+# Swagger / OpenAPI (springdoc)
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+    tagsSorter: alpha
+    operationsSorter: alpha
 
 server:
   port: 8080
@@ -29,7 +31,6 @@ server:
     include-message: always
     include-binding-errors: always
     include-exception: true
-
 
 logging:
   level:
@@ -60,7 +61,7 @@ mycitygov:
       bucket: "mycitygov"
       region: "us-east-1"
 
-# ✅ JWT Config (για το JwtConfig @ConfigurationProperties(prefix="security.jwt"))
+# JWT Config (για το JwtConfig @ConfigurationProperties(prefix="security.jwt"))
 security:
   jwt:
     # ΠΡΕΠΕΙ να είναι >= 32 χαρακτήρες για HS256

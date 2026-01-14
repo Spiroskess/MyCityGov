@@ -38,18 +38,29 @@ public class AppointmentServiceImpl implements AppointmentService {
         this.personRepository = personRepository;
     }
 
-    private MunicipalService employeeService(Long employeeId) {
-        Person p = personRepository.findById(employeeId).orElseThrow();
-        return p.getMunicipalService();
+    private Person requireEmployee(Long employeeId) {
+        return personRepository.findById(employeeId)
+            .orElseThrow(() -> new IllegalStateException("Employee not found: " + employeeId));
     }
 
-    private void ensureEmployeeCanAccess(Long employeeId, Appointment a) {
-        MunicipalService svc = employeeService(employeeId);
-        if (svc == null) {
-            throw new IllegalStateException("Ο υπάλληλος δεν έχει ορισμένη υπηρεσία");
+    /**
+     * Access rules:
+     * - If employee has municipalService -> can access appointments of that service (even if unassigned).
+     * - If employee has NO municipalService -> can access only appointments already assigned to them.
+     */
+    private void ensureEmployeeCanAccess(Person employee, Appointment a) {
+        final MunicipalService svc = employee.getMunicipalService();
+
+        if (svc != null) {
+            if (a.getService() != svc) {
+                throw new IllegalStateException("Δεν επιτρέπεται πρόσβαση σε ραντεβού άλλης υπηρεσίας");
+            }
+            return;
         }
-        if (a.getService() != svc) {
-            throw new IllegalStateException("Δεν επιτρέπεται πρόσβαση σε ραντεβού άλλης υπηρεσίας");
+
+        // no service => only own assigned appointments
+        if (a.getEmployeeId() == null || !a.getEmployeeId().equals(employee.getId())) {
+            throw new IllegalStateException("Not your appointment");
         }
     }
 
@@ -61,14 +72,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (date == null) throw new IllegalArgumentException("date is null");
         if (time == null) throw new IllegalArgumentException("time is null");
 
-        // ενεργό ραντεβού ανά υπηρεσία για κάθε πολίτη.
         if (appointmentRepository
             .findFirstByCitizenIdAndServiceAndStatusInOrderByAppointmentDateTimeDesc(citizenId, service, ACTIVE_STATUSES)
             .isPresent()) {
             throw new IllegalStateException("Έχεις ήδη ενεργό ραντεβού για αυτή την υπηρεσία.");
         }
 
-        // Booking μόνο σε διαθέσιμο slot
         List<LocalTime> available = availabilityService.getAvailableTimes(service, date);
         if (!available.contains(time)) {
             throw new IllegalStateException("Time slot not available");
@@ -76,7 +85,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         LocalDateTime slot = LocalDateTime.of(date, time);
 
-        // Μηδενική επικάλυψη slot στην υπηρεσία
         if (appointmentRepository.existsActiveServiceClash(service, slot, ACTIVE_STATUSES, null)) {
             throw new IllegalStateException("Service overlap");
         }
@@ -99,9 +107,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (time == null) throw new IllegalArgumentException("time is null");
 
         Appointment a = appointmentRepository.findById(appointmentId).orElseThrow();
+        Person employee = requireEmployee(employeeId);
 
-        // υπάλληλος μόνο της δικής του υπηρεσίας
-        ensureEmployeeCanAccess(employeeId, a);
+        ensureEmployeeCanAccess(employee, a);
 
         if (a.getEmployeeId() != null && !a.getEmployeeId().equals(employeeId)) {
             throw new IllegalStateException("Not your appointment");
@@ -129,7 +137,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new IllegalStateException("Employee overlap");
         }
 
-        if (a.getEmployeeId() == null) {
+        // if employee has service, allow claiming unassigned appointment
+        if (a.getEmployeeId() == null && employee.getMunicipalService() != null) {
             a.setEmployeeId(employeeId);
         }
 
@@ -144,13 +153,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (appointmentId == null) throw new IllegalArgumentException("appointmentId is null");
 
         Appointment a = appointmentRepository.findById(appointmentId).orElseThrow();
+        Person employee = requireEmployee(employeeId);
 
-        // υπάλληλος μόνο της δικής του υπηρεσίας
-        ensureEmployeeCanAccess(employeeId, a);
-
-        if (a.getEmployeeId() != null && !a.getEmployeeId().equals(employeeId)) {
-            throw new IllegalStateException("Not your appointment");
-        }
+        ensureEmployeeCanAccess(employee, a);
 
         if (appointmentRepository.existsActiveEmployeeClash(
             employeeId, a.getAppointmentDateTime(), ACTIVE_STATUSES, a.getId()
@@ -158,8 +163,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new IllegalStateException("Employee overlap");
         }
 
-        if (a.getEmployeeId() == null) {
+        if (a.getEmployeeId() == null && employee.getMunicipalService() != null) {
             a.setEmployeeId(employeeId);
+        } else if (a.getEmployeeId() != null && !a.getEmployeeId().equals(employeeId)) {
+            throw new IllegalStateException("Not your appointment");
         }
 
         if (a.getStatus() == AppointmentStatus.CANCELLED) {
@@ -198,13 +205,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (appointmentId == null) throw new IllegalArgumentException("appointmentId is null");
 
         Appointment a = appointmentRepository.findById(appointmentId).orElseThrow();
+        Person employee = requireEmployee(employeeId);
 
-        // υπάλληλος μόνο της δικής του υπηρεσίας
-        ensureEmployeeCanAccess(employeeId, a);
-
-        if (a.getEmployeeId() != null && !a.getEmployeeId().equals(employeeId)) {
-            throw new IllegalStateException("Not your appointment");
-        }
+        ensureEmployeeCanAccess(employee, a);
 
         if (a.getStatus() == AppointmentStatus.CANCELLED) {
             return a;
@@ -213,8 +216,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new IllegalStateException("Cannot cancel completed appointment");
         }
 
-        if (a.getEmployeeId() == null) {
+        if (a.getEmployeeId() == null && employee.getMunicipalService() != null) {
             a.setEmployeeId(employeeId);
+        } else if (a.getEmployeeId() != null && !a.getEmployeeId().equals(employeeId)) {
+            throw new IllegalStateException("Not your appointment");
         }
 
         a.setStatus(AppointmentStatus.CANCELLED);
@@ -228,18 +233,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (appointmentId == null) throw new IllegalArgumentException("appointmentId is null");
 
         Appointment a = appointmentRepository.findById(appointmentId).orElseThrow();
+        Person employee = requireEmployee(employeeId);
 
-        // υπάλληλος μόνο της δικής του υπηρεσίας
-        ensureEmployeeCanAccess(employeeId, a);
-
-        if (a.getEmployeeId() == null) {
-            a.setEmployeeId(employeeId);
-        } else if (!a.getEmployeeId().equals(employeeId)) {
-            throw new IllegalStateException("Not your appointment");
-        }
+        ensureEmployeeCanAccess(employee, a);
 
         if (a.getStatus() == AppointmentStatus.CANCELLED) {
             throw new IllegalStateException("Cannot complete cancelled appointment");
+        }
+
+        if (a.getEmployeeId() == null && employee.getMunicipalService() != null) {
+            a.setEmployeeId(employeeId);
+        } else if (a.getEmployeeId() != null && !a.getEmployeeId().equals(employeeId)) {
+            throw new IllegalStateException("Not your appointment");
         }
 
         a.setStatus(AppointmentStatus.COMPLETED);
@@ -272,15 +277,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<Appointment> listForEmployee(Long employeeId) {
         if (employeeId == null) throw new IllegalArgumentException("employeeId is null");
 
-        MunicipalService svc = employeeService(employeeId);
+        Person employee = requireEmployee(employeeId);
+        MunicipalService svc = employee.getMunicipalService();
+
         if (svc == null) {
-            // fallback: δείξε ό,τι του έχει ήδη ανατεθεί
             return appointmentRepository.findByEmployeeIdAndStatusInOrderByAppointmentDateTimeDesc(
                 employeeId, EnumSet.allOf(AppointmentStatus.class)
             );
         }
 
-        //  ο υπάλληλος βλέπει τα ενεργά ραντεβού της υπηρεσίας του (employeeId μπορεί να είναι null)
         return appointmentRepository.findByServiceAndStatusInOrderByAppointmentDateTimeDesc(
             svc,
             ACTIVE_STATUSES
@@ -292,7 +297,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentRepository.findAll();
     }
 
-    // ✅ ΑΠΑΡΑΙΤΗΤΟ: Admin αλλάζει status ραντεβού (για να ταιριάξει με το interface)
     @Override
     @Transactional
     public Appointment setStatusByAdmin(Long appointmentId, AppointmentStatus status) {
@@ -304,5 +308,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         a.setStatus(status);
         return appointmentRepository.save(a);
+    }
+
+    @Override
+    @Transactional
+    public Appointment getForEmployeeOrThrow(Long employeeId, Long appointmentId) {
+        if (employeeId == null) throw new IllegalArgumentException("employeeId is null");
+        if (appointmentId == null) throw new IllegalArgumentException("appointmentId is null");
+
+        Appointment a = appointmentRepository.findById(appointmentId)
+            .orElseThrow(() -> new IllegalStateException("Appointment not found: " + appointmentId));
+
+        Person employee = requireEmployee(employeeId);
+        ensureEmployeeCanAccess(employee, a);
+        return a;
     }
 }
