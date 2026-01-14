@@ -22,6 +22,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice(basePackages = "gr.hua.dit.mycitygov.web.rest")
 @Order(1)
@@ -80,21 +81,33 @@ public class GlobalErrorHandlerRestControllerAdvice {
 
         if (exception instanceof NoResourceFoundException) {
             status = HttpStatus.NOT_FOUND;
+
+        } else if (exception instanceof NoSuchElementException) {
+            // avoids 500 from Optional.orElseThrow() without custom exceptions
+            status = HttpStatus.NOT_FOUND;
+
         } else if (exception instanceof AuthenticationException || exception instanceof SecurityException) {
             status = HttpStatus.UNAUTHORIZED;
+
         } else if (exception instanceof AuthorizationDeniedException || exception instanceof AccessDeniedException) {
             status = HttpStatus.FORBIDDEN;
+
         } else if (exception instanceof IllegalStateException) {
             status = HttpStatus.CONFLICT;
+
         } else if (exception instanceof MethodArgumentTypeMismatchException
             || exception instanceof ConversionFailedException) {
             status = HttpStatus.BAD_REQUEST;
+
         } else if (exception instanceof IllegalArgumentException) {
             status = HttpStatus.BAD_REQUEST;
+
         } else if (exception instanceof ResponseStatusException responseStatusException) {
             try {
                 status = HttpStatus.valueOf(responseStatusException.getStatusCode().value());
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+                // keep INTERNAL_SERVER_ERROR
+            }
         }
 
         LOGGER.warn("REST error [{} {}] -> status={} cause={}: {}",

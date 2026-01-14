@@ -1,12 +1,12 @@
 package gr.hua.dit.mycitygov.config;
 
 import gr.hua.dit.mycitygov.core.security.JwtAuthenticationFilter;
-import jakarta.servlet.http.HttpServletResponse;
+import gr.hua.dit.mycitygov.web.rest.error.RestApiAccessDeniedHandler;
+import gr.hua.dit.mycitygov.web.rest.error.RestApiAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -39,13 +39,16 @@ public class SecurityConfig {
     }
 
     /**
-     * ✅ API Security (JWT) - Stateless
+     * API Security (JWT) - Stateless
      * Applies ONLY to: /api/** + swagger endpoints
-     * IMPORTANT: No redirects to "/" — returns JSON 401/403 instead.
+     * Teacher-style: No redirects to "/" — returns JSON ApiError for 401/403.
      */
     @Bean
     @Order(0)
-    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http,
+                                                      JwtAuthenticationFilter jwtFilter,
+                                                      RestApiAuthenticationEntryPoint restApiAuthenticationEntryPoint,
+                                                      RestApiAccessDeniedHandler restApiAccessDeniedHandler) throws Exception {
 
         http
             .securityMatcher("/api/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
@@ -53,8 +56,12 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .authorizeHttpRequests(auth -> auth
-                // Auth endpoint public
+                // Auth endpoints public
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+
+                // Optional public browsing for availability
+                .requestMatchers(HttpMethod.GET, "/api/availability/**").permitAll()
 
                 // Swagger / OpenAPI public
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
@@ -70,25 +77,17 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .logout(logout -> logout.disable())
 
-            // ✅ μην κάνει redirect σε HTML όταν δεν έχεις token
+            //  JSON (ApiError) for 401/403
             .exceptionHandling(eh -> eh
-                .authenticationEntryPoint((req, res, ex) -> {
-                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    res.getWriter().write("{\"error\":\"unauthorized\"}");
-                })
-                .accessDeniedHandler((req, res, ex) -> {
-                    res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    res.getWriter().write("{\"error\":\"forbidden\"}");
-                })
+                .authenticationEntryPoint(restApiAuthenticationEntryPoint)
+                .accessDeniedHandler(restApiAccessDeniedHandler)
             );
 
         return http.build();
     }
 
     /**
-     * ✅ UI Security - Session + Form Login (όπως το είχες)
+     * UI Security - Session + Form Login (όπως το είχες)
      */
     @Bean
     @Order(1)
