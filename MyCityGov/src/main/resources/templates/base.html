@@ -99,7 +99,8 @@
         }, delay);
       });
     });
-</script>\
+</script>
+
 <script>
     function hideAlert(el) {
       if (!el || el.classList.contains("mc-alert-hide")) return;
@@ -132,6 +133,31 @@
     });
 </script>
 
+<!-- Password eye toggle (δουλεύει όπου υπάρχει .mc-password-wrap) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.mc-password-wrap').forEach((wrap) => {
+        const input = wrap.querySelector('input');
+        const btn = wrap.querySelector('.mc-password-toggle');
+        if (!input || !btn) return;
+
+        btn.addEventListener('click', () => {
+          const start = input.selectionStart;
+          const end = input.selectionEnd;
+
+          const makeVisible = input.type === 'password';
+          input.type = makeVisible ? 'text' : 'password';
+
+          wrap.classList.toggle('is-visible', makeVisible);
+          btn.setAttribute('aria-pressed', String(makeVisible));
+          btn.setAttribute('aria-label', makeVisible ? 'Απόκρυψη κωδικού' : 'Εμφάνιση κωδικού');
+
+          try { input.setSelectionRange(start, end); } catch (e) {}
+          input.focus();
+        });
+      });
+    });
+</script>
 
 </body>
 </html>

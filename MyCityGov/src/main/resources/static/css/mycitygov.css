@@ -2047,3 +2047,57 @@ select.mc-control option:checked{
   .mc-tile:hover{ transform:none; }
   .mc-dash-row:hover{ transform:none; }
 }
+/* =========================
+   Password eye toggle (MC)
+   ========================= */
+.mc-password-wrap{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.mc-password-wrap input{
+  width: 100%;
+  padding-right: 44px;
+}
+
+.mc-password-toggle{
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(15, 23, 42, 0.55);
+}
+
+.mc-password-toggle:hover{
+  color: rgba(15, 23, 42, 0.75);
+}
+
+.mc-password-toggle:focus{ outline: none; }
+
+.mc-password-toggle:focus-visible{
+  outline: 2px solid rgba(37, 99, 235, 0.35);
+  border-radius: 999px;
+}
+
+.mc-password-toggle svg{
+  width: 18px;
+  height: 18px;
+}
+
+/* αρχικά: δείξε eye-off (όπως στη φωτο), κρύψε eye */
+.mc-password-toggle .icon-eye{ display: none; }
+
+/* όταν γίνει visible: δείξε eye, κρύψε eye-off */
+.mc-password-wrap.is-visible .icon-eye{ display: block; }
+.mc-password-wrap.is-visible .icon-eye-off{ display: none; }
+

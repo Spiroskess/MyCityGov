@@ -56,7 +56,7 @@
             Η εγγραφή ολοκληρώθηκε. Συνδεθείτε.
         </p>
 
-        <!-- Login με κωδικούς (ΚΡΑΤΑΕΙ ΟΠΩΣ ΕΙΝΑΙ) -->
+        <!-- Login με κωδικούς -->
         <form th:action="@{/login}" method="post" class="mc-form">
             <div class="mc-form-group">
                 <label for="username">Email</label>
@@ -66,7 +66,36 @@
 
             <div class="mc-form-group">
                 <label for="password">Κωδικός πρόσβασης</label>
-                <input id="password" name="password" type="password" required/>
+
+                <!-- ✅ ΕΔΩ μπαίνει το "ματάκι" -->
+                <div class="mc-password-wrap">
+                    <input id="password"
+                           name="password"
+                           type="password"
+                           required
+                           autocomplete="current-password"/>
+
+                    <button type="button"
+                            class="mc-password-toggle"
+                            aria-label="Εμφάνιση κωδικού"
+                            aria-pressed="false">
+                        <!-- Eye (show) -->
+                        <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+
+                        <!-- Eye off (hide) -->
+                        <svg class="icon-eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3l18 18"/>
+                            <path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"/>
+                            <path d="M9.88 5.09A10.94 10.94 0 0 1 12 5c6.5 0 10 7 10 7a19.52 19.52 0 0 1-3.25 4.43"/>
+                            <path d="M6.61 6.61A19.56 19.56 0 0 0 2 12s3.5 7 10 7a10.94 10.94 0 0 0 4.12-.81"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="mc-form-footer">
@@ -87,7 +116,7 @@
             <span style="opacity:.7;">ή</span>
         </div>
 
-        <!-- MockGov login: 1-click redirect στο MockGov UI (αν υπάρχει mockGovUiUrl) -->
+        <!-- MockGov login -->
         <a th:if="${mockGovUiUrl != null}"
            th:href="${mockGovUiUrl}"
            class="mc-button-primary mc-button-full"
@@ -95,7 +124,6 @@
             Σύνδεση με MockGov (Token)
         </a>
 
-        <!-- Fallback: αν για κάποιο λόγο δεν έχει περαστεί το mockGovUiUrl -->
         <a th:unless="${mockGovUiUrl != null}"
            th:href="@{/gov/login}"
            class="mc-button-primary mc-button-full"
