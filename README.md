@@ -16,14 +16,19 @@ Run the example:
 ```shell
 cd MyCityGov
 ./mvnw spring-boot:run  # MacOS / Linux
-./mvnw.cmd spring-boot:run  # Windows
+docker compose up -d --build # Windows
 ```
 
 ---
+URLs :
 
-Open in browser: [localhost:8080](http://localhost:8080)
+- Open in browser: [localhost:8080](http://localhost:8080)
 
-For the DataBase: [localhost:8080/h2-console](http://localhost:8080/h2-console)
+- For the DataBase: [localhost:8080/h2-console](http://localhost:8080/h2-console)
+
+- Swagger UI: http://localhost:8080/swagger-ui/index.html 
+
+
 
 ---
 To gain access to the db:
