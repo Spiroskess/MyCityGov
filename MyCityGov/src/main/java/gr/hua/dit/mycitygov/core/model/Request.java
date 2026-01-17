@@ -17,60 +17,46 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Μοναδικός αριθμός πρωτοκόλλου για ιχνηλασιμότητα
     @Column(name = "protocol_number", nullable = false, unique = true, length = 32)
     private String protocolNumber;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false, length = 32)
-    private RequestType type;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+        name = "type_id",
+        nullable = false,
+        foreignKey = @ForeignKey(name = "fk_request_type")
+    )
+    private RequestTypeEntity type;
 
-    // Κατάσταση αιτήματος (SUBMITTED/IN_PROGRESS/COMPLETED/REJECTED κλπ)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 32)
     private RequestStatus status = RequestStatus.SUBMITTED;
 
-    // Σε ποια δημοτική υπηρεσία ανήκει/δρομολογήθηκε το αίτημα
     @Enumerated(EnumType.STRING)
     @Column(name = "assigned_service", length = 32)
     private MunicipalService assignedService;
 
-    // Πολίτης που υπέβαλε το αίτημα (σχέση Many-to-One)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-        name = "citizen_id",
-        nullable = false,
-        foreignKey = @ForeignKey(name = "fk_request_citizen")
-    )
+    @JoinColumn(name = "citizen_id", nullable = false, foreignKey = @ForeignKey(name = "fk_request_citizen"))
     private Person citizen;
 
-    // Υπάλληλος που έχει αναλάβει το αίτημα (προαιρετικό)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-        name = "employee_id",
-        foreignKey = @ForeignKey(name = "fk_request_employee")
-    )
+    @JoinColumn(name = "employee_id", foreignKey = @ForeignKey(name = "fk_request_employee"))
     private Person assignedEmployee;
 
-    @NotNull
-    @NotBlank
-    @Size(max = 255)
+    @NotNull @NotBlank @Size(max = 255)
     @Column(name = "subject", nullable = false, length = 255)
     private String subject;
 
-    @NotNull
-    @NotBlank
-    @Size(max = 2000)
+    @NotNull @NotBlank @Size(max = 2000)
     @Column(name = "description", nullable = false, length = 2000)
     private String description;
 
-    // SLA προθεσμία (χρησιμοποιείται για "εκπρόθεσμο" reporting)
     @Column(name = "sla_due_date")
     private LocalDate slaDueDate;
 
-    // Timestamps δημιουργίας/ενημέρωσης
     @NotNull
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
@@ -79,7 +65,6 @@ public class Request {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
-    // Σχόλιο/αιτιολόγηση αλλαγής κατάστασης
     @Column(length = 500)
     private String statusComment;
 
@@ -89,8 +74,8 @@ public class Request {
     public String getProtocolNumber() { return protocolNumber; }
     public void setProtocolNumber(String protocolNumber) { this.protocolNumber = protocolNumber; }
 
-    public RequestType getType() { return type; }
-    public void setType(RequestType type) { this.type = type; }
+    public RequestTypeEntity getType() { return type; }
+    public void setType(RequestTypeEntity type) { this.type = type; }
 
     public RequestStatus getStatus() { return status; }
     public void setStatus(RequestStatus status) { this.status = status; }

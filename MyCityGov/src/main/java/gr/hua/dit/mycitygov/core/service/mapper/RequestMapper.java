@@ -11,11 +11,11 @@ import java.util.EnumSet;
 @Component
 public class RequestMapper {
 
-    // Mapper- Request entity -> RequestView DTO
     private static final EnumSet<RequestStatus> TERMINAL_STATUSES =
         EnumSet.of(RequestStatus.COMPLETED, RequestStatus.REJECTED);
 
     public RequestView convertRequestToView(Request request) {
+
         String citizenName = request.getCitizen().getLastName() + " " + request.getCitizen().getFirstName();
 
         String employeeName = request.getAssignedEmployee() == null
@@ -30,10 +30,18 @@ public class RequestMapper {
             overdue = !terminal && slaDueDate.isBefore(LocalDate.now());
         }
 
+        String typeCode = null;
+        String typeTitle = null;
+        if (request.getType() != null) {
+            typeCode = request.getType().getCode();
+            typeTitle = request.getType().getTitle();
+        }
+
         return new RequestView(
             request.getId(),
             request.getProtocolNumber(),
-            request.getType(),
+            typeCode,
+            typeTitle,
             request.getStatus(),
             request.getAssignedService(),
             request.getSubject(),

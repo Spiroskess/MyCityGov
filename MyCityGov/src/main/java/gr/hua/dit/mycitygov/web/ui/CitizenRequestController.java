@@ -5,8 +5,10 @@ import gr.hua.dit.mycitygov.core.model.RequestStatus;
 import gr.hua.dit.mycitygov.core.security.CurrentUserProvider;
 import gr.hua.dit.mycitygov.core.service.RequestAttachmentService;
 import gr.hua.dit.mycitygov.core.service.RequestService;
+import gr.hua.dit.mycitygov.core.service.RequestTypeService;
 import gr.hua.dit.mycitygov.core.service.model.AttachmentUpload;
 import gr.hua.dit.mycitygov.core.service.model.OpenRequestRequest;
+import gr.hua.dit.mycitygov.core.service.model.RequestView;
 
 import jakarta.validation.Valid;
 import org.springframework.core.io.InputStreamResource;
@@ -20,8 +22,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -29,13 +29,16 @@ import java.nio.charset.StandardCharsets;
 public class CitizenRequestController {
 
     private final RequestService requestService;
+    private final RequestTypeService requestTypeService;
     private final CurrentUserProvider currentUserProvider;
     private final RequestAttachmentService requestAttachmentService;
 
     public CitizenRequestController(RequestService requestService,
+                                    RequestTypeService requestTypeService,
                                     CurrentUserProvider currentUserProvider,
                                     RequestAttachmentService requestAttachmentService) {
         this.requestService = requestService;
+        this.requestTypeService = requestTypeService;
         this.currentUserProvider = currentUserProvider;
         this.requestAttachmentService = requestAttachmentService;
     }
@@ -71,7 +74,8 @@ public class CitizenRequestController {
     @GetMapping("/citizen/request-new")
     public String showNewRequestForm(Model model) {
         // Φόρμα δημιουργίας νέου αιτήματος
-        model.addAttribute("openRequestRequest", new OpenRequestRequest(null, "", ""));
+        model.addAttribute("openRequestRequest", new OpenRequestRequest("", "", ""));
+        model.addAttribute("requestTypes", requestTypeService.listEnabled());
         return "citizen/request-new";
     }
 
@@ -84,12 +88,21 @@ public class CitizenRequestController {
 
         // Submit νέου αιτήματος + (optional) upload συνημμένων σε S3/MinIO
         if (bindingResult.hasErrors()) {
+            model.addAttribute("requestTypes", requestTypeService.listEnabled());
             return "citizen/request-new";
         }
 
         Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
 
-        var created = requestService.openRequest(citizen, openRequestRequest);
+        RequestView created;
+        try {
+            created = requestService.openRequest(citizen, openRequestRequest);
+        } catch (IllegalArgumentException ex) {
+            // π.χ. UNKNOWN_REQUEST_TYPE / REQUEST_TYPE_DISABLED
+            bindingResult.rejectValue("requestTypeCode", "invalid", "Μη έγκυρος τύπος αιτήματος.");
+            model.addAttribute("requestTypes", requestTypeService.listEnabled());
+            return "citizen/request-new";
+        }
 
         if (attachments != null) {
             for (MultipartFile f : attachments) {
@@ -106,6 +119,7 @@ public class CitizenRequestController {
                 } catch (Exception e) {
                     String name = (f.getOriginalFilename() == null) ? "file" : f.getOriginalFilename();
                     model.addAttribute("uploadError", "Αποτυχία ανεβάσματος αρχείου: " + name);
+                    model.addAttribute("requestTypes", requestTypeService.listEnabled());
                     return "citizen/request-new";
                 }
             }
@@ -160,58 +174,4 @@ public class CitizenRequestController {
         // Τερματικές καταστάσεις για “Completed” tab
         return status == RequestStatus.COMPLETED || status == RequestStatus.REJECTED;
     }
-
-    @PostMapping("/citizen/requests/{id}/attachments/upload")
-    public String uploadAdditionalInfo(@PathVariable Long id,
-                                       @RequestParam(name = "attachments", required = false) MultipartFile[] attachments,
-                                       @RequestParam(name = "note", required = false) String note,
-                                       RedirectAttributes ra) {
-        // Upload πρόσθετων αρχείων από πολίτη μόνο όταν το αίτημα είναι WAITING_ADDITIONAL_INFO
-        Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
-
-        if (attachments == null || attachments.length == 0) {
-            ra.addFlashAttribute("uploadError", "Δεν επιλέχθηκαν αρχεία.");
-            return "redirect:/citizen/requests/" + id;
-        }
-
-        int uploaded = 0;
-
-        for (MultipartFile f : attachments) {
-            if (f == null || f.isEmpty()) continue;
-
-            try {
-                var upload = new AttachmentUpload(
-                    f.getOriginalFilename(),
-                    f.getContentType(),
-                    f.getSize(),
-                    f.getInputStream()
-                );
-
-                requestAttachmentService.addAdditionalInfoForCitizenRequest(id, citizen, upload);
-                uploaded++;
-
-            } catch (IllegalStateException st) {
-                ra.addFlashAttribute("uploadError", "Δεν μπορείς να ανεβάσεις αρχεία σε αυτή την κατάσταση αιτήματος.");
-                return "redirect:/citizen/requests/" + id;
-            } catch (Exception e) {
-                String name = (f.getOriginalFilename() == null) ? "file" : f.getOriginalFilename();
-                ra.addFlashAttribute("uploadError", "Αποτυχία ανεβάσματος αρχείου: " + name);
-                return "redirect:/citizen/requests/" + id;
-            }
-        }
-
-        if (uploaded == 0) {
-            ra.addFlashAttribute("uploadError", "Δεν ανέβηκε κανένα αρχείο (ίσως ήταν κενά).");
-            return "redirect:/citizen/requests/" + id;
-        }
-
-        // Καταγράφει μήνυμα στο ιστορικό ότι ο πολίτης υπέβαλε επιπλέον στοιχεία
-        try {
-            requestService.citizenSubmittedAdditionalInfo(id, citizen, uploaded, note);
-        } catch (Exception ignored) {}
-
-        ra.addFlashAttribute("uploadOk", "Ανέβηκαν επιτυχώς " + uploaded + " αρχείο(α).");
-        return "redirect:/citizen/requests/" + id;
-    }
-
 }

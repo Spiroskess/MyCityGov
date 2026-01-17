@@ -41,15 +41,7 @@
                 </td>
 
                 <td data-label="Τύπος">
-                    <span th:switch="${r.type().name()}">
-                        <span th:case="'CERTIFICATE_RESIDENCE'">Βεβαίωση μόνιμης κατοικίας</span>
-                        <span th:case="'SIDEWALK_LICENSE'">Άδεια κατάληψης πεζοδρομίου</span>
-                        <span th:case="'LIGHTING_ISSUE'">Αναφορά προβλήματος φωτισμού</span>
-                        <span th:case="'ROAD_HOLE'">Αναφορά λακκούβας</span>
-                        <span th:case="'CLEANING_ISSUE'">Αναφορά καθαριότητας</span>
-                        <span th:case="'OTHER'">Άλλο</span>
-                        <span th:case="*" th:text="${#strings.replace(r.type().name(), '_', ' ')}">TYPE</span>
-                    </span>
+                    <span th:text="${r.typeTitle() != null ? r.typeTitle() : r.typeCode()}">Τύπος</span>
                 </td>
 
                 <td data-label="Κατάσταση">

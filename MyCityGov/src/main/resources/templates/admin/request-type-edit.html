@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title th:text="${isNew} ? 'Νέος τύπος αιτήματος' : 'Επεξεργασία τύπου αιτήματος'">Τύπος αιτήματος</title>
+</head>
+
+<section>
+    <div class="mc-page-head">
+        <div>
+            <h2 class="mc-page-title" th:text="${isNew} ? 'Νέος τύπος αιτήματος' : 'Επεξεργασία τύπου αιτήματος'">
+                Τύπος αιτήματος
+            </h2>
+            <div class="mc-subtitle" th:if="${!isNew}">
+                Κωδικός: <strong th:text="${type.code()}">CODE</strong>
+                <span class="mc-dot">•</span>
+                Default υπηρεσία:
+                <strong th:text="${type.defaultService() != null ? type.defaultService().label() : '—'}">—</strong>
+            </div>
+        </div>
+
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost mc-btn-small" th:href="@{/admin/request-types}">Πίσω στη λίστα</a>
+            <a class="mc-btn mc-btn-small mc-btn-outline"
+               th:if="${!isNew}"
+               th:href="@{/admin/request-types/{code}/mapping(code=${type.code()})}">
+                Αντιστοίχιση υπηρεσίας
+            </a>
+        </div>
+    </div>
+
+    <div class="mc-alert mc-alert-danger" th:if="${error != null}" th:text="${error}">Σφάλμα</div>
+
+    <div class="mc-card mc-form-card mc-admin-type-edit-card">
+        <div class="mc-form-card-header">
+            <div class="mc-form-card-title">Στοιχεία τύπου</div>
+            <div class="mc-form-card-subtitle">
+                Ορίστε τίτλο, SLA και ενεργοποίηση/απενεργοποίηση.
+            </div>
+        </div>
+
+        <form class="mc-form"
+              th:object="${form}"
+              th:action="${isNew} ? @{/admin/request-types/new} : @{/admin/request-types/{code}/edit(code=${form.code})}"
+              method="post">
+
+            <div class="mc-form-grid mc-admin-type-form-grid">
+
+                <!-- CODE -->
+                <div class="mc-field">
+                    <label class="mc-label" for="code">Κωδικός</label>
+
+                    <!-- Create -->
+                    <input th:if="${isNew}"
+                           class="mc-control mc-input"
+                           id="code"
+                           type="text"
+                           th:field="*{code}"
+                           maxlength="64"
+                           placeholder="π.χ. CERT_RESIDENCE"
+                           required/>
+
+                    <!-- Edit (disabled visible + hidden real) -->
+                    <input th:if="${!isNew}"
+                           class="mc-control mc-input mc-input-readonly"
+                           id="codeVisible"
+                           type="text"
+                           th:value="${form.code}"
+                           disabled/>
+
+                    <input th:if="${!isNew}" type="hidden" th:field="*{code}"/>
+
+                    <div class="mc-help">Μοναδικός κωδικός (χρησιμοποιείται σε API/DB).</div>
+
+                    <div class="mc-field-error"
+                         th:if="${#fields.hasErrors('code')}"
+                         th:errors="*{code}">
+                        Σφάλμα
+                    </div>
+                </div>
+
+                <!-- TITLE -->
+                <div class="mc-field">
+                    <label class="mc-label" for="title">Τίτλος</label>
+
+                    <input class="mc-control mc-input"
+                           id="title"
+                           type="text"
+                           th:field="*{title}"
+                           maxlength="160"
+                           placeholder="π.χ. Βεβαίωση μόνιμης κατοικίας"
+                           required/>
+
+                    <div class="mc-help">Ο τίτλος που βλέπει ο πολίτης.</div>
+
+                    <div class="mc-field-error"
+                         th:if="${#fields.hasErrors('title')}"
+                         th:errors="*{title}">
+                        Σφάλμα
+                    </div>
+                </div>
+
+                <!-- SLA -->
+                <div class="mc-field">
+                    <label class="mc-label" for="slaDays">SLA (ημέρες)</label>
+
+                    <input class="mc-control mc-input"
+                           id="slaDays"
+                           type="number"
+                           min="1"
+                           max="3650"
+                           th:field="*{slaDays}"
+                           required/>
+
+                    <div class="mc-help">Προθεσμία διεκπεραίωσης (σε ημέρες).</div>
+
+                    <div class="mc-field-error"
+                         th:if="${#fields.hasErrors('slaDays')}"
+                         th:errors="*{slaDays}">
+                        Σφάλμα
+                    </div>
+                </div>
+
+                <!-- ENABLED -->
+                <div class="mc-field">
+                    <label class="mc-label">Κατάσταση</label>
+
+                    <label class="mc-check">
+                        <input type="checkbox" th:field="*{enabled}"/>
+                        <span>Ενεργός τύπος</span>
+                    </label>
+
+                    <div class="mc-help">Αν είναι ανενεργός, δεν εμφανίζεται στον πολίτη.</div>
+                </div>
+            </div>
+
+            <div class="mc-actions-row mc-actions-row-right">
+                <a class="mc-btn mc-btn-ghost" th:href="@{/admin/request-types}">Ακύρωση</a>
+                <button type="submit" class="mc-btn mc-btn-primary">Αποθήκευση</button>
+            </div>
+        </form>
+    </div>
+</section>
+</html>

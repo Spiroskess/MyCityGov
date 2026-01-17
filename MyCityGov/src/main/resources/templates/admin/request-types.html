@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Τύποι αιτημάτων</title>
+</head>
+
+<section>
+    <div class="mc-page-head">
+        <div>
+            <h2 class="mc-page-title">Τύποι αιτημάτων</h2>
+            <div class="mc-subtitle">
+                Διαχείριση (CRUD/Enable/SLA) &amp; προεπιλεγμένης δρομολόγησης σε υπηρεσία
+                <span class="mc-dot">•</span>
+                <span class="mc-muted">Σύνολο:</span>
+                <strong th:text="${types != null ? #lists.size(types) : 0}">0</strong>
+            </div>
+        </div>
+
+        <div class="mc-page-actions mc-admin-types-actions">
+            <a class="mc-btn mc-btn-small mc-btn-outline" th:href="@{/admin/request-types/new}">
+                + Νέος τύπος
+            </a>
+            <a class="mc-btn mc-btn-small mc-btn-ghost" th:href="@{/admin/request-types}">
+                Ανανέωση
+            </a>
+        </div>
+    </div>
+
+    <div class="mc-alert mc-alert-success" th:if="${success != null}" th:text="${success}">Επιτυχία</div>
+    <div class="mc-alert mc-alert-danger" th:if="${error != null}" th:text="${error}">Σφάλμα</div>
+
+    <div class="mc-card mc-admin-types-card">
+        <div class="mc-table-wrap">
+            <table class="mc-table mc-admin-types-table" th:if="${types != null and !#lists.isEmpty(types)}">
+                <thead>
+                <tr>
+                    <th class="mc-col-code">Κωδικός</th>
+                    <th>Τίτλος</th>
+                    <th class="mc-col-sla">SLA (ημέρες)</th>
+                    <th class="mc-col-enabled">Ενεργό</th>
+                    <th>Προεπιλεγμένη υπηρεσία</th>
+                    <th class="mc-col-actions">Ενέργειες</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="t : ${types}">
+                    <td data-label="Κωδικός" class="mc-col-code">
+                        <span class="mc-pill mc-type-code" th:text="${t.code()}">CODE</span>
+                    </td>
+
+                    <td data-label="Τίτλος">
+                        <span class="mc-pill" th:text="${t.title()}">Title</span>
+                    </td>
+
+                    <td data-label="SLA (ημέρες)" class="mc-col-sla">
+                        <span class="mc-badge" th:text="${t.slaDays()} + 'd'">5d</span>
+                    </td>
+
+                    <td data-label="Ενεργό" class="mc-col-enabled">
+                        <span th:if="${t.enabled()}" class="mc-badge mc-badge-success">Ναι</span>
+                        <span th:if="${!t.enabled()}" class="mc-badge mc-badge-danger">Όχι</span>
+                    </td>
+
+                    <td data-label="Προεπιλεγμένη υπηρεσία">
+                        <span th:if="${t.defaultService() == null}" class="mc-pill mc-pill-muted">—</span>
+                        <span th:if="${t.defaultService() != null}"
+                              class="mc-pill"
+                              th:text="${t.defaultService().label()}">
+                            Service
+                        </span>
+                    </td>
+
+                    <td data-label="Ενέργειες" class="mc-col-actions">
+                        <div class="mc-admin-types-actions-row">
+                            <a class="mc-btn mc-btn-small mc-btn-outline"
+                               th:href="@{/admin/request-types/{code}/edit(code=${t.code()})}">
+                                Επεξεργασία
+                            </a>
+
+                            <a class="mc-btn mc-btn-small mc-btn-ghost"
+                               th:href="@{/admin/request-types/{code}/mapping(code=${t.code()})}">
+                                Αντιστοίχιση
+                            </a>
+
+                            <form class="mc-inline-form"
+                                  th:action="@{/admin/request-types/{code}/toggle(code=${t.code()})}"
+                                  method="post"
+                                  th:onsubmit="${t.enabled()} ? 'return confirm(\\'Να απενεργοποιηθεί ο τύπος;\\');' : 'return true;'">
+
+                                <input type="hidden" name="enabled"
+                                       th:value="${t.enabled() ? 'false' : 'true'}"/>
+
+                                <button type="submit"
+                                        class="mc-btn mc-btn-small"
+                                        th:classappend="${t.enabled()} ? ' mc-btn-danger' : ' mc-btn-primary'"
+                                        th:text="${t.enabled()} ? 'Απενεργοποίηση' : 'Ενεργοποίηση'">
+                                    Toggle
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="mc-empty" th:if="${types == null or #lists.isEmpty(types)}">
+                Δεν υπάρχουν τύποι αιτημάτων.
+            </div>
+        </div>
+    </div>
+</section>
+</html>

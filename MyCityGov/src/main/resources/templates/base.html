@@ -46,6 +46,7 @@
             <!-- ADMIN -->
             <span sec:authorize="hasRole('ADMIN')">
                 <a th:href="@{/admin/requests}" class="mc-nav-link">Όλα τα αιτήματα</a>
+                <a th:href="@{/admin/request-types}" class="mc-nav-link">Τύποι αιτημάτων</a>
                 <a th:href="@{/admin/schedules}" class="mc-nav-link">Ωράρια υπηρεσιών</a>
             </span>
         </nav>

@@ -16,7 +16,6 @@
                 <span class="mc-dot">•</span>
                 <span class="mc-muted">Σύνολο:</span>
 
-                <!-- Αν υπάρχει countAll (από controller), δείξτο. Αλλιώς fallback στο #lists.size(requests) -->
                 <strong th:if="${countAll != null}" th:text="${countAll}">0</strong>
                 <strong th:if="${countAll == null}" th:text="${#lists.size(requests)}">0</strong>
             </div>
@@ -47,7 +46,6 @@
                 </a>
             </div>
 
-            <!-- Κρατάμε την Ανανέωση σου -->
             <a class="mc-btn mc-btn-ghost" th:href="@{/admin/requests(view=${view != null ? view : 'all'})}">
                 Ανανέωση
             </a>
@@ -73,28 +71,14 @@
 
                 <tbody>
                 <tr th:each="r : ${requests}">
-                    <!-- Πρωτόκολλο -->
                     <td data-label="Πρωτόκολλο">
                         <span class="mc-protocol" th:text="${r.protocolNumber()}">PR</span>
                     </td>
 
-                    <!-- Τύπος (στα ελληνικά) -->
                     <td data-label="Τύπος">
-                        <span class="mc-pill" th:switch="${r.type().name()}">
-                            <span th:case="'CERTIFICATE_RESIDENCE'">Βεβαίωση κατοικίας</span>
-                            <span th:case="'CERTIFICATE_FAMILY'">Πιστοποιητικό οικογενειακής κατάστασης</span>
-                            <span th:case="'PARKING_PERMIT'">Άδεια στάθμευσης</span>
-                            <span th:case="'SIDEWALK_LICENSE'">Άδεια κατάληψης<br>πεζοδρομίου</span>
-                            <span th:case="'LIGHTING_ISSUE'">Βλάβη φωτισμού</span>
-                            <span th:case="'ROAD_HOLE'">Λακκούβα</span>
-                            <span th:case="'CLEANING_ISSUE'">Καθαριότητα / απορρίμματα</span>
-                            <span th:case="'SOCIAL_SUPPORT'">Κοινωνική υποστήριξη</span>
-                            <span th:case="'OTHER'">Άλλο</span>
-                            <span th:case="*" th:text="${r.type().name()}">TYPE</span>
-                        </span>
+                        <span class="mc-pill" th:text="${r.typeTitle() != null ? r.typeTitle() : r.typeCode()}">Τύπος</span>
                     </td>
 
-                    <!-- Κατάσταση -->
                     <td data-label="Κατάσταση">
                         <span class="mc-badge"
                               th:classappend="${r.status().badgeClass()}"
@@ -103,7 +87,6 @@
                         </span>
                     </td>
 
-                    <!-- Υπηρεσία -->
                     <td data-label="Υπηρεσία">
                         <span th:if="${r.assignedService() == null}" class="mc-pill mc-pill-muted">—</span>
                         <span th:if="${r.assignedService() != null}" class="mc-pill" th:switch="${r.assignedService().name()}">
@@ -116,18 +99,15 @@
                         </span>
                     </td>
 
-                    <!-- Πολίτης -->
                     <td data-label="Πολίτης" class="mc-name-cell">
                         <span th:text="${r.citizenFullName()}">Citizen</span>
                     </td>
 
-                    <!-- Υπάλληλος -->
                     <td data-label="Υπάλληλος" class="mc-name-cell">
                         <span th:if="${r.assignedEmployeeFullName() == null}" class="mc-muted">—</span>
                         <span th:if="${r.assignedEmployeeFullName() != null}" th:text="${r.assignedEmployeeFullName()}">Employee</span>
                     </td>
 
-                    <!-- SLA -->
                     <td data-label="SLA">
                         <div class="mc-sla">
                             <div class="mc-sla-date" th:text="${r.slaDueDate()}">2026-01-01</div>
@@ -137,7 +117,6 @@
                         </div>
                     </td>
 
-                    <!-- Ενέργειες -->
                     <td data-label="Ενέργειες" class="mc-col-actions">
                         <a class="mc-btn mc-btn-small mc-btn-outline mc-admin-action-btn"
                            th:href="@{/admin/requests/{id}/assign(id=${r.id()})}">

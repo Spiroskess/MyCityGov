@@ -4,6 +4,8 @@ import gr.hua.dit.mycitygov.core.model.*;
 import gr.hua.dit.mycitygov.core.port.SmsNotificationPort;
 import gr.hua.dit.mycitygov.core.repository.RequestMessageRepository;
 import gr.hua.dit.mycitygov.core.repository.RequestRepository;
+import gr.hua.dit.mycitygov.core.repository.RequestTypeRepository;
+import gr.hua.dit.mycitygov.core.repository.RequestTypeServiceMappingRepository;
 import gr.hua.dit.mycitygov.core.service.RequestService;
 import gr.hua.dit.mycitygov.core.service.RequestStatusTransitions;
 import gr.hua.dit.mycitygov.core.service.mapper.RequestMapper;
@@ -24,6 +26,8 @@ public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
     private final RequestMessageRepository requestMessageRepository;
+    private final RequestTypeRepository requestTypeRepository;
+    private final RequestTypeServiceMappingRepository requestTypeServiceMappingRepository;
     private final RequestMapper requestMapper;
     private final RequestMessageMapper requestMessageMapper;
     private final SmsNotificationPort smsNotificationPort;
@@ -31,12 +35,16 @@ public class RequestServiceImpl implements RequestService {
     public RequestServiceImpl(
         RequestRepository requestRepository,
         RequestMessageRepository requestMessageRepository,
+        RequestTypeRepository requestTypeRepository,
+        RequestTypeServiceMappingRepository requestTypeServiceMappingRepository,
         RequestMapper requestMapper,
         RequestMessageMapper requestMessageMapper,
         SmsNotificationPort smsNotificationPort
     ) {
         this.requestRepository = requestRepository;
         this.requestMessageRepository = requestMessageRepository;
+        this.requestTypeRepository = requestTypeRepository;
+        this.requestTypeServiceMappingRepository = requestTypeServiceMappingRepository;
         this.requestMapper = requestMapper;
         this.requestMessageMapper = requestMessageMapper;
         this.smsNotificationPort = smsNotificationPort;
@@ -45,10 +53,22 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestView openRequest(Person citizen, OpenRequestRequest openReq) {
-        // Δημιουργία νέου αιτήματος από πολίτη + πρωτόκολλο + SLA due date
+        // Δημιουργία νέου αιτήματος από πολίτη + πρωτόκολλο + SLA (από DB) + auto-assign υπηρεσίας (αν υπάρχει mapping)
+
+        if (openReq == null || openReq.requestTypeCode() == null || openReq.requestTypeCode().isBlank()) {
+            throw new IllegalArgumentException("REQUEST_TYPE_REQUIRED");
+        }
+
+        RequestTypeEntity type = requestTypeRepository.findByCode(openReq.requestTypeCode())
+            .orElseThrow(() -> new IllegalArgumentException("UNKNOWN_REQUEST_TYPE"));
+
+        if (!Boolean.TRUE.equals(type.getEnabled())) {
+            throw new IllegalArgumentException("REQUEST_TYPE_DISABLED");
+        }
+
         Request request = new Request();
         request.setCitizen(citizen);
-        request.setType(openReq.type());
+        request.setType(type);
         request.setSubject(openReq.subject());
         request.setDescription(openReq.description());
         request.setStatus(RequestStatus.SUBMITTED);
@@ -56,24 +76,27 @@ public class RequestServiceImpl implements RequestService {
         request.setCreatedAt(Instant.now());
         request.setUpdatedAt(Instant.now());
 
-        request.setSlaDueDate(calculateSlaDueDate(openReq.type()));
-        request.setAssignedService(null);
+        // SLA from DB
+        int slaDays = (type.getSlaDays() == null) ? 0 : type.getSlaDays();
+        if (slaDays > 0) {
+            request.setSlaDueDate(LocalDate.now().plusDays(slaDays));
+        }
+
+        // Auto-assign to service based on mapping rule (if exists)
+        MunicipalService mappedService = requestTypeServiceMappingRepository
+            .findByRequestType_Code(type.getCode())
+            .map(RequestTypeServiceMapping::getMunicipalService)
+            .orElse(null);
+
+        request.setAssignedService(mappedService);
+
+        // Optional: if it is already routed to a service, we can mark it as RECEIVED
+        if (mappedService != null && request.getStatus() == RequestStatus.SUBMITTED) {
+            request.setStatus(RequestStatus.RECEIVED);
+        }
 
         Request saved = requestRepository.save(request);
         return requestMapper.convertRequestToView(saved);
-    }
-
-    private LocalDate calculateSlaDueDate(RequestType type) {
-        // SLA προθεσμία ανά τύπο αιτήματος
-        LocalDate today = LocalDate.now();
-        return switch (type) {
-            case CERTIFICATE_RESIDENCE -> today.plusDays(10);
-            case SIDEWALK_LICENSE      -> today.plusDays(15);
-            case LIGHTING_ISSUE        -> today.plusDays(7);
-            case ROAD_HOLE             -> today.plusDays(7);
-            case CLEANING_ISSUE        -> today.plusDays(5);
-            case OTHER                 -> today.plusDays(20);
-        };
     }
 
     @Override

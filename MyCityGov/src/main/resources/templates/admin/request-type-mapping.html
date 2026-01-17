@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Αντιστοίχιση τύπου αιτήματος</title>
+</head>
+
+<section>
+    <div class="mc-page-head">
+        <div>
+            <h2 class="mc-page-title">Αντιστοίχιση τύπου αιτήματος με υπηρεσία</h2>
+            <div class="mc-subtitle">
+                Τύπος:
+                <strong th:text="${type.title()}">Title</strong>
+                <span class="mc-dot">•</span>
+                <span class="mc-type-code" th:text="${type.code()}">CODE</span>
+            </div>
+        </div>
+
+        <div class="mc-page-actions">
+            <a class="mc-btn mc-btn-ghost mc-btn-small" th:href="@{/admin/request-types}">Πίσω στη λίστα</a>
+            <a class="mc-btn mc-btn-small mc-btn-outline"
+               th:href="@{/admin/request-types/{code}/edit(code=${type.code()})}">
+                Επεξεργασία τύπου
+            </a>
+        </div>
+    </div>
+
+    <div class="mc-alert mc-alert-danger" th:if="${error != null}" th:text="${error}">Σφάλμα</div>
+
+    <div class="mc-card mc-form-card mc-admin-mapping-card">
+        <div class="mc-form-card-header">
+            <div class="mc-form-card-title">Προεπιλεγμένη δρομολόγηση</div>
+            <div class="mc-form-card-subtitle">
+                Αν οριστεί υπηρεσία, τα νέα αιτήματα αυτού του τύπου θα παίρνουν αυτόματα assignedService.
+            </div>
+        </div>
+
+        <form class="mc-form"
+              th:object="${form}"
+              th:action="@{/admin/request-types/{code}/mapping(code=${type.code()})}"
+              method="post">
+
+            <div class="mc-form-grid mc-admin-mapping-grid">
+                <div class="mc-field mc-span-2">
+                    <label class="mc-label" for="municipalService">Υπηρεσία</label>
+
+                    <select id="municipalService" class="mc-control mc-select" th:field="*{municipalService}">
+                        <option value="">— Καμία (χωρίς προεπιλογή) —</option>
+
+                        <option th:each="s : ${services}"
+                                th:value="${s.name()}"
+                                th:text="${s.label()}">
+                        </option>
+                    </select>
+
+                    <div class="mc-help">
+                        Μπορείς να αφήσεις “Καμία” και να γίνεται manual ανάθεση ανά αίτημα.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mc-actions-row mc-actions-row-right">
+                <a class="mc-btn mc-btn-ghost" th:href="@{/admin/request-types}">Ακύρωση</a>
+                <button type="submit" class="mc-btn mc-btn-primary">Αποθήκευση</button>
+            </div>
+        </form>
+    </div>
+</section>
+</html>

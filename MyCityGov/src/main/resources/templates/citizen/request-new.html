@@ -38,27 +38,21 @@
             <div class="mc-request-grid">
                 <!-- Type -->
                 <div class="mc-field">
-                    <label class="mc-label" for="type">Τύπος αιτήματος</label>
+                    <label class="mc-label" for="requestTypeCode">Τύπος αιτήματος</label>
 
-                    <select class="mc-control mc-select" id="type" th:field="*{type}" required>
+                    <select class="mc-control mc-select" id="requestTypeCode" th:field="*{requestTypeCode}" required>
                         <option value="">— Επιλογή —</option>
 
-                        <option th:each="t : ${T(gr.hua.dit.mycitygov.core.model.RequestType).values()}"
-                                th:value="${t}"
-                                th:text="${
-                                    t.name() == 'CERTIFICATE_RESIDENCE' ? 'Βεβαίωση μόνιμης κατοικίας' :
-                                    (t.name() == 'SIDEWALK_LICENSE' ? 'Άδεια κατάληψης πεζοδρομίου' :
-                                    (t.name() == 'LIGHTING_ISSUE' ? 'Αναφορά προβλήματος φωτισμού' :
-                                    (t.name() == 'ROAD_HOLE' ? 'Αναφορά λακκούβας' :
-                                    (t.name() == 'CLEANING_ISSUE' ? 'Αναφορά καθαριότητας' :
-                                    (t.name() == 'OTHER' ? 'Άλλο' : t.name())))))
-                                }">
+                        <!-- ΜΟΝΟ enabled τύποι έρχονται από controller -->
+                        <option th:each="t : ${requestTypes}"
+                                th:value="${t.code()}"
+                                th:text="${t.title()}">
                         </option>
                     </select>
 
                     <div class="mc-help">Διαλέξτε την κατηγορία/τύπο αιτήματος.</div>
 
-                    <div class="mc-field-error" th:if="${#fields.hasErrors('type')}" th:errors="*{type}">
+                    <div class="mc-field-error" th:if="${#fields.hasErrors('requestTypeCode')}" th:errors="*{requestTypeCode}">
                         Σφάλμα
                     </div>
                 </div>
@@ -72,7 +66,7 @@
                            type="text"
                            th:field="*{subject}"
                            placeholder="π.χ. Αίτηση για βεβαίωση μόνιμης κατοικίας"
-                           maxlength="120"
+                           maxlength="255"
                            required/>
 
                     <div class="mc-help">Σύντομος τίτλος που περιγράφει το αίτημά σας.</div>

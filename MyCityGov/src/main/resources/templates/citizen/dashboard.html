@@ -93,15 +93,7 @@
                         </div>
 
                         <div class="mc-dash-row-meta">
-                            <span class="mc-muted" th:switch="${r.type.name()}">
-                                <span th:case="'CERTIFICATE_RESIDENCE'">Βεβαίωση μόνιμης κατοικίας</span>
-                                <span th:case="'SIDEWALK_LICENSE'">Άδεια κατάληψης πεζοδρομίου</span>
-                                <span th:case="'LIGHTING_ISSUE'">Αναφορά προβλήματος φωτισμού</span>
-                                <span th:case="'ROAD_HOLE'">Αναφορά λακκούβας</span>
-                                <span th:case="'CLEANING_ISSUE'">Αναφορά καθαριότητας</span>
-                                <span th:case="'OTHER'">Άλλο</span>
-                                <span th:case="*" th:text="${#strings.replace(r.type.name(), '_', ' ')}">Τύπος</span>
-                            </span>
+                            <span class="mc-muted" th:text="${r.typeTitle != null ? r.typeTitle : r.typeCode}">Τύπος</span>
                             <span class="mc-dash-date" th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</span>
                         </div>
                     </div>

@@ -1,15 +1,15 @@
 package gr.hua.dit.mycitygov.core.service.model;
 
 import gr.hua.dit.mycitygov.core.model.RequestStatus;
-import gr.hua.dit.mycitygov.core.model.RequestType;
-
 import java.time.Instant;
 import java.time.LocalDate;
-// DTO/View για προβολή αιτήματος στο UI/REST
+
+/** View DTO για UI/REST */
 public record RequestView(
     Long id,
     String protocolNumber,
-    RequestType type,
+    String typeCode,
+    String typeTitle,
     RequestStatus status,
     MunicipalService assignedService,
     String subject,

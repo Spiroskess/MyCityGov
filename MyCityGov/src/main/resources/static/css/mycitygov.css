@@ -2101,3 +2101,330 @@ select.mc-control option:checked{
 .mc-password-wrap.is-visible .icon-eye{ display: block; }
 .mc-password-wrap.is-visible .icon-eye-off{ display: none; }
 
+/* =========================================================
+   Admin - Request Types
+   ========================================================= */
+
+.mc-admin-types-actions { gap: 10px; }
+
+.mc-admin-types-card { margin-top: 14px; }
+
+.mc-admin-types-table .mc-col-code { width: 170px; }
+.mc-admin-types-table .mc-col-sla { width: 120px; }
+.mc-admin-types-table .mc-col-enabled { width: 110px; }
+.mc-admin-types-table .mc-col-actions { width: 360px; }
+
+.mc-admin-types-actions-row{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.mc-inline-form{ display:inline; margin:0; }
+
+.mc-type-code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight: 900;
+  letter-spacing: .4px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.10);
+  display: inline-flex;
+}
+
+.mc-input-readonly{
+  opacity: .9;
+  cursor: not-allowed;
+}
+
+.mc-check{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.08);
+}
+.mc-check input{ transform: scale(1.15); }
+
+/* =========================================================
+   FIX: Admin Request Types - no horizontal scroll
+   ========================================================= */
+
+.mc-admin-types-card .mc-table-wrap{
+  overflow-x: hidden;   /* κόβει το πλαϊνό scroll */
+}
+
+.mc-admin-types-table{
+  width: 100%;
+  table-layout: fixed;  /* κρατάει το table μέσα στο container */
+}
+
+/* Συμπίεση στηλών */
+.mc-admin-types-table .mc-col-code{ width: 130px; }
+.mc-admin-types-table .mc-col-sla{ width: 100px; }
+.mc-admin-types-table .mc-col-enabled{ width: 80px; }
+.mc-admin-types-table .mc-col-actions{ width: 150px; }
+
+/* Default: κόψιμο με ellipsis όπου περισσεύει */
+.mc-admin-types-table th,
+.mc-admin-types-table td{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Τίτλος: άστο να “σπάει” σε 2 γραμμές αντί να ανοίγει το table */
+.mc-admin-types-table td:nth-child(2){
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Κωδικός: πιο μικρός + ellipsis */
+.mc-admin-types-table .mc-type-code{
+  font-size: 12px;
+  padding: 4px 8px;
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ενέργειες: κουμπιά κάθετα για να μικρύνει πλάτος */
+.mc-admin-types-actions-row{
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.mc-admin-types-actions-row .mc-btn,
+.mc-admin-types-actions-row button.mc-btn{
+  width: 100%;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Admin Request Types - Responsive table (no horizontal scroll)
+   ========================================================= */
+
+.mc-admin-types-card .mc-table-wrap { overflow-x: hidden; }
+
+.mc-admin-types-table { width: 100%; table-layout: fixed; }
+.mc-admin-types-table th, .mc-admin-types-table td { overflow: hidden; text-overflow: ellipsis; }
+
+.mc-admin-types-table .mc-type-code{
+  font-size: 12px;
+  padding: 4px 8px;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* buttons nicer */
+.mc-admin-types-actions-row{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.mc-admin-types-actions-row .mc-btn{ white-space: nowrap; }
+
+/* --- BREAKPOINT: κάτω από 1024px κάν’ το “cards” --- */
+@media (max-width: 1024px){
+
+  .mc-admin-types-table{
+    table-layout: auto;
+  }
+
+  /* κρύβουμε header */
+  .mc-admin-types-table thead{
+    display: none;
+  }
+
+  /* κάθε row γίνεται card */
+  .mc-admin-types-table,
+  .mc-admin-types-table tbody,
+  .mc-admin-types-table tr{
+    display: block;
+    width: 100%;
+  }
+
+  .mc-admin-types-table tr{
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    margin: 12px 0;
+    padding: 10px 10px 6px 10px;
+  }
+
+  .mc-admin-types-table td{
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 10px;
+    padding: 8px 6px;
+    border: 0 !important;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  /* label αριστερά */
+  .mc-admin-types-table td::before{
+    content: attr(data-label);
+    font-weight: 700;
+    opacity: 0.85;
+  }
+
+  /* actions full-width στο τέλος */
+  .mc-admin-types-table td.mc-col-actions{
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-top: 10px;
+  }
+  .mc-admin-types-table td.mc-col-actions::before{ display: none; }
+
+  .mc-admin-types-actions-row{
+    justify-content: stretch;
+  }
+  .mc-admin-types-actions-row .mc-btn,
+  .mc-admin-types-actions-row button.mc-btn{
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* code pill πιο “στενό” */
+  .mc-admin-types-table .mc-type-code{ max-width: 220px; }
+
+}
+
+/* --- EXTRA: πολύ μικρές οθόνες --- */
+@media (max-width: 480px){
+  .mc-admin-types-table td{
+    grid-template-columns: 120px 1fr;
+  }
+}
+
+
+/* =========================================================
+   FINAL OVERRIDE: Admin Request Types (clean columns + responsive)
+   Paste at END of mycitygov.css
+   ========================================================= */
+
+.mc-admin-types-card .mc-table-wrap{
+  overflow-x: hidden !important;
+  padding-right: 12px; /* μικρό “κενό” δεξιά ώστε να μη κολλάει/κόβεται το κουμπί */
+}
+
+.mc-admin-types-table{
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+/* Μην κόβεις τα header κείμενα */
+.mc-admin-types-table thead th{
+  white-space: normal !important;
+}
+
+/* Σταθερές/λογικές στήλες, οι άλλες “παίρνουν” τον υπόλοιπο χώρο */
+.mc-admin-types-table .mc-col-code{ width: 150px !important; }
+.mc-admin-types-table .mc-col-sla{ width: 120px !important; }
+.mc-admin-types-table .mc-col-enabled{ width: 90px !important; }
+.mc-admin-types-table .mc-col-actions{ width: 240px !important; }
+
+/* Pills σε αυτό το table να μπορούν να “σπάνε” (για να μη φουσκώνει η στήλη) */
+.mc-admin-types-table .mc-pill{
+  display: inline-block !important;
+  max-width: 100%;
+  white-space: normal !important;
+  word-break: break-word;
+  line-height: 1.25;
+  text-align: center;
+}
+
+/* Κωδικός: ellipsis ώστε να μη μεγαλώνει υπερβολικά */
+.mc-admin-types-table .mc-type-code{
+  display: inline-block !important;
+  max-width: 150px;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Actions: μην κλιπάρεις τίποτα + extra padding right */
+.mc-admin-types-table td.mc-col-actions{
+  white-space: normal !important;
+  overflow: visible !important;
+  padding-right: 22px; /* extra κενό δεξιά όπως ζήτησες */
+}
+
+/* Κουμπιά actions: κάθετα, full width, και να κάνουν wrap (για “Απενεργοποίηση”) */
+.mc-admin-types-actions-row{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+}
+
+.mc-admin-types-actions-row .mc-btn,
+.mc-admin-types-actions-row button.mc-btn{
+  width: 100% !important;
+  justify-content: center;
+  white-space: normal !important;   /* ΔΕΝ κόβεται το κείμενο */
+  line-height: 1.15;
+  padding: 9px 10px;
+}
+
+.mc-admin-types-actions-row form{ width: 100%; }
+.mc-inline-form{ display:block !important; margin:0 !important; }
+
+/* Responsive “cards” κάτω από 1024px */
+@media (max-width: 1024px){
+  .mc-admin-types-table thead{ display:none !important; }
+
+  .mc-admin-types-table,
+  .mc-admin-types-table tbody,
+  .mc-admin-types-table tr{
+    display:block;
+    width:100%;
+  }
+
+  .mc-admin-types-table tr{
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    margin: 12px 0;
+    padding: 10px 10px 6px 10px;
+  }
+
+  .mc-admin-types-table td{
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+    padding: 8px 6px;
+    border: 0 !important;
+  }
+
+  .mc-admin-types-table td::before{
+    content: attr(data-label);
+    font-weight: 900;
+    opacity: .9;
+  }
+
+  .mc-admin-types-table td.mc-col-actions{
+    grid-template-columns: 1fr;
+    padding-right: 6px;
+  }
+  .mc-admin-types-table td.mc-col-actions::before{ display:none; }
+}
+
+@media (max-width: 480px){
+  .mc-admin-types-table td{
+    grid-template-columns: 120px 1fr;
+  }
+}
+
