@@ -48,7 +48,7 @@ public class InitializationService {
                 new CreatePersonRequest(
                     PersonRole.ADMIN,
                     "admin@mycity.gov",
-                    "Artemakis",
+                    "Giorgos",
                     "Papadopoulos",
                     "+306900000000",
                     "999999999",
@@ -85,7 +85,50 @@ public class InitializationService {
                     "Emp2!23456"
                 ),
                 MunicipalService.TECHNICAL_SERVICE
+            ),
+
+            new SeedUser(
+                new CreatePersonRequest(
+                    PersonRole.EMPLOYEE,
+                    "employee3@mycity.gov",
+                    "Giorgos",
+                    "Nikolaou",
+                    "+306900000003",
+                    "333333333",
+                    "33333333333",
+                    "Emp3!23456"
+                ),
+                MunicipalService.SOCIAL_SERVICE
+            ),
+
+            new SeedUser(
+                new CreatePersonRequest(
+                    PersonRole.EMPLOYEE,
+                    "employee4@mycity.gov",
+                    "Kostas",
+                    "Oikonomou",
+                    "+306900000004",
+                    "444444444",
+                    "44444444444",
+                    "Emp4!23456"
+                ),
+                MunicipalService.FINANCIAL_SERVICE
+            ),
+
+            new SeedUser(
+                new CreatePersonRequest(
+                    PersonRole.EMPLOYEE,
+                    "employee5@mycity.gov",
+                    "Eleni",
+                    "Menegaki",
+                    "+306900000005",
+                    "555555555",
+                    "55555555555",
+                    "Emp5!23456"
+                ),
+                MunicipalService.ENVIRONMENT_SERVICE
             )
+
         );
 
         for (SeedUser seed : users) {
