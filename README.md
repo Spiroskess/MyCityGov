@@ -75,12 +75,12 @@ Password: Emp3!23456
 ```
 ```shell
 For the forth EMPLOYEE (FINANCIAL_SERVICE)
-Email: employee2@mycity.gov
+Email: employee4@mycity.gov
 Password: Emp4!23456
 ```
 ```shell
 For the fifth EMPLOYEE (ENVIRONMENT_SERVICE)
-Email: employee2@mycity.gov
+Email: employee5@mycity.gov
 Password: Emp5!23456
 ```
 ---
