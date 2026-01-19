@@ -52,6 +52,7 @@ mycitygov:
     base-url: "http://localhost:8081"
     sms:
       active: true
+      fail-fast: false
 
   storage:
     s3:

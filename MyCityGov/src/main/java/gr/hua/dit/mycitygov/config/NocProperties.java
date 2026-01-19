@@ -7,6 +7,6 @@ public record NocProperties(
     String baseUrl,
     Sms sms
 ) {
-    public record Sms(boolean active) {}
+    public record Sms(boolean active, boolean failFast) {}
 }
 

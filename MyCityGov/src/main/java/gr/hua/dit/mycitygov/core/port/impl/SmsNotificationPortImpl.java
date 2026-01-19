@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -27,10 +28,20 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
 
     @Override
     public boolean sendSms(final String e164, final String content) {
-        // POST προς external NOC service για αποστολή SMS (με flag on/off από properties)
-        LOGGER.error("SENDING SMS JSON e164={} content='{}'", e164, content);
-        if (e164 == null || e164.isBlank()) throw new IllegalArgumentException("e164 is blank");
-        if (content == null || content.isBlank()) throw new IllegalArgumentException("content is blank");
+        // IMPORTANT: Η αποστολή SMS είναι side-effect και ΔΕΝ πρέπει να ρίχνει όλο το business flow.
+        // Αν το NOC είναι down/απλήρωτο/επιστρέφει 5xx, απλώς κάνουμε log και συνεχίζουμε.
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Attempting to send SMS to e164={} (len={})", e164, content == null ? 0 : content.length());
+        }
+
+        if (e164 == null || e164.isBlank()) {
+            LOGGER.warn("Skipping SMS send: missing/blank recipient number (e164)");
+            return false;
+        }
+        if (content == null || content.isBlank()) {
+            LOGGER.warn("Skipping SMS send: missing/blank content for recipient {}", e164);
+            return false;
+        }
 
         if (!nocProperties.sms().active()) {
             LOGGER.warn("SMS notifications disabled (mycitygov.noc.sms.active=false). Would send to {}: {}", e164, content);
@@ -44,14 +55,29 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
         final HttpEntity<SendSmsRequest> entity = new HttpEntity<>(body, headers);
 
         final String url = nocProperties.baseUrl() + "/api/v1/sms";
-        final ResponseEntity<SendSmsResult> response =
-            restTemplate.postForEntity(url, entity, SendSmsResult.class);
+        try {
+            final ResponseEntity<SendSmsResult> response =
+                restTemplate.postForEntity(url, entity, SendSmsResult.class);
 
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            return response.getBody().sent();
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody().sent();
+            }
+
+            final String msg = "NOC send sms returned non-success status: " + response.getStatusCode();
+            if (nocProperties.sms().failFast()) {
+                throw new IllegalStateException(msg);
+            }
+            LOGGER.warn("{} (non-blocking)", msg);
+            return false;
+
+        } catch (RestClientException ex) {
+            // π.χ. 500 από NOC, connection refused, timeouts, DNS errors, κ.λπ.
+            if (nocProperties.sms().failFast()) {
+                throw ex;
+            }
+            LOGGER.warn("NOC SMS send failed (non-blocking): {}", ex.getMessage());
+            LOGGER.debug("NOC SMS send stacktrace", ex);
+            return false;
         }
-
-        throw new IllegalStateException("NOC send sms failed with status: " + response.getStatusCode());
     }
-
 }
