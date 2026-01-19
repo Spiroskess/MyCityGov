@@ -50,6 +50,14 @@ Username: minioadmin
 Password: minioadmin
 Url: http://localhost:9001/login
 ```
+---
+Προτεινόμενα στοιχεία για την εγγραφή προκειμένου να λειτουργήσει και το Mock Gov Service
+```shell
+ΑΦΜ: 999999999
+ΑΜΚΑ: 99999999999
+Ονομα: Dimitris
+Επώνυμο: Gkoulis
+```
 
 ---
 Staff Accounts
