@@ -1,5 +1,7 @@
 package gr.hua.dit.mycitygov.web.api.advice;
 
+import gr.hua.dit.mycitygov.core.service.exception.InvalidRequestStatusTransitionException;
+import gr.hua.dit.mycitygov.core.service.exception.RequestNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -82,9 +84,16 @@ public class GlobalErrorHandlerRestControllerAdvice {
         if (exception instanceof NoResourceFoundException) {
             status = HttpStatus.NOT_FOUND;
 
-        } else if (exception instanceof NoSuchElementException) {
-            // avoids 500 from Optional.orElseThrow() without custom exceptions
+        } else if (exception instanceof RequestNotFoundException) {
+            // FIX: “not found / not assigned” -> 404 (όχι 409)
             status = HttpStatus.NOT_FOUND;
+
+        } else if (exception instanceof NoSuchElementException) {
+            status = HttpStatus.NOT_FOUND;
+
+        } else if (exception instanceof InvalidRequestStatusTransitionException) {
+            // FIX: invalid transition -> 409 με καθαρό μήνυμα
+            status = HttpStatus.CONFLICT;
 
         } else if (exception instanceof AuthenticationException || exception instanceof SecurityException) {
             status = HttpStatus.UNAUTHORIZED;
@@ -93,6 +102,7 @@ public class GlobalErrorHandlerRestControllerAdvice {
             status = HttpStatus.FORBIDDEN;
 
         } else if (exception instanceof IllegalStateException) {
+            // Γενικά business conflicts (π.χ. REQUEST_NOT_WAITING_ADDITIONAL_INFO)
             status = HttpStatus.CONFLICT;
 
         } else if (exception instanceof MethodArgumentTypeMismatchException

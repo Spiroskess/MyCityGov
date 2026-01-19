@@ -8,10 +8,11 @@ import gr.hua.dit.mycitygov.core.repository.RequestTypeRepository;
 import gr.hua.dit.mycitygov.core.repository.RequestTypeServiceMappingRepository;
 import gr.hua.dit.mycitygov.core.service.RequestService;
 import gr.hua.dit.mycitygov.core.service.RequestStatusTransitions;
+import gr.hua.dit.mycitygov.core.service.exception.InvalidRequestStatusTransitionException;
+import gr.hua.dit.mycitygov.core.service.exception.RequestNotFoundException;
 import gr.hua.dit.mycitygov.core.service.mapper.RequestMapper;
 import gr.hua.dit.mycitygov.core.service.mapper.RequestMessageMapper;
 import gr.hua.dit.mycitygov.core.service.model.*;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +54,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestView openRequest(Person citizen, OpenRequestRequest openReq) {
-        // Δημιουργία νέου αιτήματος από πολίτη + πρωτόκολλο + SLA (από DB) + auto-assign υπηρεσίας (αν υπάρχει mapping)
 
         if (openReq == null || openReq.requestTypeCode() == null || openReq.requestTypeCode().isBlank()) {
             throw new IllegalArgumentException("REQUEST_TYPE_REQUIRED");
@@ -76,13 +76,11 @@ public class RequestServiceImpl implements RequestService {
         request.setCreatedAt(Instant.now());
         request.setUpdatedAt(Instant.now());
 
-        // SLA from DB
         int slaDays = (type.getSlaDays() == null) ? 0 : type.getSlaDays();
         if (slaDays > 0) {
             request.setSlaDueDate(LocalDate.now().plusDays(slaDays));
         }
 
-        // Auto-assign to service based on mapping rule (if exists)
         MunicipalService mappedService = requestTypeServiceMappingRepository
             .findByRequestType_Code(type.getCode())
             .map(RequestTypeServiceMapping::getMunicipalService)
@@ -90,7 +88,6 @@ public class RequestServiceImpl implements RequestService {
 
         request.setAssignedService(mappedService);
 
-        // Optional: if it is already routed to a service, we can mark it as RECEIVED
         if (mappedService != null && request.getStatus() == RequestStatus.SUBMITTED) {
             request.setStatus(RequestStatus.RECEIVED);
         }
@@ -102,7 +99,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getRequestsOfCitizen(Person citizen) {
-        // “Τα αιτήματά μου” για πολίτη
         return requestRepository.findAllByCitizenOrderByCreatedAtDesc(citizen)
             .stream()
             .map(requestMapper::convertRequestToView)
@@ -112,7 +108,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public Optional<RequestView> getCitizenRequestDetails(Long requestId, Person citizen) {
-        // Details μόνο για αίτημα που ανήκει στον πολίτη
         return requestRepository.findByIdAndCitizen(requestId, citizen)
             .map(requestMapper::convertRequestToView);
     }
@@ -120,9 +115,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestMessageView> getCitizenMessages(Long requestId, Person citizen) {
-        // Μηνύματα αιτήματος που βλέπει ο πολίτης
+        // FIX: όχι IllegalStateException -> 409. Για “δεν βρέθηκε/δεν ανήκει” επιστρέφουμε 404.
         Request req = requestRepository.findByIdAndCitizen(requestId, citizen)
-            .orElseThrow(() -> new IllegalStateException("Request not found"));
+            .orElseThrow(() -> new RequestNotFoundException("Request not found"));
 
         return requestMessageRepository
             .findAllByRequestAndVisibleToCitizenOrderByCreatedAtAsc(req, true)
@@ -134,7 +129,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getRequestsAssignedToEmployee(Person employee) {
-        // Αιτήματα που έχουν ανατεθεί σε συγκεκριμένο υπάλληλο
         return requestRepository.findAllByAssignedEmployeeOrderByCreatedAtDesc(employee)
             .stream()
             .map(requestMapper::convertRequestToView)
@@ -144,7 +138,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getAllRequests() {
-        // Admin list: όλα τα αιτήματα
         return requestRepository.findAllByOrderByCreatedAtDesc()
             .stream()
             .map(requestMapper::convertRequestToView)
@@ -154,7 +147,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getUnassignedRequests() {
-        // Αιτήματα χωρίς assignedService
         return requestRepository.findAllByAssignedServiceIsNullOrderByCreatedAtDesc()
             .stream()
             .map(requestMapper::convertRequestToView)
@@ -164,7 +156,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getAssignedRequests() {
-        // Αιτήματα που έχουν δρομολογηθεί σε υπηρεσία
         return requestRepository.findAllByAssignedServiceIsNotNullOrderByCreatedAtDesc()
             .stream()
             .map(requestMapper::convertRequestToView)
@@ -174,7 +165,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public Optional<RequestView> assignRequestToService(Long requestId, MunicipalService service) {
-        // Admin: δρομολόγηση αιτήματος σε υπηρεσία + auto μετάβαση SUBMITTED -> RECEIVED
         return requestRepository.findById(requestId)
             .map(request -> {
                 request.setAssignedService(service);
@@ -192,7 +182,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestView> getServiceQueue(MunicipalService service) {
-        // “Ουρά” υπηρεσίας: αιτήματα που είναι assignedService αλλά όχι assignedEmployee
         if (service == null) {
             return List.of();
         }
@@ -207,7 +196,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public Optional<RequestView> claimRequest(Long requestId, Person employee) {
-        // Υπάλληλος “αναλαμβάνει” αίτημα της υπηρεσίας του
         if (employee.getRole() != PersonRole.EMPLOYEE) return Optional.empty();
         if (employee.getMunicipalService() == null) return Optional.empty();
 
@@ -226,11 +214,19 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public Optional<RequestView> updateStatus(Long requestId, Person employee, RequestStatus nextStatus, String comment) {
-        // Αλλαγή κατάστασης αιτήματος από τον assigned υπάλληλο
+        // FIX: το “invalid transition” δεν γυρνάει πλέον Optional.empty (που οδηγεί σε generic 403),
+        // αλλά πετάει συγκεκριμένο exception -> 409 με καθαρό μήνυμα.
         return requestRepository.findById(requestId)
             .filter(req -> req.getAssignedEmployee() != null && req.getAssignedEmployee().getId().equals(employee.getId()))
-            .filter(req -> RequestStatusTransitions.canMove(req.getStatus(), nextStatus))
             .map(req -> {
+
+                if (!RequestStatusTransitions.canMove(req.getStatus(), nextStatus)) {
+                    throw new InvalidRequestStatusTransitionException(
+                        req.getStatus(),
+                        nextStatus,
+                        RequestStatusTransitions.nextStatuses(req.getStatus())
+                    );
+                }
 
                 if (requiresComment(nextStatus)) {
                     if (comment == null || comment.trim().isEmpty()) {
@@ -244,7 +240,6 @@ public class RequestServiceImpl implements RequestService {
 
                 Request saved = requestRepository.save(req);
 
-                // Δημιουργία μηνύματος προς πολίτη για “αναμονή στοιχείων” ή “απόρριψη”
                 if (nextStatus == RequestStatus.WAITING_ADDITIONAL_INFO) {
                     createCitizenMessage(saved, employee,
                         RequestMessageType.REQUEST_ADDITIONAL_INFO,
@@ -257,25 +252,24 @@ public class RequestServiceImpl implements RequestService {
                     );
                 }
 
-                // SMS ενημέρωση πολίτη για status change
                 notifyCitizenOnStatusChange(saved);
                 return requestMapper.convertRequestToView(saved);
             });
     }
 
     private boolean requiresComment(RequestStatus nextStatus) {
-        // Σχόλιο υποχρεωτικό σε WAITING_ADDITIONAL_INFO / REJECTED
         return nextStatus == RequestStatus.WAITING_ADDITIONAL_INFO
             || nextStatus == RequestStatus.REJECTED;
     }
 
     private void createCitizenMessage(Request request, Person employee, RequestMessageType type, String message) {
-        // Καταγραφή μηνύματος/ιστορικού στο αίτημα
+        // FIX: βάλε createdAt ώστε τα orderByCreatedAtAsc να είναι σωστά
         RequestMessage m = new RequestMessage();
         m.setRequest(request);
         m.setType(type);
         m.setVisibleToCitizen(true);
         m.setMessage(message);
+        m.setCreatedAt(Instant.now());
 
         String createdBy = "Employee: " + employee.getLastName() + " " + employee.getFirstName();
         m.setCreatedBy(createdBy);
@@ -286,7 +280,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public Optional<RequestView> getMyRequestDetails(Long requestId, Person employee) {
-        // Details μόνο για αίτημα που έχει ανατεθεί στον υπάλληλο
         return requestRepository.findByIdAndAssignedEmployee(requestId, employee)
             .map(requestMapper::convertRequestToView);
     }
@@ -294,9 +287,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional(readOnly = true)
     public List<RequestMessageView> getMyRequestMessages(Long requestId, Person employee) {
-        // Όλα τα μηνύματα αιτήματος
+        // FIX: όχι IllegalStateException -> 409. Για “δεν βρέθηκε/δεν είναι assigned” επιστρέφουμε 404.
         Request req = requestRepository.findByIdAndAssignedEmployee(requestId, employee)
-            .orElseThrow(() -> new IllegalStateException("Request not found"));
+            .orElseThrow(() -> new RequestNotFoundException("Request not found or not assigned to you"));
 
         return requestMessageRepository.findAllByRequestOrderByCreatedAtAsc(req)
             .stream()
@@ -307,7 +300,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public void citizenSubmittedAdditionalInfo(Long requestId, Person citizen, int uploadedFilesCount, String note) {
-        // Καταγραφή ότι ο πολίτης πρόσθεσε επιπλέον στοιχεία
+
         Request req = requestRepository.findByIdAndCitizen(requestId, citizen)
             .orElseThrow(() -> new IllegalArgumentException("REQUEST_NOT_FOUND"));
 
@@ -329,6 +322,7 @@ public class RequestServiceImpl implements RequestService {
         m.setType(RequestMessageType.CITIZEN_ADDITIONAL_INFO);
         m.setVisibleToCitizen(true);
         m.setMessage(msg);
+        m.setCreatedAt(Instant.now()); // FIX: createdAt
 
         String createdBy = "Citizen: " + citizen.getLastName() + " " + citizen.getFirstName();
         m.setCreatedBy(createdBy);
@@ -340,12 +334,10 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private String generateProtocolNumber() {
-        // Απλός generator πρωτοκόλλου (8 chars) για demo/εργασία
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     private void notifyCitizenOnStatusChange(Request request) {
-        // SMS ενημέρωση πολίτη ανά status
         String phone = request.getCitizen().getMobilePhoneNumber();
         String protocol = request.getProtocolNumber();
 

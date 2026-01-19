@@ -1,6 +1,5 @@
 package gr.hua.dit.mycitygov.web.rest;
 
-import gr.hua.dit.mycitygov.core.model.RequestStatus;
 import gr.hua.dit.mycitygov.core.security.CurrentUserProvider;
 import gr.hua.dit.mycitygov.core.service.RequestService;
 import gr.hua.dit.mycitygov.core.service.model.RequestMessageView;
@@ -63,7 +62,10 @@ public class EmployeeRequestRestController {
     public RequestView myRequestDetails(@PathVariable Long id) {
         var employee = currentUserProvider.requireCurrentPerson();
         return requestService.getMyRequestDetails(id, employee)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found or not assigned to you"));
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Request not found or not assigned to you"
+            ));
     }
 
     // EMPLOYEE: messages of my request
@@ -71,6 +73,7 @@ public class EmployeeRequestRestController {
     @GetMapping("/{id}/messages")
     public List<RequestMessageView> myRequestMessages(@PathVariable Long id) {
         var employee = currentUserProvider.requireCurrentPerson();
+        // Το service πλέον πετάει RequestNotFoundException -> 404 από GlobalErrorHandler
         return requestService.getMyRequestMessages(id, employee);
     }
 
@@ -79,9 +82,22 @@ public class EmployeeRequestRestController {
     @PatchMapping(value = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
     public RequestView updateStatus(@PathVariable Long id, @Valid @RequestBody UpdateRequestStatusRestRequest request) {
         var employee = currentUserProvider.requireCurrentPerson();
-        RequestStatus next = request.status;
 
-        return requestService.updateStatus(id, employee, next, request.comment)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot update status (not assigned or invalid transition)"));
+        // Guard μόνο για το “assigned σε μένα” ώστε να ξεχωρίζει 403 (authorization)
+        requestService.getMyRequestDetails(id, employee)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Cannot update status (not assigned to you)"
+            ));
+
+        // Το service θα:
+        // - πετάξει InvalidRequestStatusTransitionException -> 409 (Global handler)
+        // - πετάξει IllegalArgumentException (COMMENT_REQUIRED) -> 400 (Global handler)
+        // - ενημερώσει SMS / δημιουργήσει messages / save
+        return requestService.updateStatus(id, employee, request.status, request.comment)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Cannot update status"
+            ));
     }
 }
