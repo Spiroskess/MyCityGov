@@ -47,7 +47,7 @@ public class GovUiLoginController {
             try {
                 var person = govUiLoginService.loginOrRegisterCitizenByToken(token.trim());
                 sessionLoginService.loginByEmail(person.getEmailAddress(), request, response);
-                return "redirect:/citizen/requests";
+                return "redirect:/citizen/dashboard";
             } catch (Exception ex) {
                 // Fallback σε manual login με μήνυμα λάθους
                 model.addAttribute("errorMessage", "Το token δεν είναι έγκυρο ή έχει λήξει. Δοκίμασε ξανά.");
