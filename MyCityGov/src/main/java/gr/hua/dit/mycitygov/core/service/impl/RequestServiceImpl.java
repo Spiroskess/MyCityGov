@@ -308,9 +308,15 @@ public class RequestServiceImpl implements RequestService {
             throw new IllegalStateException("REQUEST_NOT_WAITING_ADDITIONAL_INFO");
         }
 
-        String base = (uploadedFilesCount == 1)
-            ? "Ο πολίτης ανέβασε 1 επιπλέον αρχείο."
-            : "Ο πολίτης ανέβασε " + uploadedFilesCount + " επιπλέον αρχεία.";
+        String base;
+        if (uploadedFilesCount <= 0) {
+            base = "Ο πολίτης έστειλε συμπληρωματικές πληροφορίες.";
+        } else if (uploadedFilesCount == 1) {
+            base = "Ο πολίτης ανέβασε 1 επιπλέον αρχείο.";
+        } else {
+            base = "Ο πολίτης ανέβασε " + uploadedFilesCount + " επιπλέον αρχεία.";
+        }
+
 
         String msg = base;
         if (note != null && !note.trim().isEmpty()) {

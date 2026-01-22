@@ -25,6 +25,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class CitizenRequestController {
 
@@ -143,6 +147,60 @@ public class CitizenRequestController {
         model.addAttribute("attachments", requestAttachmentService.listForCitizenRequest(id, citizen));
 
         return "citizen/request-details";
+    }
+    @PostMapping("/citizen/requests/{id}/attachments/upload")
+    public String uploadAdditionalAttachments(@PathVariable Long id,
+                                              @RequestParam(name = "attachments", required = false) MultipartFile[] attachments,
+                                              @RequestParam(name = "note", required = false) String note,
+                                              RedirectAttributes ra) {
+
+        Person citizen = currentUserProvider.getCurrentPerson().orElseThrow();
+
+        int uploaded = 0;
+        List<String> failed = new ArrayList<>();
+
+        if (attachments != null) {
+            for (MultipartFile f : attachments) {
+                if (f == null || f.isEmpty()) continue;
+
+                try {
+                    var upload = new AttachmentUpload(
+                        f.getOriginalFilename(),
+                        f.getContentType(),
+                        f.getSize(),
+                        f.getInputStream()
+                    );
+                    // IMPORTANT: αυτό είναι το σωστό για WAITING_ADDITIONAL_INFO
+                    requestAttachmentService.addAdditionalInfoForCitizenRequest(id, citizen, upload);
+                    uploaded++;
+                } catch (Exception e) {
+                    failed.add(f.getOriginalFilename() == null ? "file" : f.getOriginalFilename());
+                }
+            }
+        }
+
+        // Αν δεν έστειλε ούτε αρχείο ούτε σημείωση
+        if (uploaded == 0 && (note == null || note.trim().isEmpty())) {
+            ra.addFlashAttribute("uploadError", "Δεν επέλεξες αρχεία και δεν έγραψες σημείωση.");
+            return "redirect:/citizen/requests/" + id;
+        }
+
+        // Αν απέτυχαν κάποια αρχεία
+        if (!failed.isEmpty()) {
+            ra.addFlashAttribute("uploadError", "Αποτυχία ανεβάσματος: " + String.join(", ", failed));
+            return "redirect:/citizen/requests/" + id;
+        }
+
+        // Γράψε μήνυμα στο ιστορικό (υπάρχει ήδη στο RequestServiceImpl)
+        requestService.citizenSubmittedAdditionalInfo(id, citizen, uploaded, note);
+
+        if (uploaded > 0) {
+            ra.addFlashAttribute("uploadOk", "Ανέβηκαν " + uploaded + " αρχείο(α) επιτυχώς.");
+        } else {
+            ra.addFlashAttribute("uploadOk", "Το συμπληρωματικό μήνυμα καταχωρήθηκε.");
+        }
+
+        return "redirect:/citizen/requests/" + id;
     }
 
     @GetMapping("/citizen/requests/{requestId}/attachments/{attachmentId}/download")
